@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tiểu luận Data Mining – HUI-Miner</title>
+<style>
+  :root{--title:#16598c;--orange:#f05d32;--blue:#2777b6;--light:#4a93c9;--card:#eef4fa;--pill:#fde7df;--text:#333;--line:#cfe0ee}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:#0f1b27;overflow:hidden}
+  body{display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Arial,'Liberation Sans','Helvetica Neue',Helvetica,sans-serif}
+  #stage{position:relative;width:1920px;height:1080px;background:#fff;overflow:hidden;flex:none;margin:-20px 0}
+  .bg{position:absolute;left:0;top:0;width:1920px;height:1080px;display:block}
+  .pg{position:absolute;right:108px;bottom:22px;font-size:18px;color:var(--title);font-weight:700;z-index:3}
+  .s{position:absolute;inset:0;display:none}.s.on{display:block}
+  h2{position:absolute;left:108px;top:74px;font-size:56px;line-height:1.15;font-weight:700;color:var(--title)}
+  h2 span,.big1 span{color:var(--orange)}
+  .sub{position:absolute;left:108px;top:154px;font-size:27px;color:#444}
+  .tag{position:absolute;right:108px;top:88px;background:var(--pill);color:var(--orange);font-weight:700;font-size:22px;padding:10px 26px;border-radius:40px;letter-spacing:1px}
+  .ttl{font-size:30px;font-weight:700;color:var(--title)}
+  .bar{width:72px;height:6px;border-radius:4px;background:var(--orange);margin:10px 0 18px}
+  .ic{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;margin-bottom:16px;flex:none}
+  .ic svg{width:36px;height:36px;color:#fff}
+  .c1{background:var(--blue)}.c2{background:var(--light)}.c3{background:var(--title)}
+  .card{position:absolute;border-radius:28px;background:var(--card);padding:34px 36px}
+  .card.dark{background:var(--title);color:#fff}.card.dark .ttl{color:#fff}
+  .card p,.card li{font-size:27px;line-height:1.45;color:var(--text)}
+  .dark p,.dark li{color:#e6f0f8}
+  b.t{color:var(--title)}.dark b.t{color:#fff}
+  /* cover */
+  .kick{position:absolute;left:108px;top:292px;font-size:28px;font-weight:700;color:var(--blue);letter-spacing:1px}
+  .big1{position:absolute;left:108px;top:340px;font-size:92px;line-height:1.12;font-weight:700;color:var(--title)}
+  .sub1{position:absolute;left:108px;top:610px;width:1150px;font-size:36px;line-height:1.4;color:#444}
+  .chips{position:absolute;left:108px;top:790px;display:flex;gap:24px}
+  .chip{background:var(--card);border-radius:24px;padding:22px 30px;font-size:22px;color:var(--title);font-weight:700;min-width:230px}
+  .chip b{display:block;font-size:54px;color:var(--blue);line-height:1.05;margin-bottom:4px}
+  /* grids */
+  .g{position:absolute;left:108px;display:grid;gap:24px;width:1704px}
+  .g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:1fr 1fr}
+  .g .card{position:relative}
+  .card h3{font-size:32px;color:var(--title);margin-bottom:10px;line-height:1.2}
+  .dark h3{color:#fff}
+  .band{position:absolute;left:108px;width:1704px;background:var(--title);color:#fff;border-radius:26px;padding:28px 40px;font-size:27px;line-height:1.4}
+  .band b{color:#fff;border-bottom:3px solid var(--light)}
+  /* flow */
+  .flow{display:flex;gap:0;align-items:stretch}
+  .fl{flex:1;background:#fff;border:2px solid var(--line);border-radius:22px;padding:20px 22px;font-size:25px;line-height:1.35;color:var(--text);position:relative}
+  .fl b{display:block;color:var(--title);font-size:28px;margin-bottom:4px}
+  .fl+.fl{margin-left:34px}
+  .fl+.fl:before{content:"›";position:absolute;left:-30px;top:50%;margin-top:-22px;font-size:44px;color:var(--light);font-weight:700}
+  .lane{font-size:24px;font-weight:700;color:#fff;background:var(--blue);border-radius:16px;padding:8px 22px;display:inline-block;margin-bottom:14px}
+  /* table rows */
+  .tr{display:grid;gap:18px;align-items:center;padding:22px 0;border-top:2px solid var(--line);font-size:26px;line-height:1.35;color:var(--text)}
+  .tr:first-of-type{border-top:0}
+  .th{font-size:19px;font-weight:700;color:var(--blue);letter-spacing:.5px;text-transform:uppercase;border-top:0;padding:0 0 8px}
+  code,.code{font-family:'Courier New','Liberation Mono',monospace}
+  code{background:#fff;border:2px solid var(--line);border-radius:10px;padding:2px 9px;font-size:.88em;color:var(--title);font-weight:700;white-space:nowrap}
+  .dark code{background:rgba(255,255,255,.14);border-color:transparent;color:#fff}
+  pre.code{font-size:20px;line-height:1.5;color:#e6f0f8;white-space:pre}
+  pre.code i{font-style:normal;color:#8fc4ea}
+  pre.code em{font-style:normal;color:#9fdba7}
+  .no{color:var(--orange);font-weight:700}.ok{color:var(--blue);font-weight:700}
+  .bars div.r{display:flex;align-items:center;gap:18px;margin-bottom:16px;font-size:23px}
+  .bars .lbl{width:230px;color:var(--text)}
+  .bars .b{height:46px;border-radius:12px;color:#fff;font-weight:700;font-size:23px;padding:0 16px;display:flex;align-items:center}
+  /* nav */
+  .nav{position:fixed;bottom:6px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;z-index:9}
+  .nav button{background:none;border:0;color:#fff;font-size:26px;cursor:pointer;opacity:.7}
+  #dots i{display:inline-block;width:10px;height:10px;border-radius:50%;background:#556;margin:0 5px;cursor:pointer}#dots i.a{background:var(--light)}
+  .tight .tr{padding:12px 0}
+
+  .tb{border-collapse:collapse;font-size:24px;width:100%}
+  .tb th{background:var(--title);color:#fff;padding:8px 10px;font-weight:700}
+  .tb td{padding:8px 10px;border-bottom:2px solid var(--line);text-align:center;color:var(--text);background:#fff}
+  .tb td:first-child{font-weight:700;color:var(--title)}
+  .tb .hl td{background:#dbe9f5}
+  .cap{font-size:24px;font-weight:700;color:var(--title);margin-bottom:10px}
+  .math{font-family:'Times New Roman',serif;font-style:italic}
+  .fm{background:#fff;border:2px solid var(--line);border-radius:16px;padding:14px 20px;font-size:25px;color:var(--title);line-height:1.5}
+  .nd{display:inline-block;border-radius:12px;padding:6px 12px;font-size:24px;margin:4px 6px 4px 0;border:2px solid var(--blue);background:#fff;color:var(--title);font-weight:700;white-space:nowrap}
+  .nd.pr{border-color:#b9c7d4;color:#7a8fa3;background:#f3f6f9;text-decoration:line-through;font-weight:400}
+  .nd.hu{background:var(--blue);color:#fff}
+  .nd small{font-size:19px;font-weight:400;margin-left:6px}
+  .blk{background:#fff;border:2px solid var(--line);border-radius:18px;padding:12px 14px}
+  .blk .rt{font-size:26px;font-weight:700;color:var(--title);margin-bottom:4px}
+  .ref li{font-size:23px;line-height:1.36;margin-bottom:10px;list-style:none;color:var(--text)}.dark .ref li{color:#e6f0f8}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-library" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 6 4 14" />
+  <path d="M12 6v14" />
+  <path d="M8 8v12" />
+  <path d="M4 4v16" /></symbol>
+<symbol id="i-repeat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4" />
+  <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+  <path d="m7 22-4-4 4-4" />
+  <path d="M21 13v1a4 4 0 0 1-4 4H3" /></symbol>
+<symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+  <path d="M16 3.128a4 4 0 0 1 0 7.744" />
+  <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+  <circle cx="9" cy="7" r="4" /></symbol>
+<symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34" />
+  <circle cx="11" cy="11" r="8" /></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0" />
+  <path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" /></symbol>
+<symbol id="i-chart-column" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16" />
+  <path d="M18 17V9" />
+  <path d="M13 17V5" />
+  <path d="M8 17v-3" /></symbol>
+<symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" />
+  <path d="M12 6v6l4 2" /></symbol>
+<symbol id="i-triangle-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
+  <path d="M12 9v4" />
+  <path d="M12 17h.01" /></symbol>
+<symbol id="i-trending-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7h6v6" />
+  <path d="m22 7-8.5 8.5-5-5L2 17" /></symbol>
+<symbol id="i-rocket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
+  <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09" />
+  <path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z" />
+  <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05" /></symbol>
+<symbol id="i-shield-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+  <path d="m9 12 2 2 4-4" /></symbol>
+<symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z" /></symbol>
+<symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" />
+  <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" />
+  <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" /></symbol>
+<symbol id="i-cog" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 10.27 7 3.34" />
+  <path d="m11 13.73-4 6.93" />
+  <path d="M12 22v-2" />
+  <path d="M12 2v2" />
+  <path d="M14 12h8" />
+  <path d="m17 20.66-1-1.73" />
+  <path d="m17 3.34-1 1.73" />
+  <path d="M2 12h2" />
+  <path d="m20.66 17-1.73-1" />
+  <path d="m20.66 7-1.73 1" />
+  <path d="m3.34 17 1.73-1" />
+  <path d="m3.34 7 1.73 1" />
+  <circle cx="12" cy="12" r="2" />
+  <circle cx="12" cy="12" r="8" /></symbol>
+<symbol id="i-database" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3" />
+  <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+  <path d="M3 12A9 3 0 0 0 21 12" /></symbol>
+
+</svg>
+<div id="stage">
+<img class="bg" src="kq-background.png" alt="">
+<div class="pg" id="pg"></div>
+<section class="s">
+<div class="tag">TIỂU LUẬN KHAI PHÁ DỮ LIỆU</div>
+<div class="kick">HỌC PHẦN DATA MINING · THẠC SĨ CÔNG NGHỆ THÔNG TIN</div>
+<h1 class="big1" style="font-size:84px">HUI-Miner <span>–</span><br>Khai phá tập mục hữu ích cao<br>không sinh ứng viên</h1>
+<div class="sub1" style="top:660px;font-size:32px">Mining High Utility Itemsets without Candidate Generation<br><span style="color:var(--title);font-weight:700">Mengchi Liu &amp; Junfeng Qu · ACM CIKM 2012 · trang 55–64</span></div>
+<div class="chips" style="top:800px">
+<div class="chip"><b>1 pha</b>không sinh ứng viên</div>
+<div class="chip"><b>3 số</b>utility-list: tid, iutil, rutil</div>
+<div class="chip"><b>2012</b>năm công bố</div>
+<div class="chip"><b>SPMF</b>thư viện cài đặt tham khảo</div>
+</div>
+<div style="position:absolute;left:108px;top:925px;font-size:22px;color:#555">Học viên: ………………… · MSHV: ………… · Giảng viên hướng dẫn: …………………</div>
+</section>
+<section class="s"><div class="tag">ĐỘNG LỰC</div><h2>Từ tần suất đến lợi ích</h2><div class="sub">Khai phá tập mục thường xuyên bỏ qua số lượng và giá trị của từng mặt hàng</div>
+<div class="card" style="left:108px;top:236px;width:830px;height:380px">
+<div class="ttl">Tập mục thường xuyên (Apriori, 1994)</div><div class="bar"></div>
+<p style="font-size:29px;line-height:1.5">Chỉ đếm <b class="t">số giao dịch chứa tập mục</b> (support). Mọi mặt hàng được coi như nhau, mỗi mặt hàng chỉ "có" hoặc "không có" trong giỏ.</p></div>
+<div class="card dark" style="left:982px;top:236px;width:830px;height:380px">
+<div class="ttl">Tập mục hữu ích cao (HUIM)</div><div class="bar"></div>
+<p style="font-size:29px;line-height:1.5">Mỗi mặt hàng có <b class="t">lợi nhuận đơn vị</b>, mỗi giao dịch có <b class="t">số lượng mua</b>. Tìm các tập mục có <b class="t">tổng lợi ích ≥ ngưỡng minutil</b>.</p></div>
+<div class="card" style="left:108px;top:640px;width:1704px;height:230px;padding:26px 40px">
+<div class="cap" style="font-size:26px">Ví dụ minh hoạ: tần suất cao chưa chắc lợi ích cao</div>
+<div style="display:grid;grid-template-columns:170px 1fr 170px;gap:12px 18px;align-items:center;font-size:23px;color:var(--text)">
+<div><b class="t">{kẹo}</b></div><div style="background:#b9c7d4;height:36px;border-radius:10px;width:90%"></div><div>bán 1.000 lần</div>
+<div><b class="t">{laptop}</b></div><div style="background:var(--blue);height:36px;border-radius:10px;width:9%"></div><div>bán 10 lần</div></div>
+<div style="font-size:21px;color:#555;margin-top:10px">Về tần suất: kẹo vượt xa. Về lợi nhuận (1.000đ × 1.000 = 1 triệu so với 15 triệu × 10 = 150 triệu): laptop vượt xa. Số liệu giả định để minh hoạ.</div></div>
+<div class="band" style="top:892px;padding:20px 40px;font-size:26px"><b>Ứng dụng:</b> phân tích giỏ hàng, chọn mặt hàng khuyến mãi, bố trí kệ, phân tích clickstream, y sinh học…</div>
+</section>
+<section class="s"><div class="tag">BÀI TOÁN</div><h2>Định nghĩa bài toán HUIM</h2><div class="sub">Cơ sở dữ liệu mẫu 5 giao dịch, 7 mặt hàng, ngưỡng minutil = 35</div>
+<div class="card" style="left:108px;top:236px;width:760px;height:660px;padding:28px 30px">
+<div class="cap">Cơ sở dữ liệu giao dịch (mặt hàng : số lượng)</div>
+<table class="tb"><tr><th>Giao dịch</th><th>Mặt hàng : số lượng</th><th>TU</th></tr><tr><td>T1</td><td>a:1, c:1, d:1</td><td>8</td></tr><tr><td>T2</td><td>a:2, c:6, e:2, g:5</td><td>27</td></tr><tr><td>T3</td><td>a:1, b:2, c:1, d:6, e:1, f:5</td><td>30</td></tr><tr><td>T4</td><td>b:4, c:3, d:3, e:1</td><td>20</td></tr><tr><td>T5</td><td>b:2, c:2, e:1, g:2</td><td>11</td></tr></table>
+<div class="cap" style="margin-top:22px">Lợi nhuận đơn vị p(i)</div>
+<table class="tb"><tr><th>a</th><th>b</th><th>c</th><th>d</th><th>e</th><th>f</th><th>g</th></tr><tr><td>5</td><td>2</td><td>1</td><td>2</td><td>3</td><td>1</td><td>1</td></tr></table>
+<p style="font-size:20px;margin-top:10px">TU: tổng lợi ích của giao dịch.</p></div>
+<div class="card" style="left:892px;top:236px;width:920px;height:660px;padding:28px 36px">
+<div class="cap">Các định nghĩa (Liu &amp; Qu, 2012)</div>
+<div class="fm" style="margin-bottom:12px"><b>Lợi ích của mặt hàng</b> trong giao dịch<br><span class="math">u(i, T) = q(i, T) × p(i)</span></div>
+<div class="fm" style="margin-bottom:12px"><b>Lợi ích của tập mục</b> X<br><span class="math">u(X) = Σ<sub>T ⊇ X</sub> Σ<sub>i ∈ X</sub> u(i, T)</span></div>
+<div class="fm" style="margin-bottom:12px"><b>Tập mục hữu ích cao (HUI):</b> <span class="math">u(X) ≥ minutil</span></div>
+<p style="font-size:23px;line-height:1.45"><b class="t">Ví dụ:</b> X = {b, d}. T3: 2×2 + 6×2 = 16. T4: 4×2 + 3×2 = 14. Vậy u(X) = 30 &lt; 35, X <b class="t">chưa phải</b> HUI.</p></div>
+<div class="band" style="top:916px;padding:18px 40px;font-size:25px"><b>Đầu ra mong đợi</b> (đã kiểm chứng bằng vét cạn): {b,d,e} = 36 và {b,c,d,e} = 40</div>
+</section>
+<section class="s"><div class="tag">THÁCH THỨC</div><h2>Lợi ích không có tính chất "giảm dần"</h2><div class="sub">Vì vậy không thể cắt tỉa bằng u(X) như Apriori đã làm với support</div>
+<div class="card" style="left:108px;top:236px;width:830px;height:470px;padding:26px 30px"><div class="cap">Support: không tăng khi thêm mặt hàng</div><svg width="780" height="300" viewBox="0 0 780 300"><rect x="40" y="53.125" width="120" height="196.875" rx="10" fill="#7a8fa3"/><text x="100" y="43.125" font-size="28" font-weight="700" fill="#16598c" text-anchor="middle">3</text><text x="100" y="285" font-size="24" fill="#333" text-anchor="middle">{b}</text><rect x="225" y="118.75" width="120" height="131.25" rx="10" fill="#7a8fa3"/><text x="285" y="108.75" font-size="28" font-weight="700" fill="#16598c" text-anchor="middle">2</text><text x="285" y="285" font-size="24" fill="#333" text-anchor="middle">{b,d}</text><rect x="410" y="118.75" width="120" height="131.25" rx="10" fill="#7a8fa3"/><text x="470" y="108.75" font-size="28" font-weight="700" fill="#16598c" text-anchor="middle">2</text><text x="470" y="285" font-size="24" fill="#333" text-anchor="middle">{b,d,e}</text><rect x="595" y="118.75" width="120" height="131.25" rx="10" fill="#7a8fa3"/><text x="655" y="108.75" font-size="28" font-weight="700" fill="#16598c" text-anchor="middle">2</text><text x="655" y="285" font-size="24" fill="#333" text-anchor="middle">{b,c,d,e}</text></svg><div style="font-size:23px;color:var(--text)">Tập mục con không thường xuyên thì mọi tập cha cũng không: cắt tỉa được (anti-monotone).</div></div>
+<div class="card" style="left:982px;top:236px;width:830px;height:470px;padding:26px 30px"><div class="cap">Utility: có thể tăng khi thêm mặt hàng</div><svg width="780" height="300" viewBox="0 0 780 300"><rect x="40" y="170.0" width="120" height="80.0" rx="10" fill="#2777b6"/><text x="100" y="160.0" font-size="28" font-weight="700" fill="#16598c" text-anchor="middle">16</text><text x="100" y="285" font-size="24" fill="#333" text-anchor="middle">{b}</text><rect x="225" y="100.0" width="120" height="150.0" rx="10" fill="#2777b6"/><text x="285" y="90.0" font-size="28" font-weight="700" fill="#16598c" text-anchor="middle">30</text><text x="285" y="285" font-size="24" fill="#333" text-anchor="middle">{b,d}</text><rect x="410" y="70.0" width="120" height="180.0" rx="10" fill="#2777b6"/><text x="470" y="60.0" font-size="28" font-weight="700" fill="#16598c" text-anchor="middle">36</text><text x="470" y="285" font-size="24" fill="#333" text-anchor="middle">{b,d,e}</text><rect x="595" y="50.0" width="120" height="200.0" rx="10" fill="#2777b6"/><text x="655" y="40.0" font-size="28" font-weight="700" fill="#16598c" text-anchor="middle">40</text><text x="655" y="285" font-size="24" fill="#333" text-anchor="middle">{b,c,d,e}</text></svg><div style="font-size:23px;color:var(--text)">u({b}) = 16 nhưng u({b,c,d,e}) = 40. Không cắt tỉa được bằng chính u(X).</div></div>
+<div class="card dark" style="left:108px;top:730px;width:1704px;height:230px;padding:26px 40px">
+<div class="ttl" style="margin-bottom:10px">Lối thoát: cận trên có tính anti-monotone</div>
+<p style="font-size:25px;line-height:1.45"><b class="t">TWU(X)</b> = tổng TU của các giao dịch chứa X. Nếu TWU(X) &lt; minutil thì mọi tập cha của X đều không phải HUI. Trong ví dụ, TWU: f=30, g=38, d=58, b=61, a=65, e=88, c=96; mặt hàng <b class="t">f (30 &lt; 35)</b> bị loại ngay.</p></div>
+</section>
+<section class="s"><div class="tag">CÁCH TIẾP CẬN TRƯỚC ĐÓ</div><h2>Hai pha: sinh ứng viên rồi kiểm tra</h2><div class="sub">Two-Phase (2005), IHUP (2009), UP-Growth (2010) đều dựa trên TWU</div>
+<div class="flow" style="position:absolute;left:108px;top:236px;width:1704px">
+<div class="fl"><b>Quét DB lần 1</b>Tính TWU của từng mặt hàng.</div>
+<div class="fl"><b>Pha 1: sinh ứng viên</b>Sinh mọi tập có TWU ≥ minutil (HTWUI).</div>
+<div class="fl"><b>Pha 2: kiểm tra</b>Quét lại DB để tính utility chính xác của từng ứng viên.</div>
+<div class="fl" style="background:var(--title);border-color:var(--title);color:#fff"><b style="color:#fff">Kết quả HUI</b>Giữ ứng viên có u(X) ≥ minutil.</div></div>
+<div class="g g3" style="top:470px">
+<div class="card" style="height:300px"><span class="ic c1"><svg><use href="#i-triangle-alert"/></svg></span><h3>Ứng viên quá nhiều</h3><p style="font-size:25px">TWU là cận trên lỏng. Ví dụ mẫu: <b class="t">25 ứng viên</b> chỉ để tìm ra <b class="t">2 HUI</b>.</p></div>
+<div class="card" style="height:300px"><span class="ic c2"><svg><use href="#i-repeat"/></svg></span><h3>Nhiều lần quét DB</h3><p style="font-size:25px">Pha 2 phải duyệt lại cơ sở dữ liệu để tính utility của mỗi ứng viên.</p></div>
+<div class="card" style="height:300px"><span class="ic c3"><svg><use href="#i-database"/></svg></span><h3>Tốn bộ nhớ và thời gian</h3><p style="font-size:25px">Lưu và kiểm tra rất nhiều ứng viên vô ích, nhất là khi dữ liệu dày hoặc ngưỡng thấp.</p></div></div>
+<div class="band" style="top:800px;padding:26px 40px"><b>Câu hỏi của bài báo:</b> có thể tính ngay utility chính xác mà không cần sinh ứng viên và không quét lại cơ sở dữ liệu không?</div>
+</section>
+<section class="s"><div class="tag">Ý TƯỞNG CHÍNH</div><h2>HUI-Miner: một pha, không sinh ứng viên</h2><div class="sub">Đóng góp của Liu &amp; Qu (CIKM 2012): cấu trúc utility-list</div>
+<div class="g g2" style="top:236px;gap:24px">
+<div class="card" style="height:250px;padding:24px 32px"><h3>Hai pha (trước đây)</h3><div class="flow" style="margin-top:12px"><div class="fl" style="font-size:22px;padding:14px">Đoán ứng viên (TWU)</div><div class="fl" style="font-size:22px;padding:14px">Quét lại DB kiểm tra</div></div><p style="font-size:23px;margin-top:12px">Generate-and-test: sinh trước, kiểm tra sau.</p></div>
+<div class="card dark" style="height:250px;padding:24px 32px"><h3>Một pha (HUI-Miner)</h3><div class="flow" style="margin-top:12px"><div class="fl" style="font-size:22px;padding:14px;color:var(--text)">Dựng utility-list 1 lần</div><div class="fl" style="font-size:22px;padding:14px;color:var(--text)">Nối danh sách và có ngay utility</div></div><p style="font-size:23px;margin-top:12px">Tính trực tiếp, không cần danh sách ứng viên.</p></div></div>
+<div class="g g3" style="top:512px">
+<div class="card" style="height:330px"><span class="ic c1"><svg><use href="#i-layers"/></svg></span><h3>① Utility-list</h3><p style="font-size:25px">Mỗi tập mục có một danh sách các bộ ba (tid, iutil, rutil): lợi ích đã có và lợi ích còn có thể thêm.</p></div>
+<div class="card" style="height:330px"><span class="ic c2"><svg><use href="#i-zap"/></svg></span><h3>② Nối danh sách</h3><p style="font-size:25px">Utility-list của tập k mục được dựng từ hai danh sách k−1 mục, không cần quét lại cơ sở dữ liệu.</p></div>
+<div class="card" style="height:330px"><span class="ic c3"><svg><use href="#i-shield-check"/></svg></span><h3>③ Cận trên chặt hơn</h3><p style="font-size:25px">iutil + rutil là cận trên dùng để cắt cả nhánh, chặt hơn TWU nên bớt nhánh vô ích.</p></div></div>
+<div class="band" style="top:868px;padding:22px 40px;font-size:26px">Tổng iutil <b>= u(X) chính xác</b> · Tổng (iutil + rutil) <b>= cận trên của mọi tập mở rộng từ X</b></div>
+</section>
+<section class="s"><div class="tag">CẤU TRÚC DỮ LIỆU</div><h2>Utility-list: bộ ba (tid, iutil, rutil)</h2><div class="sub">Sắp xếp mặt hàng theo TWU tăng dần: g ≺ d ≺ b ≺ a ≺ e ≺ c</div>
+<div class="card" style="left:108px;top:236px;width:1704px;height:250px;padding:24px 36px">
+<div class="cap">Giao dịch T3 sau khi bỏ f và sắp theo thứ tự trên (số sau dấu hai chấm là lợi ích)</div>
+<div style="display:flex;margin:6px 0 14px"><div style="width:360px;height:70px;background:#16598c;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;border-right:3px solid #fff">d:12</div><div style="width:120px;height:70px;background:#2777b6;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;border-right:3px solid #fff">b:4</div><div style="width:150px;height:70px;background:#4a93c9;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;border-right:3px solid #fff">a:5</div><div style="width:90px;height:70px;background:#7fb3d9;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;border-right:3px solid #fff">e:3</div><div style="width:30px;height:70px;background:#a9cbe6;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;border-right:3px solid #fff">c:1</div></div>
+<div style="font-size:24px;line-height:1.5;color:var(--text)">Với <b class="t">d</b> trong T3: <b class="t">iutil</b> = u(d, T3) = 12 · <b class="t">rutil</b> = lợi ích các mặt hàng đứng sau d = 4+5+3+1 = <b class="t">13</b> → bộ ba (T3, 12, 13)</div></div>
+<div class="card" style="left:108px;top:512px;width:1704px;height:340px;padding:24px 30px">
+<div style="display:flex;gap:22px"><div style="flex:1"><div class="cap">UL({d})</div><table class="tb"><tr><th>tid</th><th>iutil</th><th>rutil</th></tr><tr><td>T1</td><td>2</td><td>6</td></tr><tr><td>T3</td><td>12</td><td>13</td></tr><tr><td>T4</td><td>6</td><td>14</td></tr></table></div><div style="flex:1"><div class="cap">UL({b})</div><table class="tb"><tr><th>tid</th><th>iutil</th><th>rutil</th></tr><tr><td>T3</td><td>4</td><td>9</td></tr><tr><td>T4</td><td>8</td><td>6</td></tr><tr><td>T5</td><td>4</td><td>5</td></tr></table></div><div style="flex:1"><div class="cap">UL({a})</div><table class="tb"><tr><th>tid</th><th>iutil</th><th>rutil</th></tr><tr><td>T1</td><td>5</td><td>1</td></tr><tr><td>T2</td><td>10</td><td>12</td></tr><tr><td>T3</td><td>5</td><td>4</td></tr></table></div></div></div>
+<div class="band" style="top:880px;padding:20px 40px;font-size:25px"><b>Đọc nhanh:</b> UL({d}): Σiutil = 20 = u({d}); Σ(iutil + rutil) = 53 là cận trên cho {d} và mọi tập mở rộng của nó</div>
+</section>
+<section class="s"><div class="tag">PHÉP NỐI</div><h2>Dựng utility-list bằng phép nối, không quét lại DB</h2><div class="sub">Giao hai danh sách theo tid, cộng iutil, trừ phần iutil của tiền tố chung</div>
+<div class="cap" style="position:absolute;left:108px;top:226px">Mức 1: {d} ⋈ {b} → {d,b} (tiền tố rỗng)</div>
+<div style="position:absolute;left:108px;top:268px;width:1704px;display:flex;gap:28px;align-items:center">
+<div style="flex:1"><table class="tb"><tr><th>tid</th><th>iutil</th><th>rutil</th></tr><tr><td>T1</td><td>2</td><td>6</td></tr><tr><td>T3</td><td>12</td><td>13</td></tr><tr><td>T4</td><td>6</td><td>14</td></tr></table></div><div style="font-size:50px;color:var(--blue)">⋈</div><div style="flex:1"><table class="tb"><tr><th>tid</th><th>iutil</th><th>rutil</th></tr><tr><td>T3</td><td>4</td><td>9</td></tr><tr><td>T4</td><td>8</td><td>6</td></tr><tr><td>T5</td><td>4</td><td>5</td></tr></table></div><div style="font-size:50px;color:var(--blue)">→</div><div style="flex:1"><table class="tb"><tr><th>tid</th><th>iutil</th><th>rutil</th></tr><tr><td>T3</td><td>16</td><td>9</td></tr><tr><td>T4</td><td>14</td><td>6</td></tr></table></div></div>
+<div class="cap" style="position:absolute;left:108px;top:540px">Mức 2: {d,b} ⋈ {d,e} → {d,b,e} (tiền tố P = {d})</div>
+<div style="position:absolute;left:108px;top:582px;width:1704px;display:flex;gap:22px;align-items:center">
+<div style="flex:1"><table class="tb"><tr><th>tid</th><th>iutil</th><th>rutil</th></tr><tr><td>T3</td><td>16</td><td>9</td></tr><tr><td>T4</td><td>14</td><td>6</td></tr></table></div><div style="font-size:44px;color:var(--blue)">⋈</div><div style="flex:1"><table class="tb"><tr><th>tid</th><th>iutil</th><th>rutil</th></tr><tr><td>T3</td><td>15</td><td>1</td></tr><tr><td>T4</td><td>9</td><td>3</td></tr></table></div><div style="font-size:30px;color:var(--blue)">− UL(d)</div><div style="font-size:44px;color:var(--blue)">→</div><div style="flex:1"><table class="tb"><tr><th>tid</th><th>iutil</th><th>rutil</th></tr><tr><td>T3</td><td>19</td><td>1</td></tr><tr><td>T4</td><td>17</td><td>3</td></tr></table></div></div>
+<div class="band" style="top:848px;padding:20px 40px;font-size:25px;line-height:1.5"><b>iutil(Pxy)</b> = iutil(Px) + iutil(Py) − iutil(P) &nbsp;·&nbsp; <b>rutil(Pxy)</b> = rutil(Py)<br>Kiểm tra: T3: iutil = 16 + 15 − 12 = 19, rutil = 1 · T4: iutil = 14 + 9 − 6 = 17, rutil = 3 → u({d,b,e}) = 36</div>
+</section>
+<section class="s"><div class="tag">CẮT TỈA</div><h2>Hai quy tắc và cây tìm kiếm</h2><div class="sub">Với minutil = 35: chỉ thăm 23 nút và thực hiện 18 phép nối, thay vì 63 tập mục có thể có</div>
+<div class="g g2" style="top:226px;gap:24px">
+<div class="card" style="height:120px;padding:16px 28px"><p style="font-size:25px;line-height:1.4"><b class="t">Quy tắc 1 (xuất kết quả):</b> nếu Σ iutil ≥ minutil thì X là HUI.</p></div>
+<div class="card dark" style="height:120px;padding:16px 28px"><p style="font-size:25px;line-height:1.4"><b class="t">Quy tắc 2 (cắt tỉa):</b> nếu Σ(iutil + rutil) &lt; minutil thì bỏ X và mọi tập mở rộng, không cần nối tiếp.</p></div></div>
+<div style="position:absolute;left:108px;top:368px;width:1704px;display:grid;grid-template-columns:1.05fr 1.5fr 1fr;gap:18px">
+<div style="display:grid;gap:14px"><div class="blk"><div class="rt">Nhánh g</div><span class="nd">{g}<small>7/38</small></span><br><span class="nd pr">{g,b}<small>6/11</small></span><span class="nd pr">{g,a}<small>15/27</small></span><span class="nd pr">{g,e}<small>16/24</small></span><span class="nd pr">{g,c}<small>15/15</small></span></div><div class="blk"><div class="rt">Nhánh b</div><span class="nd">{b}<small>16/36</small></span><br><span class="nd pr">{b,a}<small>9/13</small></span><span class="nd pr">{b,e}<small>25/31</small></span><span class="nd pr">{b,c}<small>22/22</small></span></div></div>
+<div><div class="blk"><div class="rt">Nhánh d</div><span class="nd">{d}<small>20/53</small></span><br><span class="nd">{d,b}<small>30/45</small></span><span class="nd pr">{d,b,a}<small>21/25</small></span><span class="nd hu">{d,b,e}<small>36/40</small></span><span class="nd hu">{d,b,e,c}<small>40/40</small></span><span class="nd pr">{d,b,c}<small>34/34</small></span><span class="nd pr">{d,a}<small>24/29</small></span><span class="nd pr">{d,e}<small>24/28</small></span><span class="nd pr">{d,c}<small>25/25</small></span></div></div>
+<div style="display:grid;gap:14px"><div class="blk"><div class="rt">Nhánh a</div><span class="nd">{a}<small>20/37</small></span><br><span class="nd pr">{a,e}<small>24/31</small></span><span class="nd pr">{a,c}<small>28/28</small></span></div><div class="blk"><div class="rt">Nhánh e</div><span class="nd pr">{e}<small>15/27</small></span><br></div><div class="blk"><div class="rt">Nhánh c</div><span class="nd pr">{c}<small>13/13</small></span><br></div></div></div>
+<div class="card" style="left:108px;top:836px;width:1704px;height:140px;padding:14px 36px">
+<div style="font-size:22px;line-height:1.45;color:var(--text)"><span class="nd hu" style="margin:0 8px 0 0">{b,d,e}</span> HUI &nbsp; <span class="nd" style="margin:0 8px 0 0">{d,b}</span> mở rộng tiếp &nbsp; <span class="nd pr" style="margin:0 8px 0 0">{d,c}</span> bị cắt &nbsp;|&nbsp; số nhỏ trong mỗi nút: <b class="t">u(X) / cận trên Σ(iutil+rutil)</b><br>Kết quả cuối: <b class="t">{b,d,e} = 36</b> và <b class="t">{b,c,d,e} = 40</b>, khớp với kiểm chứng vét cạn.</div></div>
+</section>
+<section class="s"><div class="tag">THUẬT TOÁN</div><h2>Quy trình HUI-Miner</h2><div class="sub">Mã giả tóm lược theo mô tả của bài báo</div>
+<div class="card dark" style="left:108px;top:236px;width:960px;height:620px;padding:30px 34px"><pre class="code" style="font-size:22px;line-height:1.55"><i># Bước tiền xử lý</i>
+1. Quét DB lần 1: tính TWU(i); bỏ item TWU &lt; minutil
+2. Sắp xếp item còn lại theo TWU tăng dần
+3. Quét DB lần 2: dựng utility-list cho từng item
+4. Search(∅, ULs, minutil)
+
+<i># Duyệt theo chiều sâu</i>
+Search(P, ULs):
+  for each X in ULs:
+    if ΣX.iutil ≥ minutil: xuất P∪X   <i># HUI</i>
+    if ΣX.iutil + ΣX.rutil ≥ minutil:
+      exULs = ∅
+      for each Y đứng sau X trong ULs:
+        exULs += Construct(P, X, Y)   <i># phép nối</i>
+      Search(X, exULs, minutil)</pre></div>
+<div style="position:absolute;left:1092px;top:236px;width:720px;display:grid;gap:18px">
+<div class="card" style="position:relative;height:140px;padding:18px 28px"><h3>Quét DB đúng 2 lần</h3><p style="font-size:24px">Sau đó mọi việc thực hiện trên utility-list trong bộ nhớ.</p></div>
+<div class="card" style="position:relative;height:140px;padding:18px 28px"><h3>Thứ tự TWU tăng dần</h3><p style="font-size:24px">Mặt hàng "yếu" đứng trước, giúp rutil và cắt tỉa hiệu quả hơn.</p></div>
+<div class="card" style="position:relative;height:140px;padding:18px 28px"><h3>Duyệt sâu, mở rộng có chọn lọc</h3><p style="font-size:24px">Chỉ nối tiếp khi cận trên còn ≥ minutil.</p></div>
+<div class="card" style="position:relative;height:140px;padding:18px 28px"><h3>Hoàn chỉnh và chính xác</h3><p style="font-size:24px">Kết quả trùng khớp vét cạn trên ví dụ và dữ liệu thử.</p></div></div>
+<div class="band" style="top:884px;padding:18px 40px;font-size:24px">Cài đặt tham khảo: thư viện mã nguồn mở <b>SPMF</b> (philippe-fournier-viger.com/spmf)</div>
+</section>
+<section class="s"><div class="tag">THỰC NGHIỆM</div><h2>Hiệu quả so với phương pháp hai pha</h2><div class="sub">Kết quả của bài báo và thử nghiệm kiểm chứng của học viên</div>
+<div class="card" style="left:108px;top:226px;width:1000px;height:560px;padding:20px 28px">
+<div class="cap">Thời gian chạy (giây): <span style="color:#7a8fa3">■ Two-Phase</span> &nbsp; <span style="color:#2777b6">■ HUI-Miner</span></div><svg width="900" height="360" viewBox="0 0 900 360"><rect x="70.0" y="259.4835680751174" width="62" height="30.51643192488263" rx="6" fill="#7a8fa3"/><text x="101.0" y="251.48356807511738" font-size="19" text-anchor="middle" fill="#333">0.26</text><rect x="140.0" y="287" width="62" height="3" rx="6" fill="#2777b6"/><text x="171.0" y="279" font-size="19" text-anchor="middle" fill="#16598c" font-weight="700">0.02</text><text x="136.0" y="322" font-size="21" text-anchor="middle" fill="#333">3.0%</text><rect x="234.0" y="231.31455399061034" width="62" height="58.68544600938967" rx="6" fill="#7a8fa3"/><text x="265.0" y="223.31455399061034" font-size="19" text-anchor="middle" fill="#333">0.5</text><rect x="304.0" y="287" width="62" height="3" rx="6" fill="#2777b6"/><text x="335.0" y="279" font-size="19" text-anchor="middle" fill="#16598c" font-weight="700">0.02</text><text x="300.0" y="322" font-size="21" text-anchor="middle" fill="#333">2.5%</text><rect x="398.0" y="217.2300469483568" width="62" height="72.7699530516432" rx="6" fill="#7a8fa3"/><text x="429.0" y="209.2300469483568" font-size="19" text-anchor="middle" fill="#333">0.62</text><rect x="468.0" y="286.4788732394366" width="62" height="3.5211267605633805" rx="6" fill="#2777b6"/><text x="499.0" y="278.4788732394366" font-size="19" text-anchor="middle" fill="#16598c" font-weight="700">0.03</text><text x="464.0" y="322" font-size="21" text-anchor="middle" fill="#333">2.0%</text><rect x="562.0" y="183.19248826291079" width="62" height="106.80751173708921" rx="6" fill="#7a8fa3"/><text x="593.0" y="175.19248826291079" font-size="19" text-anchor="middle" fill="#333">0.91</text><rect x="632.0" y="285.30516431924883" width="62" height="4.694835680751174" rx="6" fill="#2777b6"/><text x="663.0" y="277.30516431924883" font-size="19" text-anchor="middle" fill="#16598c" font-weight="700">0.04</text><text x="628.0" y="322" font-size="21" text-anchor="middle" fill="#333">1.5%</text><rect x="726.0" y="40.0" width="62" height="250.0" rx="6" fill="#7a8fa3"/><text x="757.0" y="32.0" font-size="19" text-anchor="middle" fill="#333">2.13</text><rect x="796.0" y="284.13145539906105" width="62" height="5.868544600938968" rx="6" fill="#2777b6"/><text x="827.0" y="276.13145539906105" font-size="19" text-anchor="middle" fill="#16598c" font-weight="700">0.05</text><text x="792.0" y="322" font-size="21" text-anchor="middle" fill="#333">1.0%</text><line x1="60" y1="290" x2="900" y2="290" stroke="#cfe0ee" stroke-width="2"/><text x="450.0" y="352" font-size="20" text-anchor="middle" fill="#555">minutil (% tổng lợi ích của DB), giảm dần →</text></svg></div>
+<div class="card" style="left:1132px;top:226px;width:680px;height:560px;padding:20px 26px">
+<div class="cap">Ứng viên và kết quả thật</div>
+<table class="tb" style="font-size:22px"><tr><th>minutil</th><th>Ứng viên</th><th>HUI</th><th>Tăng tốc</th></tr><tr><td>3.0%</td><td>829</td><td>133</td><td>13×</td></tr><tr><td>2.5%</td><td>1153</td><td>180</td><td>25×</td></tr><tr><td>2.0%</td><td>1560</td><td>276</td><td>21×</td></tr><tr><td>1.5%</td><td>2227</td><td>536</td><td>23×</td></tr><tr><td>1.0%</td><td>3940</td><td>1247</td><td>43×</td></tr></table>
+<p style="font-size:21px;margin-top:12px;line-height:1.4">Hai thuật toán cho <b class="t">cùng tập HUI</b>; Two-Phase phải xét nhiều ứng viên gấp 3 đến 5 lần số HUI thật.</p></div>
+<div class="card" style="left:108px;top:806px;width:830px;height:170px;padding:18px 28px"><h3 style="font-size:27px">Theo bài báo gốc</h3><p style="font-size:22px;line-height:1.4">HUI-Miner vượt các thuật toán so sánh (Two-Phase, IHUP, UP-Growth) về thời gian và bộ nhớ; tài liệu tổng hợp nêu mức tăng tốc khoảng 10 đến 100 lần.</p></div>
+<div class="card dark" style="left:982px;top:806px;width:830px;height:170px;padding:18px 28px"><h3 style="font-size:27px">Thử nghiệm của học viên</h3><p style="font-size:22px;line-height:1.4">Tự cài đặt Python, 400 giao dịch tổng hợp, 22 mặt hàng. Chỉ minh hoạ xu hướng, không thay thế số liệu của bài báo.</p></div>
+</section>
+<section class="s"><div class="tag">ĐÁNH GIÁ</div><h2>Ưu điểm, hạn chế và hướng cải tiến</h2><div class="sub">HUI-Miner mở đường cho nhiều thuật toán một pha về sau</div>
+<div class="g g3" style="top:236px">
+<div class="card" style="height:460px"><span class="ic c1"><svg><use href="#i-check"/></svg></span><h3>Ưu điểm</h3><p style="font-size:28px;line-height:1.5">Không sinh ứng viên. Utility chính xác khi dựng danh sách. Cận trên iutil+rutil chặt hơn TWU. Nhanh hơn và tiết kiệm bộ nhớ hơn các thuật toán hai pha.</p></div>
+<div class="card" style="height:460px"><span class="ic c2"><svg><use href="#i-triangle-alert"/></svg></span><h3>Hạn chế</h3><p style="font-size:28px;line-height:1.5">Mỗi nút cần nối hai danh sách, chi phí lớn khi dữ liệu dày. Utility-list chiếm nhiều bộ nhớ. Có thể nối cả những cặp cuối cùng không sinh ra HUI.</p></div>
+<div class="card" style="height:460px"><span class="ic c3"><svg><use href="#i-trending-up"/></svg></span><h3>Cải tiến về sau</h3><p style="font-size:26px;line-height:1.45"><b class="t">FHM</b> (2014): cấu trúc EUCS giảm số phép nối. <b class="t">HUP-Miner</b>: cắt tỉa PU-Prune, LA-Prune. <b class="t">EFIM</b> (2017): cận trên mới, nhanh hơn 2 đến 3 bậc độ lớn trên dữ liệu dày.</p></div></div>
+<div class="band" style="top:720px;padding:30px 40px"><b>Ý nghĩa:</b> HUI-Miner là thuật toán khai phá HUI <b>một pha</b> đầu tiên; ý tưởng utility-list trở thành nền tảng cho cả nhánh nghiên cứu tiếp theo.</div>
+</section>
+<section class="s"><div class="tag">KẾT LUẬN</div><h2>Kết luận và tài liệu tham khảo</h2><div class="sub"></div>
+<div class="card" style="left:108px;top:200px;width:760px;height:760px;padding:28px 34px">
+<div class="ttl">Điều rút ra</div><div class="bar"></div>
+<ul style="padding:0"><li style="list-style:none;margin-bottom:22px;font-size:28px;line-height:1.45"><b class="t">1.</b> Utility không anti-monotone, nên cần cận trên để cắt tỉa.</li>
+<li style="list-style:none;margin-bottom:22px;font-size:28px;line-height:1.45"><b class="t">2.</b> Utility-list giữ đủ thông tin (iutil, rutil) để tính utility chính xác và cắt nhánh mà không quét lại DB.</li>
+<li style="list-style:none;margin-bottom:22px;font-size:28px;line-height:1.45"><b class="t">3.</b> HUI-Miner bỏ pha sinh ứng viên, nhanh và gọn hơn hướng hai pha.</li>
+<li style="list-style:none;font-size:28px;line-height:1.45"><b class="t">4.</b> Thử nghiệm của học viên: kết quả trùng khớp vét cạn và nhanh hơn Two-Phase tự cài đặt.</li></ul></div>
+<div class="card dark" style="left:892px;top:200px;width:920px;height:760px;padding:28px 34px">
+<div class="ttl">Tài liệu tham khảo</div><div class="bar"></div>
+<ul class="ref" style="padding:0"><li><b>[1]</b> Liu, M., Qu, J. (2012). Mining high utility itemsets without candidate generation. <i>Proc. ACM CIKM</i>, 55–64. doi:10.1145/2396761.2396773</li><li><b>[2]</b> Liu, Y., Liao, W., Choudhary, A. (2005). A two-phase algorithm for fast discovery of high utility itemsets. <i>PAKDD</i>.</li><li><b>[3]</b> Ahmed, C. F. et al. (2009). Efficient tree structures for high utility pattern mining in incremental databases. <i>IEEE TKDE</i>, 21(12).</li><li><b>[4]</b> Tseng, V. S. et al. (2010). UP-Growth: an efficient algorithm for high utility itemset mining. <i>ACM KDD</i>.</li><li><b>[5]</b> Fournier-Viger, P. et al. (2014). FHM: faster high-utility itemset mining using estimated utility co-occurrence pruning. <i>ISMIS</i>.</li><li><b>[6]</b> Zida, S. et al. (2017). EFIM: a fast and memory efficient algorithm for high-utility itemset mining. <i>Knowledge and Information Systems</i>, 51(2).</li><li><b>[7]</b> Fournier-Viger, P. et al. (2016). The SPMF open-source data mining library. <i>JMLR</i>, 17(1). philippe-fournier-viger.com/spmf</li><li><b>[8]</b> Agrawal, R., Srikant, R. (1994). Fast algorithms for mining association rules. <i>VLDB</i>.</li></ul></div>
+</section>
+</div>
+<div class="nav"><button id="pv">‹</button><span id="dots"></span><button id="nx">›</button></div>
+<script>
+  const stage=document.getElementById('stage'),S=[...document.querySelectorAll('.s')];
+  let cur=Math.max(0,Math.min(S.length-1,(parseInt(location.hash.slice(1))||1)-1));
+  function fit(){const s=Math.min(innerWidth/1920,(innerHeight-40)/1080);stage.style.transform='scale('+s+')';}
+  function show(i){cur=Math.max(0,Math.min(S.length-1,i));S.forEach((e,k)=>e.classList.toggle('on',k==cur));
+    document.getElementById('pg').textContent=(cur+1)+' / '+S.length;
+    document.getElementById('dots').innerHTML=S.map((_,k)=>'<i class="'+(k==cur?'a':'')+'" data-k="'+k+'"></i>').join('');
+    history.replaceState(null,'','#'+(cur+1));}
+  document.getElementById('pv').onclick=()=>show(cur-1);document.getElementById('nx').onclick=()=>show(cur+1);
+  document.getElementById('dots').onclick=e=>{if(e.target.dataset.k)show(+e.target.dataset.k)};
+  addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key))show(cur+1);if(['ArrowLeft','PageUp'].includes(e.key))show(cur-1);});
+  addEventListener('resize',fit);addEventListener('hashchange',()=>show((parseInt(location.hash.slice(1))||1)-1));fit();show(cur);
+</script>
+</body>
+</html>
