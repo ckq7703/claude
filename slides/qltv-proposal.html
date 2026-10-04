@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Proposal – QLTV: Hệ thống quản lý thư viện</title>
+<style>
+  :root{--title:#16598c;--orange:#f05d32;--blue:#2777b6;--light:#4a93c9;--card:#eef4fa;--pill:#fde7df;--text:#333}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:#0f1b27;overflow:hidden}
+  body{display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Arial,'Liberation Sans','Helvetica Neue',Helvetica,sans-serif}
+  #stage{position:relative;width:1920px;height:1080px;background:#fff;overflow:hidden;flex:none;margin:-20px 0}
+  .bg{position:absolute;left:0;top:0;width:1920px;height:1080px;display:block}
+  .pg{position:absolute;right:108px;bottom:22px;font-size:18px;color:var(--title);font-weight:700;z-index:3}
+  .s{position:absolute;inset:0;display:none}.s.on{display:block}
+  h2{position:absolute;left:108px;top:74px;font-size:56px;line-height:1.15;font-weight:700;color:var(--title)}
+  h2 span,.big1 span{color:var(--orange)}
+  .sub{position:absolute;left:108px;top:154px;font-size:26px;color:#444}
+  .tag{position:absolute;right:108px;top:88px;background:var(--pill);color:var(--orange);font-weight:700;font-size:22px;padding:10px 26px;border-radius:40px;letter-spacing:1px}
+  .ttl{font-size:28px;font-weight:700;color:var(--title)}
+  .bar{width:72px;height:6px;border-radius:4px;background:var(--orange);margin:10px 0 18px}
+  .ic{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;margin-bottom:18px}
+  .ic svg{width:36px;height:36px;color:#fff}
+  .c1{background:var(--blue)}.c2{background:var(--light)}.c3{background:var(--title)}.c4{background:var(--light)}
+  .card{position:absolute;border-radius:28px;background:var(--card)}
+  /* cover */
+  .kick{position:absolute;left:108px;top:300px;font-size:26px;font-weight:700;color:var(--blue);letter-spacing:1px}
+  .big1{position:absolute;left:108px;top:348px;font-size:92px;line-height:1.12;font-weight:700;color:var(--title)}
+  .sub1{position:absolute;left:108px;top:624px;width:1100px;font-size:34px;line-height:1.35;color:#444}
+  .chips{position:absolute;left:108px;top:790px;display:flex;gap:24px}
+  .chip{background:var(--card);border-radius:24px;padding:22px 34px;font-size:22px;color:var(--title);font-weight:700;min-width:220px}
+  .chip b{display:block;font-size:56px;color:var(--blue);line-height:1.05}
+  /* 3 columns */
+  .col3{position:absolute;left:108px;top:236px;width:1704px;height:560px;display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+  .col3 .card{position:relative;padding:38px 36px}
+  .big b{display:block;font-size:30px;color:var(--title);margin-bottom:14px}
+  .big p{font-size:23px;line-height:1.45;color:var(--text)}
+  .big em{position:absolute;left:36px;bottom:30px;font-style:normal;font-weight:700;font-size:18px;color:var(--light)}
+  .band{position:absolute;left:108px;top:830px;width:1704px;background:var(--title);color:#fff;border-radius:26px;padding:34px 44px;font-size:26px;line-height:1.4}
+  .band b{color:#fff}
+  /* 2x3 */
+  .g23{position:absolute;left:108px;top:236px;width:1704px;display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+  .mod{background:var(--card);border-radius:28px;height:352px;padding:30px 32px}
+  .mod .ic{width:60px;height:60px;margin-bottom:14px}.mod .ic svg{width:32px;height:32px}
+  .mod b{display:block;font-size:28px;color:var(--title);margin-bottom:10px}
+  .mod p{font-size:21px;line-height:1.42;color:var(--text)}
+  /* arch */
+  .arch{position:absolute;left:108px;top:236px;width:1060px;height:720px;background:var(--title);border-radius:28px;padding:44px 44px;color:#fff}
+  .lay{border-radius:20px;background:rgba(255,255,255,.14);padding:24px 26px;font-size:21px;line-height:1.4;display:flex;gap:20px;align-items:center}
+  .lay b{display:block;font-size:28px;margin-bottom:4px}
+  .lb{flex:none;width:64px;height:64px;border-radius:50%;background:var(--light);display:grid;place-items:center}
+  .lb svg{width:34px;height:34px;color:#fff}
+  .dn{height:60px;text-align:center;font-size:20px;line-height:60px;color:#bcd9ee}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .side{position:absolute;left:1192px;top:236px;width:620px;height:720px;background:var(--card);border-radius:28px;padding:40px 38px}
+  .side li{list-style:none;font-size:23px;line-height:1.45;margin-bottom:22px;color:var(--text)}
+  .side li b{color:var(--title)}
+  /* panels */
+  .pan{padding:38px 40px}
+  .tabs{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:26px}
+  .tabs i{font-style:normal;background:#fff;color:var(--title);font-weight:700;font-size:21px;padding:10px 18px;border-radius:14px;border:2px solid #cfe0ee}
+  .note{font-size:23px;line-height:1.5;color:var(--text)}.note b{color:var(--title)}
+  .dark{background:var(--title);color:#fff}.dark .ttl{color:#fff}
+  .flow{display:grid;gap:18px}
+  .stp{display:flex;gap:22px;align-items:center;background:rgba(255,255,255,.13);border-radius:20px;padding:20px 26px;font-size:21px;line-height:1.4}
+  .stp b{display:block;font-size:26px;margin-bottom:2px}
+  .stp span{flex:none;width:56px;height:56px;border-radius:50%;background:var(--light);display:grid;place-items:center;font-size:28px;font-weight:700}
+  .res{margin-top:24px;background:#fff;color:var(--title);border-radius:20px;padding:22px 28px;font-size:24px;line-height:1.4}.res b{color:var(--blue)}
+  /* kpi */
+  .kp4{position:absolute;left:108px;top:236px;width:1704px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+  .kpi{background:var(--card);border-radius:28px;height:520px;padding:38px 32px}
+  .kpi .big{font-size:76px;font-weight:700;line-height:1;margin-bottom:12px}
+  .kpi .lab{font-size:27px;font-weight:700;color:var(--title);margin-bottom:16px}
+  .kpi .d{font-size:22px;line-height:1.45;color:var(--text)}
+  .kp4+.band{top:796px}
+  /* timeline */
+  .line{position:absolute;left:108px;top:222px;width:1704px;height:0}
+  .tl .card{height:520px}
+  .tl u{text-decoration:none;display:inline-block;background:#dbe9f5;color:var(--blue);font-weight:700;font-size:17px;padding:5px 16px;border-radius:16px;margin-bottom:14px}
+  .cta{position:absolute;left:108px;top:790px;width:1704px;background:var(--title);color:#fff;border-radius:28px;padding:36px 44px;font-size:27px;line-height:1.45;display:flex;justify-content:space-between;align-items:center;gap:40px}
+  .cta b{color:#fff}.cta span{flex:none;background:var(--light);padding:14px 26px;border-radius:30px;font-weight:700;font-size:23px}
+  /* nav */
+  .nav{position:fixed;bottom:6px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;z-index:9}
+  .nav button{background:none;border:0;color:#fff;font-size:26px;cursor:pointer;opacity:.7}
+  #dots i{display:inline-block;width:10px;height:10px;border-radius:50%;background:#556;margin:0 5px;cursor:pointer}#dots i.a{background:var(--orange)}
+  /* size tuning */
+  .col3{height:520px}.tl .card{height:520px}
+  .big b{font-size:34px}.big p{font-size:28px;line-height:1.5}.big em{font-size:20px}
+  .band{top:800px;font-size:28px}.cta{top:800px;font-size:28px}
+  .mod b{font-size:32px}.mod p{font-size:25px}.mod{height:352px}
+  .lay{font-size:25px;padding:30px 28px}.lay b{font-size:32px}.dn{font-size:23px}
+  .side li{font-size:27px;margin-bottom:28px}.side .ttl{font-size:32px}
+  .tabs i{font-size:24px}.note{font-size:26px}
+  .stp{font-size:24px;padding:24px 26px}.stp b{font-size:29px}.res{font-size:27px}
+  .kpi .d{font-size:26px}.kpi .lab{font-size:30px}.kpi{height:520px}
+  .tl u{font-size:19px}
+  .kick{font-size:28px}.sub1{font-size:38px}.chip{font-size:24px}
+  .stp{padding:14px 26px;font-size:23px}.stp b{font-size:27px}.flow{gap:12px}.res{margin-top:16px;padding:18px 26px;font-size:25px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-library" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 6 4 14" />
+  <path d="M12 6v14" />
+  <path d="M8 8v12" />
+  <path d="M4 4v16" /></symbol>
+<symbol id="i-repeat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4" />
+  <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+  <path d="m7 22-4-4 4-4" />
+  <path d="M21 13v1a4 4 0 0 1-4 4H3" /></symbol>
+<symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+  <path d="M16 3.128a4 4 0 0 1 0 7.744" />
+  <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+  <circle cx="9" cy="7" r="4" /></symbol>
+<symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34" />
+  <circle cx="11" cy="11" r="8" /></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0" />
+  <path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" /></symbol>
+<symbol id="i-chart-column" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16" />
+  <path d="M18 17V9" />
+  <path d="M13 17V5" />
+  <path d="M8 17v-3" /></symbol>
+<symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" />
+  <path d="M12 6v6l4 2" /></symbol>
+<symbol id="i-triangle-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
+  <path d="M12 9v4" />
+  <path d="M12 17h.01" /></symbol>
+<symbol id="i-trending-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7h6v6" />
+  <path d="m22 7-8.5 8.5-5-5L2 17" /></symbol>
+<symbol id="i-rocket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
+  <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09" />
+  <path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z" />
+  <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05" /></symbol>
+<symbol id="i-shield-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+  <path d="m9 12 2 2 4-4" /></symbol>
+<symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z" /></symbol>
+<symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" />
+  <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" />
+  <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" /></symbol>
+<symbol id="i-cog" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 10.27 7 3.34" />
+  <path d="m11 13.73-4 6.93" />
+  <path d="M12 22v-2" />
+  <path d="M12 2v2" />
+  <path d="M14 12h8" />
+  <path d="m17 20.66-1-1.73" />
+  <path d="m17 3.34-1 1.73" />
+  <path d="M2 12h2" />
+  <path d="m20.66 17-1.73-1" />
+  <path d="m20.66 7-1.73 1" />
+  <path d="m3.34 17 1.73-1" />
+  <path d="m3.34 7 1.73 1" />
+  <circle cx="12" cy="12" r="2" />
+  <circle cx="12" cy="12" r="8" /></symbol>
+<symbol id="i-database" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3" />
+  <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+  <path d="M3 12A9 3 0 0 0 21 12" /></symbol>
+
+</svg>
+<div id="stage">
+  <img class="bg" src="kq-background.png" alt="">
+  <div class="pg" id="pg"></div>
+
+  <!-- 1 Cover -->
+  <section class="s cover">
+    <div class="tag" style="top:88px">PROPOSAL</div>
+    <div class="kick">github.com/ckq7703/qltv</div>
+    <h1 class="big1">QLTV <span>–</span><br>Hệ thống quản lý thư viện</h1>
+    <div class="sub1">Mượn trả an toàn khi nhiều người dùng cùng lúc, tra cứu nhanh, thống kê rõ ràng</div>
+    <div class="chips">
+      <div class="chip"><b>28</b>API REST</div>
+      <div class="chip"><b>9</b>bảng dữ liệu</div>
+      <div class="chip"><b>15</b>test tự động</div>
+      <div class="chip"><b>4</b>service Docker</div>
+    </div>
+  </section>
+
+  <!-- 2 Bối cảnh -->
+  <section class="s">
+    <div class="tag">BỐI CẢNH</div>
+    <h2>Bối cảnh <span>&amp;</span> mục tiêu</h2>
+    <div class="sub">Thư viện cần một nơi duy nhất để quản lý sách, độc giả và các lượt mượn trả</div>
+    <div class="col3">
+      <div class="card big"><span class="ic c1"><svg><use href="#i-layers"/></svg></span><b>Quản lý tập trung</b><p>Đầu sách, từng bản sao vật lý, tác giả, danh mục phân cấp và độc giả nằm trên một hệ thống thay vì nhiều file rời rạc.</p><em>Mục tiêu 1</em></div>
+      <div class="card big"><span class="ic c2"><svg><use href="#i-shield-check"/></svg></span><b>Không mượn trùng</b><p>Một bản sao chỉ cho một người mượn, kể cả khi nhiều người bấm mượn cùng lúc. Dữ liệu luôn nhất quán.</p><em>Mục tiêu 2</em></div>
+      <div class="card big"><span class="ic c3"><svg><use href="#i-chart-column"/></svg></span><b>Nắm số liệu</b><p>Theo dõi phiếu quá hạn, sách được mượn nhiều, độc giả tích cực và báo cáo theo tháng để ra quyết định.</p><em>Mục tiêu 3</em></div>
+    </div>
+    <div class="band">Đối tượng sử dụng: <b>thủ thư / admin</b> quản trị toàn bộ · <b>độc giả (member)</b> tự tra cứu, mượn và trả sách</div>
+  </section>
+
+  <!-- 3 Phạm vi -->
+  <section class="s">
+    <div class="tag">PHẠM VI</div>
+    <h2>Phạm vi chức năng</h2>
+    <div class="sub">Sáu phân hệ chính, đã triển khai đầy đủ ở cả backend và giao diện web</div>
+    <div class="g23">
+      <div class="mod"><span class="ic c1"><svg><use href="#i-library"/></svg></span><b>Sách &amp; bản sao</b><p>Mỗi bản sao là một dòng riêng, có trạng thái (sẵn sàng, mất, hỏng). Tác giả, danh mục phân cấp, ảnh bìa.</p></div>
+      <div class="mod"><span class="ic c2"><svg><use href="#i-repeat"/></svg></span><b>Mượn – trả</b><p>Tối đa 3 phiếu mỗi độc giả, hạn 14 ngày, phí trễ 5.000đ/ngày. Có wizard mượn 3 bước kèm nội quy.</p></div>
+      <div class="mod"><span class="ic c3"><svg><use href="#i-users"/></svg></span><b>Độc giả &amp; phân quyền</b><p>Đăng nhập JWT, vai trò admin / member. Độc giả tự mượn trả, admin quản trị toàn bộ.</p></div>
+      <div class="mod"><span class="ic c4"><svg><use href="#i-search"/></svg></span><b>Tìm kiếm nhanh</b><p>Full-text search trên PostgreSQL với GIN index, kết quả được cache bằng Redis (TTL 60 giây).</p></div>
+      <div class="mod"><span class="ic c2"><svg><use href="#i-bell"/></svg></span><b>Thông báo tức thời</b><p>Admin nhận thông báo qua WebSocket khi có độc giả mượn sách, bấm vào mở thẳng chi tiết phiếu.</p></div>
+      <div class="mod"><span class="ic c1"><svg><use href="#i-chart-column"/></svg></span><b>Thống kê &amp; báo cáo</b><p>Top sách mượn, phiếu quá hạn, độc giả tích cực, báo cáo mượn trả theo tháng.</p></div>
+    </div>
+  </section>
+
+  <!-- 4 Kiến trúc -->
+  <section class="s">
+    <div class="tag">KIẾN TRÚC</div>
+    <h2>Kiến trúc <span>&amp;</span> công nghệ</h2>
+    <div class="sub">Ba tầng tách bạch, đóng gói bằng Docker Compose và chạy bằng một lệnh</div>
+    <div class="arch">
+      <div class="lay"><span class="lb"><svg><use href="#i-zap"/></svg></span><div><b>Frontend</b>React 19 · Vite · TypeScript · Tailwind v4 · shadcn/ui · layout sidebar</div></div>
+      <div class="dn">▼ REST /api &nbsp;·&nbsp; WebSocket /ws</div>
+      <div class="lay"><span class="lb"><svg><use href="#i-cog"/></svg></span><div><b>Backend</b>FastAPI (Python 3.12) · SQLAlchemy · Alembic migration · xác thực JWT</div></div>
+      <div class="dn">▼</div>
+      <div class="two">
+        <div class="lay"><span class="lb"><svg><use href="#i-database"/></svg></span><div><b>PostgreSQL 16</b>Dữ liệu chính, trigger, view, index</div></div>
+        <div class="lay"><span class="lb"><svg><use href="#i-clock"/></svg></span><div><b>Redis 7</b>Cache-aside, Pub/Sub cho thông báo</div></div>
+      </div>
+    </div>
+    <div class="side">
+      <div class="ttl">Vì sao chọn như vậy</div><div class="bar"></div>
+      <ul>
+        <li><b>PostgreSQL</b> khoá dòng và full-text search sẵn có, đủ cho bài toán mượn đồng thời.</li>
+        <li><b>Redis</b> giảm tải cho truy vấn tìm kiếm lặp lại.</li>
+        <li><b>FastAPI</b> sinh tài liệu Swagger tự động.</li>
+        <li><b>Docker Compose</b> cùng môi trường cho mọi máy, 4 service.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 5 Dữ liệu & đồng thời -->
+  <section class="s">
+    <div class="tag">DỮ LIỆU</div>
+    <h2>Dữ liệu <span>&amp;</span> xử lý mượn đồng thời</h2>
+    <div class="sub">Điểm khó nhất của bài toán và cách hệ thống giải quyết</div>
+    <div class="card pan" style="left:108px;top:222px;width:560px;height:750px">
+      <div class="ttl">Lược đồ 9 bảng</div><div class="bar"></div>
+      <div class="tabs"><i>books</i><i>book_copies</i><i>authors</i><i>book_authors</i><i>categories</i><i>members</i><i>users</i><i>loans</i><i>audit_log</i></div>
+      <p class="note">Chuẩn hoá nhiều bảng: sách tách khỏi bản sao vật lý, quan hệ sách – tác giả nhiều–nhiều, danh mục phân cấp. Có trigger, view và index hỗ trợ; mọi thao tác quan trọng được ghi vào <b>audit_log</b>.</p>
+    </div>
+    <div class="card pan dark" style="left:690px;top:222px;width:1122px;height:750px">
+      <div class="ttl">Luồng mượn sách trong một transaction</div><div class="bar"></div>
+      <div class="flow">
+        <div class="stp"><span>1</span><div><b>Chọn bản sao còn sẵn</b>SELECT … FOR UPDATE SKIP LOCKED: khoá dòng, bỏ qua bản sao đang bị người khác giữ.</div></div>
+        <div class="stp"><span>2</span><div><b>Kiểm tra quy tắc</b>Độc giả còn dưới 3 phiếu, tài khoản hợp lệ.</div></div>
+        <div class="stp"><span>3</span><div><b>Tạo phiếu &amp; đổi trạng thái</b>Ghi loan, đánh dấu bản sao đang mượn, hạn trả sau 14 ngày.</div></div>
+        <div class="stp"><span>4</span><div><b>Commit &amp; thông báo</b>Ghi audit_log, xoá cache liên quan, đẩy thông báo cho admin.</div></div>
+      </div>
+      <div class="res">Kết quả kiểm chứng: 10 yêu cầu cùng mượn 1 bản sao cuối → <b>1 thành công, 9 nhận báo hết sách</b>, không lỗi, không treo.</div>
+    </div>
+  </section>
+
+  <!-- 6 Hiệu năng -->
+  <section class="s">
+    <div class="tag">KẾT QUẢ</div>
+    <h2>Hiệu năng <span>&amp;</span> kiểm thử</h2>
+    <div class="sub">Số liệu lấy từ BENCHMARKS.md và bộ test của dự án, không ước lượng</div>
+    <div class="kp4">
+      <div class="kpi"><div class="big" style="color:var(--title)">1 / 10</div><div class="lab">Mượn đồng thời</div><div class="d">10 yêu cầu cho 1 bản sao cuối: đúng 1 thành công, 9 nhận báo hết sách. Không mượn trùng.</div></div>
+      <div class="kpi"><div class="big" style="color:var(--blue)">2,41 ms</div><div class="lab">Tìm kiếm toàn văn</div><div class="d">Trên 20.000 sách khi có GIN index, so với 4,58 ms khi quét toàn bảng.</div></div>
+      <div class="kpi"><div class="big" style="color:var(--title)">15</div><div class="lab">Test tự động</div><div class="d">Gồm mượn đồng thời, mượn trả, tìm kiếm sách và phân quyền độc giả. Toàn bộ đạt.</div></div>
+      <div class="kpi"><div class="big" style="color:var(--light)">28</div><div class="lab">API REST</div><div class="d">Kèm WebSocket cho thông báo và tài liệu Swagger tự sinh.</div></div>
+    </div>
+    <div class="band">Frontend đã qua type-check (tsc) và lint (oxlint) sạch, build Docker image thành công</div>
+  </section>
+
+  <!-- 7 Lộ trình -->
+  <section class="s">
+    <div class="tag">LỘ TRÌNH</div>
+    <h2>Hiện trạng <span>&amp;</span> lộ trình</h2>
+    <div class="sub">Phần lõi đã hoàn thành, các bước tiếp theo tập trung vào vận hành thực tế</div>
+    <div class="line"></div>
+    <div class="col3 tl">
+      <div class="card big"><span class="ic c1"><svg><use href="#i-check"/></svg></span><u>HIỆN TẠI</u><b>Đã hoàn thành</b><p>Hạ tầng Docker, schema và migration, CRUD API, kiểm soát mượn đồng thời, xác thực JWT, cache, benchmark, thống kê, giao diện web.</p></div>
+      <div class="card big"><span class="ic c2"><svg><use href="#i-rocket"/></svg></span><u>TIẾP THEO</u><b>Đưa vào vận hành</b><p>Build giao diện tĩnh phục vụ qua Nginx, đóng cổng CSDL ra ngoài, đổi toàn bộ mật khẩu và khoá bí mật mặc định.</p></div>
+      <div class="card big"><span class="ic c3"><svg><use href="#i-trending-up"/></svg></span><u>TUỲ CHỌN</u><b>Mở rộng</b><p>Sao lưu và khôi phục theo thời điểm (PITR), thu phí trễ hạn trực tuyến, gateway NestJS phía trước API.</p></div>
+    </div>
+  </section>
+
+  <!-- 8 Kết luận -->
+  <section class="s">
+    <div class="tag">KẾT LUẬN</div>
+    <h2>Giá trị <span>&amp;</span> đề xuất</h2>
+    <div class="sub">QLTV sẵn sàng để triển khai thử nghiệm tại thư viện</div>
+    <div class="col3">
+      <div class="card big"><span class="ic c1"><svg><use href="#i-shield-check"/></svg></span><b>Đáng tin cậy</b><p>Khoá dòng ở tầng CSDL bảo đảm không mượn trùng, có audit_log và bộ test kiểm chứng.</p></div>
+      <div class="card big"><span class="ic c2"><svg><use href="#i-zap"/></svg></span><b>Nhanh &amp; trực quan</b><p>Tìm kiếm vài mili-giây nhờ index và cache; thông báo thời gian thực cho thủ thư.</p></div>
+      <div class="card big"><span class="ic c3"><svg><use href="#i-rocket"/></svg></span><b>Dễ triển khai</b><p>Một lệnh docker compose up, công nghệ phổ biến, dễ bảo trì và mở rộng.</p></div>
+    </div>
+    <div class="cta"><div><b>Đề xuất:</b> chạy thử với dữ liệu thật của thư viện, hoàn tất các hạng mục vận hành, sau đó đưa vào sử dụng chính thức.</div><span>github.com/ckq7703/qltv</span></div>
+  </section>
+</div>
+<div class="nav"><button id="pv">‹</button><span id="dots"></span><button id="nx">›</button></div>
+<script>
+  const stage=document.getElementById('stage'),S=[...document.querySelectorAll('.s')];
+  let cur=Math.max(0,Math.min(S.length-1,(parseInt(location.hash.slice(1))||1)-1));
+  function fit(){const s=Math.min(innerWidth/1920,(innerHeight-40)/1080);stage.style.transform='scale('+s+')';}
+  function show(i){cur=Math.max(0,Math.min(S.length-1,i));S.forEach((e,k)=>e.classList.toggle('on',k==cur));
+    document.getElementById('pg').textContent=(cur+1)+' / '+S.length;
+    document.getElementById('dots').innerHTML=S.map((_,k)=>'<i class="'+(k==cur?'a':'')+'" data-k="'+k+'"></i>').join('');
+    history.replaceState(null,'','#'+(cur+1));}
+  document.getElementById('pv').onclick=()=>show(cur-1);document.getElementById('nx').onclick=()=>show(cur+1);
+  document.getElementById('dots').onclick=e=>{if(e.target.dataset.k)show(+e.target.dataset.k)};
+  addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key))show(cur+1);if(['ArrowLeft','PageUp'].includes(e.key))show(cur-1);});
+  addEventListener('resize',fit);addEventListener('hashchange',()=>show((parseInt(location.hash.slice(1))||1)-1));fit();show(cur);
+</script>
+
+</body>
+</html>
