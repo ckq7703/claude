@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Proposal – QLTV: Hệ thống quản lý thư viện</title>
 <style>
-  :root{--title:#16598c;--orange:#f05d32;--blue:#2777b6;--light:#4a93c9;--card:#eef4fa;--pill:#fde7df;--text:#333}
+  :root{--title:#16598c;--orange:#f05d32;--blue:#2777b6;--light:#4a93c9;--card:#eef4fa;--pill:#fde7df;--text:#333;--line:#cfe0ee}
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%;background:#0f1b27;overflow:hidden}
   body{display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Arial,'Liberation Sans','Helvetica Neue',Helvetica,sans-serif}
@@ -15,87 +15,59 @@
   .s{position:absolute;inset:0;display:none}.s.on{display:block}
   h2{position:absolute;left:108px;top:74px;font-size:56px;line-height:1.15;font-weight:700;color:var(--title)}
   h2 span,.big1 span{color:var(--orange)}
-  .sub{position:absolute;left:108px;top:154px;font-size:26px;color:#444}
+  .sub{position:absolute;left:108px;top:154px;font-size:27px;color:#444}
   .tag{position:absolute;right:108px;top:88px;background:var(--pill);color:var(--orange);font-weight:700;font-size:22px;padding:10px 26px;border-radius:40px;letter-spacing:1px}
-  .ttl{font-size:28px;font-weight:700;color:var(--title)}
+  .ttl{font-size:30px;font-weight:700;color:var(--title)}
   .bar{width:72px;height:6px;border-radius:4px;background:var(--orange);margin:10px 0 18px}
-  .ic{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;margin-bottom:18px}
+  .ic{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;margin-bottom:16px;flex:none}
   .ic svg{width:36px;height:36px;color:#fff}
-  .c1{background:var(--blue)}.c2{background:var(--light)}.c3{background:var(--title)}.c4{background:var(--light)}
-  .card{position:absolute;border-radius:28px;background:var(--card)}
+  .c1{background:var(--blue)}.c2{background:var(--light)}.c3{background:var(--title)}
+  .card{position:absolute;border-radius:28px;background:var(--card);padding:34px 36px}
+  .card.dark{background:var(--title);color:#fff}.card.dark .ttl{color:#fff}
+  .card p,.card li{font-size:27px;line-height:1.45;color:var(--text)}
+  .dark p,.dark li{color:#e6f0f8}
+  b.t{color:var(--title)}.dark b.t{color:#fff}
   /* cover */
-  .kick{position:absolute;left:108px;top:300px;font-size:26px;font-weight:700;color:var(--blue);letter-spacing:1px}
-  .big1{position:absolute;left:108px;top:348px;font-size:92px;line-height:1.12;font-weight:700;color:var(--title)}
-  .sub1{position:absolute;left:108px;top:624px;width:1100px;font-size:34px;line-height:1.35;color:#444}
+  .kick{position:absolute;left:108px;top:292px;font-size:28px;font-weight:700;color:var(--blue);letter-spacing:1px}
+  .big1{position:absolute;left:108px;top:340px;font-size:92px;line-height:1.12;font-weight:700;color:var(--title)}
+  .sub1{position:absolute;left:108px;top:610px;width:1150px;font-size:36px;line-height:1.4;color:#444}
   .chips{position:absolute;left:108px;top:790px;display:flex;gap:24px}
-  .chip{background:var(--card);border-radius:24px;padding:22px 34px;font-size:22px;color:var(--title);font-weight:700;min-width:220px}
-  .chip b{display:block;font-size:56px;color:var(--blue);line-height:1.05}
-  /* 3 columns */
-  .col3{position:absolute;left:108px;top:236px;width:1704px;height:560px;display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
-  .col3 .card{position:relative;padding:38px 36px}
-  .big b{display:block;font-size:30px;color:var(--title);margin-bottom:14px}
-  .big p{font-size:23px;line-height:1.45;color:var(--text)}
-  .big em{position:absolute;left:36px;bottom:30px;font-style:normal;font-weight:700;font-size:18px;color:var(--light)}
-  .band{position:absolute;left:108px;top:830px;width:1704px;background:var(--title);color:#fff;border-radius:26px;padding:34px 44px;font-size:26px;line-height:1.4}
-  .band b{color:#fff}
-  /* 2x3 */
-  .g23{position:absolute;left:108px;top:236px;width:1704px;display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
-  .mod{background:var(--card);border-radius:28px;height:352px;padding:30px 32px}
-  .mod .ic{width:60px;height:60px;margin-bottom:14px}.mod .ic svg{width:32px;height:32px}
-  .mod b{display:block;font-size:28px;color:var(--title);margin-bottom:10px}
-  .mod p{font-size:21px;line-height:1.42;color:var(--text)}
-  /* arch */
-  .arch{position:absolute;left:108px;top:236px;width:1060px;height:720px;background:var(--title);border-radius:28px;padding:44px 44px;color:#fff}
-  .lay{border-radius:20px;background:rgba(255,255,255,.14);padding:24px 26px;font-size:21px;line-height:1.4;display:flex;gap:20px;align-items:center}
-  .lay b{display:block;font-size:28px;margin-bottom:4px}
-  .lb{flex:none;width:64px;height:64px;border-radius:50%;background:var(--light);display:grid;place-items:center}
-  .lb svg{width:34px;height:34px;color:#fff}
-  .dn{height:60px;text-align:center;font-size:20px;line-height:60px;color:#bcd9ee}
-  .two{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-  .side{position:absolute;left:1192px;top:236px;width:620px;height:720px;background:var(--card);border-radius:28px;padding:40px 38px}
-  .side li{list-style:none;font-size:23px;line-height:1.45;margin-bottom:22px;color:var(--text)}
-  .side li b{color:var(--title)}
-  /* panels */
-  .pan{padding:38px 40px}
-  .tabs{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:26px}
-  .tabs i{font-style:normal;background:#fff;color:var(--title);font-weight:700;font-size:21px;padding:10px 18px;border-radius:14px;border:2px solid #cfe0ee}
-  .note{font-size:23px;line-height:1.5;color:var(--text)}.note b{color:var(--title)}
-  .dark{background:var(--title);color:#fff}.dark .ttl{color:#fff}
-  .flow{display:grid;gap:18px}
-  .stp{display:flex;gap:22px;align-items:center;background:rgba(255,255,255,.13);border-radius:20px;padding:20px 26px;font-size:21px;line-height:1.4}
-  .stp b{display:block;font-size:26px;margin-bottom:2px}
-  .stp span{flex:none;width:56px;height:56px;border-radius:50%;background:var(--light);display:grid;place-items:center;font-size:28px;font-weight:700}
-  .res{margin-top:24px;background:#fff;color:var(--title);border-radius:20px;padding:22px 28px;font-size:24px;line-height:1.4}.res b{color:var(--blue)}
-  /* kpi */
-  .kp4{position:absolute;left:108px;top:236px;width:1704px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
-  .kpi{background:var(--card);border-radius:28px;height:520px;padding:38px 32px}
-  .kpi .big{font-size:76px;font-weight:700;line-height:1;margin-bottom:12px}
-  .kpi .lab{font-size:27px;font-weight:700;color:var(--title);margin-bottom:16px}
-  .kpi .d{font-size:22px;line-height:1.45;color:var(--text)}
-  .kp4+.band{top:796px}
-  /* timeline */
-  .line{position:absolute;left:108px;top:222px;width:1704px;height:0}
-  .tl .card{height:520px}
-  .tl u{text-decoration:none;display:inline-block;background:#dbe9f5;color:var(--blue);font-weight:700;font-size:17px;padding:5px 16px;border-radius:16px;margin-bottom:14px}
-  .cta{position:absolute;left:108px;top:790px;width:1704px;background:var(--title);color:#fff;border-radius:28px;padding:36px 44px;font-size:27px;line-height:1.45;display:flex;justify-content:space-between;align-items:center;gap:40px}
-  .cta b{color:#fff}.cta span{flex:none;background:var(--light);padding:14px 26px;border-radius:30px;font-weight:700;font-size:23px}
+  .chip{background:var(--card);border-radius:24px;padding:22px 30px;font-size:22px;color:var(--title);font-weight:700;min-width:230px}
+  .chip b{display:block;font-size:54px;color:var(--blue);line-height:1.05;margin-bottom:4px}
+  /* grids */
+  .g{position:absolute;left:108px;display:grid;gap:24px;width:1704px}
+  .g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:1fr 1fr}
+  .g .card{position:relative}
+  .card h3{font-size:32px;color:var(--title);margin-bottom:10px;line-height:1.2}
+  .dark h3{color:#fff}
+  .band{position:absolute;left:108px;width:1704px;background:var(--title);color:#fff;border-radius:26px;padding:28px 40px;font-size:27px;line-height:1.4}
+  .band b{color:#fff;border-bottom:3px solid var(--light)}
+  /* flow */
+  .flow{display:flex;gap:0;align-items:stretch}
+  .fl{flex:1;background:#fff;border:2px solid var(--line);border-radius:22px;padding:20px 22px;font-size:25px;line-height:1.35;color:var(--text);position:relative}
+  .fl b{display:block;color:var(--title);font-size:28px;margin-bottom:4px}
+  .fl+.fl{margin-left:34px}
+  .fl+.fl:before{content:"›";position:absolute;left:-30px;top:50%;margin-top:-22px;font-size:44px;color:var(--light);font-weight:700}
+  .lane{font-size:24px;font-weight:700;color:#fff;background:var(--blue);border-radius:16px;padding:8px 22px;display:inline-block;margin-bottom:14px}
+  /* table rows */
+  .tr{display:grid;gap:18px;align-items:center;padding:22px 0;border-top:2px solid var(--line);font-size:26px;line-height:1.35;color:var(--text)}
+  .tr:first-of-type{border-top:0}
+  .th{font-size:19px;font-weight:700;color:var(--blue);letter-spacing:.5px;text-transform:uppercase;border-top:0;padding:0 0 8px}
+  code,.code{font-family:'Courier New','Liberation Mono',monospace}
+  code{background:#fff;border:2px solid var(--line);border-radius:10px;padding:2px 9px;font-size:.88em;color:var(--title);font-weight:700;white-space:nowrap}
+  .dark code{background:rgba(255,255,255,.14);border-color:transparent;color:#fff}
+  pre.code{font-size:20px;line-height:1.5;color:#e6f0f8;white-space:pre}
+  pre.code i{font-style:normal;color:#8fc4ea}
+  pre.code em{font-style:normal;color:#9fdba7}
+  .no{color:var(--orange);font-weight:700}.ok{color:var(--blue);font-weight:700}
+  .bars div.r{display:flex;align-items:center;gap:18px;margin-bottom:16px;font-size:23px}
+  .bars .lbl{width:230px;color:var(--text)}
+  .bars .b{height:46px;border-radius:12px;color:#fff;font-weight:700;font-size:23px;padding:0 16px;display:flex;align-items:center}
   /* nav */
   .nav{position:fixed;bottom:6px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;z-index:9}
   .nav button{background:none;border:0;color:#fff;font-size:26px;cursor:pointer;opacity:.7}
-  #dots i{display:inline-block;width:10px;height:10px;border-radius:50%;background:#556;margin:0 5px;cursor:pointer}#dots i.a{background:var(--orange)}
-  /* size tuning */
-  .col3{height:520px}.tl .card{height:520px}
-  .big b{font-size:34px}.big p{font-size:28px;line-height:1.5}.big em{font-size:20px}
-  .band{top:800px;font-size:28px}.cta{top:800px;font-size:28px}
-  .mod b{font-size:32px}.mod p{font-size:25px}.mod{height:352px}
-  .lay{font-size:25px;padding:30px 28px}.lay b{font-size:32px}.dn{font-size:23px}
-  .side li{font-size:27px;margin-bottom:28px}.side .ttl{font-size:32px}
-  .tabs i{font-size:24px}.note{font-size:26px}
-  .stp{font-size:24px;padding:24px 26px}.stp b{font-size:29px}.res{font-size:27px}
-  .kpi .d{font-size:26px}.kpi .lab{font-size:30px}.kpi{height:520px}
-  .tl u{font-size:19px}
-  .kick{font-size:28px}.sub1{font-size:38px}.chip{font-size:24px}
-  .stp{padding:14px 26px;font-size:23px}.stp b{font-size:27px}.flow{gap:12px}.res{margin-top:16px;padding:18px 26px;font-size:25px}
+  #dots i{display:inline-block;width:10px;height:10px;border-radius:50%;background:#556;margin:0 5px;cursor:pointer}#dots i.a{background:var(--light)}
+  .tight .tr{padding:12px 0}
 </style>
 </head>
 <body>
@@ -158,138 +130,190 @@
 
 </svg>
 <div id="stage">
-  <img class="bg" src="kq-background.png" alt="">
-  <div class="pg" id="pg"></div>
+<img class="bg" src="kq-background.png" alt="">
+<div class="pg" id="pg"></div>
+<section class="s">
+<div class="tag">PROPOSAL</div>
+<div class="kick">ĐỀ XUẤT GIẢI PHÁP DÀNH CHO QUÝ KHÁCH HÀNG</div>
+<h1 class="big1">QLTV <span>–</span><br>Hệ thống quản lý thư viện</h1>
+<div class="sub1">Xây trên nền cơ sở dữ liệu quan hệ: mỗi cuốn sách chỉ có một người mượn tại một thời điểm, dữ liệu luôn chính xác và truy vết được</div>
+<div class="chips">
+<div class="chip"><b>9</b>bảng dữ liệu liên kết chặt chẽ</div>
+<div class="chip"><b>0</b>lượt mượn trùng khi kiểm thử</div>
+<div class="chip"><b>2,4 ms</b>tra cứu trên 20.000 đầu sách</div>
+<div class="chip"><b>15</b>bài kiểm thử tự động</div>
+</div></section>
+<section class="s"><div class="tag">BỐI CẢNH</div><h2>Những khó khăn thư viện thường gặp</h2><div class="sub">Khi quản lý bằng sổ sách hoặc bảng tính rời rạc</div>
+<div class="g g4" style="top:236px">
+<div class="card" style="height:400px"><span class="ic c1"><svg><use href="#i-layers"/></svg></span><h3>Dữ liệu rải rác</h3><p>Sách, độc giả, phiếu mượn nằm ở nhiều file khác nhau. Cùng một thông tin bị nhập nhiều lần và dễ lệch nhau.</p></div>
+<div class="card" style="height:400px"><span class="ic c2"><svg><use href="#i-triangle-alert"/></svg></span><h3>Mượn trùng</h3><p>Hai người cùng thấy "còn sách" và cùng mượn được. Thủ thư chỉ phát hiện khi đã quá muộn.</p></div>
+<div class="card" style="height:400px"><span class="ic c3"><svg><use href="#i-search"/></svg></span><h3>Khó biết sách đang ở đâu</h3><p>Không biết chính xác bản nào đang ai giữ, bản nào đã mất hoặc hỏng, hạn trả là khi nào.</p></div>
+<div class="card" style="height:400px"><span class="ic c1"><svg><use href="#i-clock"/></svg></span><h3>Báo cáo tốn công</h3><p>Muốn biết sách nào được mượn nhiều, phiếu nào quá hạn đều phải đếm tay. Khi sai sót khó biết ai đã sửa gì.</p></div>
+</div>
+<div class="band" style="top:664px"><b>Mục tiêu của dự án:</b> một nguồn dữ liệu duy nhất, chính xác, tra cứu nhanh và có thể truy vết mọi thay đổi.</div>
+</section>
+<section class="s"><div class="tag">GIẢI PHÁP</div><h2>QLTV mang lại điều gì?</h2><div class="sub">Sáu nhóm chức năng, phục vụ cả thủ thư và độc giả</div>
+<div class="g g3" style="top:236px;grid-template-rows:330px 330px">
+<div class="card" style="height:330px;padding:28px 32px"><span class="ic c1"><svg><use href="#i-library"/></svg></span><h3>Quản lý sách đến từng bản</h3><p style="font-size:26px">Mỗi bản sách vật lý được quản lý riêng, có trạng thái: sẵn sàng, đang mượn, mất, hỏng. Kèm tác giả, thể loại, ảnh bìa.</p></div>
+<div class="card" style="height:330px;padding:28px 32px"><span class="ic c2"><svg><use href="#i-repeat"/></svg></span><h3>Mượn trả có kiểm soát</h3><p style="font-size:26px">Tối đa 3 cuốn mỗi độc giả, hạn 14 ngày, phí trễ 5.000đ mỗi ngày. Hệ thống tự kiểm tra, không cần nhớ nội quy.</p></div>
+<div class="card" style="height:330px;padding:28px 32px"><span class="ic c3"><svg><use href="#i-users"/></svg></span><h3>Độc giả tự phục vụ</h3><p style="font-size:26px">Độc giả tự đăng nhập để tìm, mượn và trả sách. Thủ thư quản trị toàn bộ. Mỗi người chỉ thấy dữ liệu của mình.</p></div>
+<div class="card" style="height:330px;padding:28px 32px"><span class="ic c3"><svg><use href="#i-search"/></svg></span><h3>Tra cứu tức thì</h3><p style="font-size:26px">Gõ tên sách là có kết quả ngay, ngay cả khi thư viện có hàng chục nghìn đầu sách.</p></div>
+<div class="card" style="height:330px;padding:28px 32px"><span class="ic c1"><svg><use href="#i-bell"/></svg></span><h3>Thông báo cho thủ thư</h3><p style="font-size:26px">Có độc giả mượn sách, thủ thư nhận thông báo ngay trên màn hình và mở thẳng phiếu mượn.</p></div>
+<div class="card" style="height:330px;padding:28px 32px"><span class="ic c2"><svg><use href="#i-chart-column"/></svg></span><h3>Báo cáo sẵn có</h3><p style="font-size:26px">Sách được mượn nhiều, phiếu quá hạn, độc giả tích cực, thống kê theo tháng, luôn sẵn sàng.</p></div>
+</div></section>
+<section class="s"><div class="tag">TRẢI NGHIỆM</div><h2>Một lượt mượn sách diễn ra thế nào?</h2><div class="sub">Đơn giản với người dùng, chặt chẽ ở phía dữ liệu</div>
+<div class="lane" style="position:absolute;left:108px;top:236px">Độc giả</div>
+<div class="flow" style="position:absolute;left:108px;top:296px;width:1704px">
+<div class="fl"><b>1. Tìm sách</b>Gõ tên sách, lọc theo thể loại, thấy ngay còn bản nào sẵn sàng.</div>
+<div class="fl"><b>2. Chọn mượn</b>Xem nội quy, xác nhận. Hệ thống kiểm tra còn bản trống và độc giả chưa mượn quá 3 cuốn.</div>
+<div class="fl"><b>3. Nhận phiếu</b>Phiếu mượn được tạo, hạn trả 14 ngày. Bản sách được đánh dấu "đang mượn".</div>
+<div class="fl"><b>4. Trả sách</b>Bấm trả, bản sách tự trở về "sẵn sàng" cho người kế tiếp.</div>
+</div>
+<div class="lane" style="position:absolute;left:108px;top:566px;background:var(--title)">Thủ thư</div>
+<div class="flow" style="position:absolute;left:108px;top:626px;width:1704px">
+<div class="fl"><b>Nhận thông báo</b>Biết ngay khi có độc giả mượn sách.</div>
+<div class="fl"><b>Theo dõi quá hạn</b>Danh sách phiếu quá hạn luôn cập nhật, không cần đánh dấu tay.</div>
+<div class="fl"><b>Xem thống kê</b>Sách mượn nhiều, độc giả tích cực, báo cáo theo tháng.</div>
+<div class="fl"><b>Truy vết khi cần</b>Mọi thay đổi trên sách và phiếu mượn đều có nhật ký.</div>
+</div>
+<div class="band" style="top:880px;padding:24px 40px">Quy tắc mặc định: tối đa <b>3 cuốn</b> mỗi độc giả · hạn trả <b>14 ngày</b> · phí trễ <b>5.000đ/ngày</b></div>
+</section>
+<section class="s"><div class="tag">CƠ SỞ DỮ LIỆU</div><h2>Mô hình dữ liệu quan hệ</h2><div class="sub">9 bảng liên kết với nhau bằng khoá chính (PK) và khoá ngoại (FK)</div>
+<svg class="erd" viewBox="0 0 1704 570" width="1704" height="570" style="position:absolute;left:108px;top:226px"><path d="M280 75 L330 75" stroke="#4a93c9" stroke-width="3" fill="none"/><text x="292" y="62" font-size="20" font-weight="700" fill="#16598c" text-anchor="middle">1</text><text x="318" y="62" font-size="20" font-weight="700" fill="#16598c" text-anchor="middle">N</text><path d="M650 75 L700 75" stroke="#4a93c9" stroke-width="3" fill="none"/><text x="662" y="62" font-size="20" font-weight="700" fill="#16598c" text-anchor="middle">1</text><text x="688" y="62" font-size="20" font-weight="700" fill="#16598c" text-anchor="middle">N</text><path d="M1060 75 L1000 75" stroke="#4a93c9" stroke-width="3" fill="none"/><text x="1048" y="62" font-size="20" font-weight="700" fill="#16598c" text-anchor="middle">1</text><text x="1012" y="62" font-size="20" font-weight="700" fill="#16598c" text-anchor="middle">N</text><path d="M490 260 L490 340" stroke="#4a93c9" stroke-width="3" fill="none"/><text x="476" y="284" font-size="20" font-weight="700" fill="#16598c" text-anchor="middle">1</text><text x="476" y="330" font-size="20" font-weight="700" fill="#16598c" text-anchor="middle">N</text><path d="M630 400 L700 400" stroke="#4a93c9" stroke-width="3" fill="none"/><text x="642" y="388" font-size="20" font-weight="700" fill="#16598c" text-anchor="middle">1</text><text x="688" y="388" font-size="20" font-weight="700" fill="#16598c" text-anchor="middle">N</text><path d="M1000 400 L1060 400" stroke="#4a93c9" stroke-width="3" fill="none"/><text x="1012" y="388" font-size="20" font-weight="700" fill="#16598c" text-anchor="middle">N</text><text x="1048" y="388" font-size="20" font-weight="700" fill="#16598c" text-anchor="middle">1</text><path d="M1340 400 L1400 400" stroke="#4a93c9" stroke-width="3" fill="none"/><text x="1352" y="388" font-size="20" font-weight="700" fill="#16598c" text-anchor="middle">1</text><text x="1388" y="388" font-size="20" font-weight="700" fill="#16598c" text-anchor="middle">0..1</text><path d="M20 20 V-4 H0" fill="none"/><g><rect x="0" y="20" width="280" height="130" rx="14" fill="#fff" stroke="#cfe0ee" stroke-width="2"/><path d="M0 34 a14 14 0 0 1 14 -14 h252 a14 14 0 0 1 14 14 v26 h-280 z" fill="#16598c"/><text x="16" y="48" font-size="22" font-weight="700" fill="#fff">categories</text><text x="16" y="81" font-size="19" fill="#333">id</text><text x="266" y="81" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">PK</text><text x="16" y="111" font-size="19" fill="#333">name</text><text x="266" y="111" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">UQ</text><text x="16" y="141" font-size="19" fill="#333">parent_id</text><text x="266" y="141" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">FK</text></g><g><rect x="330" y="20" width="320" height="220" rx="14" fill="#fff" stroke="#cfe0ee" stroke-width="2"/><path d="M330 34 a14 14 0 0 1 14 -14 h292 a14 14 0 0 1 14 14 v26 h-320 z" fill="#16598c"/><text x="346" y="48" font-size="22" font-weight="700" fill="#fff">books</text><text x="346" y="81" font-size="19" fill="#333">id</text><text x="636" y="81" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">PK</text><text x="346" y="111" font-size="19" fill="#333">title</text><text x="346" y="141" font-size="19" fill="#333">isbn</text><text x="636" y="141" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">UQ</text><text x="346" y="171" font-size="19" fill="#333">category_id</text><text x="636" y="171" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">FK</text><text x="346" y="201" font-size="19" fill="#333">search_vector</text><text x="346" y="231" font-size="19" fill="#333">created_at</text></g><g><rect x="700" y="20" width="300" height="100" rx="14" fill="#fff" stroke="#cfe0ee" stroke-width="2"/><path d="M700 34 a14 14 0 0 1 14 -14 h272 a14 14 0 0 1 14 14 v26 h-300 z" fill="#16598c"/><text x="716" y="48" font-size="22" font-weight="700" fill="#fff">book_authors</text><text x="716" y="81" font-size="19" fill="#333">book_id</text><text x="986" y="81" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">PK·FK</text><text x="716" y="111" font-size="19" fill="#333">author_id</text><text x="986" y="111" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">PK·FK</text></g><g><rect x="1060" y="20" width="280" height="100" rx="14" fill="#fff" stroke="#cfe0ee" stroke-width="2"/><path d="M1060 34 a14 14 0 0 1 14 -14 h252 a14 14 0 0 1 14 14 v26 h-280 z" fill="#16598c"/><text x="1076" y="48" font-size="22" font-weight="700" fill="#fff">authors</text><text x="1076" y="81" font-size="19" fill="#333">id</text><text x="1326" y="81" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">PK</text><text x="1076" y="111" font-size="19" fill="#333">full_name</text></g><g><rect x="1400" y="20" width="300" height="190" rx="14" fill="#fff" stroke="#cfe0ee" stroke-width="2"/><path d="M1400 34 a14 14 0 0 1 14 -14 h272 a14 14 0 0 1 14 14 v26 h-300 z" fill="#7a8fa3"/><text x="1416" y="48" font-size="22" font-weight="700" fill="#fff">audit_log</text><text x="1416" y="81" font-size="19" fill="#333">id</text><text x="1686" y="81" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">PK</text><text x="1416" y="111" font-size="19" fill="#333">table_name</text><text x="1416" y="141" font-size="19" fill="#333">operation</text><text x="1416" y="171" font-size="19" fill="#333">old_data</text><text x="1686" y="171" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">JSONB</text><text x="1416" y="201" font-size="19" fill="#333">new_data</text><text x="1686" y="201" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">JSONB</text></g><g><rect x="330" y="340" width="300" height="160" rx="14" fill="#fff" stroke="#cfe0ee" stroke-width="2"/><path d="M330 354 a14 14 0 0 1 14 -14 h272 a14 14 0 0 1 14 14 v26 h-300 z" fill="#16598c"/><text x="346" y="368" font-size="22" font-weight="700" fill="#fff">book_copies</text><text x="346" y="401" font-size="19" fill="#333">id</text><text x="616" y="401" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">PK</text><text x="346" y="431" font-size="19" fill="#333">book_id</text><text x="616" y="431" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">FK</text><text x="346" y="461" font-size="19" fill="#333">status</text><text x="616" y="461" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">CK</text><text x="346" y="491" font-size="19" fill="#333">version</text></g><g><rect x="700" y="340" width="300" height="220" rx="14" fill="#fff" stroke="#cfe0ee" stroke-width="2"/><path d="M700 354 a14 14 0 0 1 14 -14 h272 a14 14 0 0 1 14 14 v26 h-300 z" fill="#16598c"/><text x="716" y="368" font-size="22" font-weight="700" fill="#fff">loans</text><text x="716" y="401" font-size="19" fill="#333">id</text><text x="986" y="401" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">PK</text><text x="716" y="431" font-size="19" fill="#333">book_copy_id</text><text x="986" y="431" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">FK</text><text x="716" y="461" font-size="19" fill="#333">member_id</text><text x="986" y="461" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">FK</text><text x="716" y="491" font-size="19" fill="#333">borrowed_at</text><text x="716" y="521" font-size="19" fill="#333">due_date</text><text x="716" y="551" font-size="19" fill="#333">returned_at</text><text x="986" y="551" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">CK</text></g><g><rect x="1060" y="340" width="280" height="190" rx="14" fill="#fff" stroke="#cfe0ee" stroke-width="2"/><path d="M1060 354 a14 14 0 0 1 14 -14 h252 a14 14 0 0 1 14 14 v26 h-280 z" fill="#16598c"/><text x="1076" y="368" font-size="22" font-weight="700" fill="#fff">members</text><text x="1076" y="401" font-size="19" fill="#333">id</text><text x="1326" y="401" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">PK</text><text x="1076" y="431" font-size="19" fill="#333">full_name</text><text x="1076" y="461" font-size="19" fill="#333">email</text><text x="1326" y="461" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">UQ</text><text x="1076" y="491" font-size="19" fill="#333">phone</text><text x="1076" y="521" font-size="19" fill="#333">joined_at</text></g><g><rect x="1400" y="340" width="300" height="190" rx="14" fill="#fff" stroke="#cfe0ee" stroke-width="2"/><path d="M1400 354 a14 14 0 0 1 14 -14 h272 a14 14 0 0 1 14 14 v26 h-300 z" fill="#16598c"/><text x="1416" y="368" font-size="22" font-weight="700" fill="#fff">users</text><text x="1416" y="401" font-size="19" fill="#333">id</text><text x="1686" y="401" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">PK</text><text x="1416" y="431" font-size="19" fill="#333">username</text><text x="1686" y="431" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">UQ</text><text x="1416" y="461" font-size="19" fill="#333">password_hash</text><text x="1416" y="491" font-size="19" fill="#333">role</text><text x="1686" y="491" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">CK</text><text x="1416" y="521" font-size="19" fill="#333">member_id</text><text x="1686" y="521" font-size="16" font-weight="700" fill="#2777b6" text-anchor="end">FK</text></g></svg>
+<div class="g g3" style="top:810px;gap:20px">
+<div class="card" style="padding:16px 24px;height:150px"><p style="font-size:21px;line-height:1.35"><b class="t">Sách và bản sao tách riêng.</b> Phiếu mượn trỏ đến đúng một bản sao, không chỉ trỏ đến đầu sách.</p></div>
+<div class="card" style="padding:16px 24px;height:150px"><p style="font-size:21px;line-height:1.35"><b class="t">Quan hệ n:n qua bảng nối.</b> Một sách có nhiều tác giả, một tác giả viết nhiều sách (<code>book_authors</code>).</p></div>
+<div class="card" style="padding:16px 24px;height:150px"><p style="font-size:21px;line-height:1.35"><b class="t">Tài khoản tách khỏi độc giả.</b> Thủ thư nhập độc giả không cần tạo tài khoản; thể loại có thể cha – con.</p></div>
+</div>
+<div style="position:absolute;left:108px;top:972px;font-size:17px;color:#555">PK khoá chính · FK khoá ngoại · UQ giá trị duy nhất · CK ràng buộc kiểm tra · 1 – N: một – nhiều</div>
+</section>
+<section class="s"><div class="tag">CƠ SỞ DỮ LIỆU</div><h2>Chuẩn hoá: mỗi thông tin lưu đúng một nơi</h2><div class="sub">Thiết kế đạt chuẩn 3NF để tránh trùng lặp và sai lệch</div>
+<div class="card" style="left:108px;top:236px;width:1704px;height:620px;padding:30px 40px">
+<div class="tr th" style="grid-template-columns:1fr 1.25fr 1.1fr"><div>Cách đơn giản dễ gặp</div><div>Cách QLTV thiết kế</div><div>Lợi ích</div></div>
+<div class="tr" style="grid-template-columns:1fr 1.25fr 1.1fr"><div><span class="no">✗</span> Tên tác giả ghi thẳng trong bảng sách, lặp ở nhiều dòng</div><div>Bảng <code>authors</code> riêng, nối với sách qua <code>book_authors</code> (n:n)</div><div>Đổi tên tác giả một lần, mọi nơi đều đúng</div></div>
+<div class="tr" style="grid-template-columns:1fr 1.25fr 1.1fr"><div><span class="no">✗</span> Thể loại là chuỗi tự do, dễ gõ sai, trùng lặp</div><div>Bảng <code>categories</code> có <code>parent_id</code> tự tham chiếu</div><div>Thể loại cha – con, không sai chính tả</div></div>
+<div class="tr" style="grid-template-columns:1fr 1.25fr 1.1fr"><div><span class="no">✗</span> Một ô đếm số bản còn lại (<code>available_copies</code>), dễ lệch khi có lỗi</div><div>Mỗi bản sao là một dòng trong <code>book_copies</code>; số còn lại được <b class="t">tính bằng COUNT</b></div><div>Không thể lệch; khoá được đúng một bản cụ thể</div></div>
+<div class="tr" style="grid-template-columns:1fr 1.25fr 1.1fr"><div><span class="no">✗</span> Gộp tài khoản đăng nhập vào hồ sơ độc giả</div><div><code>users</code> tách khỏi <code>members</code>, liên kết tuỳ chọn qua <code>member_id</code></div><div>Có quản trị viên không cần là độc giả</div></div>
+</div>
+<div class="band" style="top:880px;padding:24px 40px"><b>Quyết định quan trọng nhất:</b> bỏ cột đếm, quản lý từng bản sao. Số liệu tổng hợp luôn được suy ra từ dữ liệu gốc.</div>
+</section>
+<section class="s"><div class="tag">CƠ SỞ DỮ LIỆU</div><h2>Toàn vẹn dữ liệu ngay tại cơ sở dữ liệu</h2><div class="sub">Dữ liệu sai bị từ chối, dù phần mềm bên trên có lỗi</div>
+<div class="g g2" style="top:236px;grid-template-columns:1fr 1.05fr;gap:28px">
+<div style="display:grid;gap:20px">
+<div class="card" style="height:196px;padding:24px 30px"><h3>Khoá chính &amp; khoá ngoại</h3><p style="font-size:22px">Mỗi dòng có định danh riêng. Phiếu mượn chỉ được tạo khi bản sao và độc giả đã tồn tại; không thể xoá bản sao hay độc giả đang có phiếu mượn.</p></div>
+<div class="card" style="height:196px;padding:24px 30px"><h3>Giá trị duy nhất (UNIQUE)</h3><p style="font-size:22px">Không thể có hai sách cùng <code>isbn</code>, hai độc giả cùng <code>email</code>, hai tài khoản cùng <code>username</code>, hai thể loại cùng tên.</p></div>
+<div class="card" style="height:196px;padding:24px 30px"><h3>Xoá có kiểm soát</h3><p style="font-size:22px">Xoá một đầu sách sẽ xoá kèm các bản sao và liên kết tác giả (<code>ON DELETE CASCADE</code>), không để lại dữ liệu mồ côi.</p></div>
+</div>
+<div class="card dark" style="height:660px;padding:34px 38px">
+<div class="ttl">Ràng buộc CHECK: luật nghiệp vụ nằm trong dữ liệu</div><div class="bar"></div>
+<pre class="code"><i>-- Trạng thái bản sao chỉ nhận 4 giá trị</i>
+CHECK (status IN
+  ('available','borrowed',
+   'lost','damaged'))
 
-  <!-- 1 Cover -->
-  <section class="s cover">
-    <div class="tag" style="top:88px">PROPOSAL</div>
-    <div class="kick">github.com/ckq7703/qltv</div>
-    <h1 class="big1">QLTV <span>–</span><br>Hệ thống quản lý thư viện</h1>
-    <div class="sub1">Mượn trả an toàn khi nhiều người dùng cùng lúc, tra cứu nhanh, thống kê rõ ràng</div>
-    <div class="chips">
-      <div class="chip"><b>28</b>API REST</div>
-      <div class="chip"><b>9</b>bảng dữ liệu</div>
-      <div class="chip"><b>15</b>test tự động</div>
-      <div class="chip"><b>4</b>service Docker</div>
-    </div>
-  </section>
+<i>-- Vai trò chỉ là admin hoặc member</i>
+CHECK (role IN ('admin','member'))
 
-  <!-- 2 Bối cảnh -->
-  <section class="s">
-    <div class="tag">BỐI CẢNH</div>
-    <h2>Bối cảnh <span>&amp;</span> mục tiêu</h2>
-    <div class="sub">Thư viện cần một nơi duy nhất để quản lý sách, độc giả và các lượt mượn trả</div>
-    <div class="col3">
-      <div class="card big"><span class="ic c1"><svg><use href="#i-layers"/></svg></span><b>Quản lý tập trung</b><p>Đầu sách, từng bản sao vật lý, tác giả, danh mục phân cấp và độc giả nằm trên một hệ thống thay vì nhiều file rời rạc.</p><em>Mục tiêu 1</em></div>
-      <div class="card big"><span class="ic c2"><svg><use href="#i-shield-check"/></svg></span><b>Không mượn trùng</b><p>Một bản sao chỉ cho một người mượn, kể cả khi nhiều người bấm mượn cùng lúc. Dữ liệu luôn nhất quán.</p><em>Mục tiêu 2</em></div>
-      <div class="card big"><span class="ic c3"><svg><use href="#i-chart-column"/></svg></span><b>Nắm số liệu</b><p>Theo dõi phiếu quá hạn, sách được mượn nhiều, độc giả tích cực và báo cáo theo tháng để ra quyết định.</p><em>Mục tiêu 3</em></div>
-    </div>
-    <div class="band">Đối tượng sử dụng: <b>thủ thư / admin</b> quản trị toàn bộ · <b>độc giả (member)</b> tự tra cứu, mượn và trả sách</div>
-  </section>
-
-  <!-- 3 Phạm vi -->
-  <section class="s">
-    <div class="tag">PHẠM VI</div>
-    <h2>Phạm vi chức năng</h2>
-    <div class="sub">Sáu phân hệ chính, đã triển khai đầy đủ ở cả backend và giao diện web</div>
-    <div class="g23">
-      <div class="mod"><span class="ic c1"><svg><use href="#i-library"/></svg></span><b>Sách &amp; bản sao</b><p>Mỗi bản sao là một dòng riêng, có trạng thái (sẵn sàng, mất, hỏng). Tác giả, danh mục phân cấp, ảnh bìa.</p></div>
-      <div class="mod"><span class="ic c2"><svg><use href="#i-repeat"/></svg></span><b>Mượn – trả</b><p>Tối đa 3 phiếu mỗi độc giả, hạn 14 ngày, phí trễ 5.000đ/ngày. Có wizard mượn 3 bước kèm nội quy.</p></div>
-      <div class="mod"><span class="ic c3"><svg><use href="#i-users"/></svg></span><b>Độc giả &amp; phân quyền</b><p>Đăng nhập JWT, vai trò admin / member. Độc giả tự mượn trả, admin quản trị toàn bộ.</p></div>
-      <div class="mod"><span class="ic c4"><svg><use href="#i-search"/></svg></span><b>Tìm kiếm nhanh</b><p>Full-text search trên PostgreSQL với GIN index, kết quả được cache bằng Redis (TTL 60 giây).</p></div>
-      <div class="mod"><span class="ic c2"><svg><use href="#i-bell"/></svg></span><b>Thông báo tức thời</b><p>Admin nhận thông báo qua WebSocket khi có độc giả mượn sách, bấm vào mở thẳng chi tiết phiếu.</p></div>
-      <div class="mod"><span class="ic c1"><svg><use href="#i-chart-column"/></svg></span><b>Thống kê &amp; báo cáo</b><p>Top sách mượn, phiếu quá hạn, độc giả tích cực, báo cáo mượn trả theo tháng.</p></div>
-    </div>
-  </section>
-
-  <!-- 4 Kiến trúc -->
-  <section class="s">
-    <div class="tag">KIẾN TRÚC</div>
-    <h2>Kiến trúc <span>&amp;</span> công nghệ</h2>
-    <div class="sub">Ba tầng tách bạch, đóng gói bằng Docker Compose và chạy bằng một lệnh</div>
-    <div class="arch">
-      <div class="lay"><span class="lb"><svg><use href="#i-zap"/></svg></span><div><b>Frontend</b>React 19 · Vite · TypeScript · Tailwind v4 · shadcn/ui · layout sidebar</div></div>
-      <div class="dn">▼ REST /api &nbsp;·&nbsp; WebSocket /ws</div>
-      <div class="lay"><span class="lb"><svg><use href="#i-cog"/></svg></span><div><b>Backend</b>FastAPI (Python 3.12) · SQLAlchemy · Alembic migration · xác thực JWT</div></div>
-      <div class="dn">▼</div>
-      <div class="two">
-        <div class="lay"><span class="lb"><svg><use href="#i-database"/></svg></span><div><b>PostgreSQL 16</b>Dữ liệu chính, trigger, view, index</div></div>
-        <div class="lay"><span class="lb"><svg><use href="#i-clock"/></svg></span><div><b>Redis 7</b>Cache-aside, Pub/Sub cho thông báo</div></div>
-      </div>
-    </div>
-    <div class="side">
-      <div class="ttl">Vì sao chọn như vậy</div><div class="bar"></div>
-      <ul>
-        <li><b>PostgreSQL</b> khoá dòng và full-text search sẵn có, đủ cho bài toán mượn đồng thời.</li>
-        <li><b>Redis</b> giảm tải cho truy vấn tìm kiếm lặp lại.</li>
-        <li><b>FastAPI</b> sinh tài liệu Swagger tự động.</li>
-        <li><b>Docker Compose</b> cùng môi trường cho mọi máy, 4 service.</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- 5 Dữ liệu & đồng thời -->
-  <section class="s">
-    <div class="tag">DỮ LIỆU</div>
-    <h2>Dữ liệu <span>&amp;</span> xử lý mượn đồng thời</h2>
-    <div class="sub">Điểm khó nhất của bài toán và cách hệ thống giải quyết</div>
-    <div class="card pan" style="left:108px;top:222px;width:560px;height:750px">
-      <div class="ttl">Lược đồ 9 bảng</div><div class="bar"></div>
-      <div class="tabs"><i>books</i><i>book_copies</i><i>authors</i><i>book_authors</i><i>categories</i><i>members</i><i>users</i><i>loans</i><i>audit_log</i></div>
-      <p class="note">Chuẩn hoá nhiều bảng: sách tách khỏi bản sao vật lý, quan hệ sách – tác giả nhiều–nhiều, danh mục phân cấp. Có trigger, view và index hỗ trợ; mọi thao tác quan trọng được ghi vào <b>audit_log</b>.</p>
-    </div>
-    <div class="card pan dark" style="left:690px;top:222px;width:1122px;height:750px">
-      <div class="ttl">Luồng mượn sách trong một transaction</div><div class="bar"></div>
-      <div class="flow">
-        <div class="stp"><span>1</span><div><b>Chọn bản sao còn sẵn</b>SELECT … FOR UPDATE SKIP LOCKED: khoá dòng, bỏ qua bản sao đang bị người khác giữ.</div></div>
-        <div class="stp"><span>2</span><div><b>Kiểm tra quy tắc</b>Độc giả còn dưới 3 phiếu, tài khoản hợp lệ.</div></div>
-        <div class="stp"><span>3</span><div><b>Tạo phiếu &amp; đổi trạng thái</b>Ghi loan, đánh dấu bản sao đang mượn, hạn trả sau 14 ngày.</div></div>
-        <div class="stp"><span>4</span><div><b>Commit &amp; thông báo</b>Ghi audit_log, xoá cache liên quan, đẩy thông báo cho admin.</div></div>
-      </div>
-      <div class="res">Kết quả kiểm chứng: 10 yêu cầu cùng mượn 1 bản sao cuối → <b>1 thành công, 9 nhận báo hết sách</b>, không lỗi, không treo.</div>
-    </div>
-  </section>
-
-  <!-- 6 Hiệu năng -->
-  <section class="s">
-    <div class="tag">KẾT QUẢ</div>
-    <h2>Hiệu năng <span>&amp;</span> kiểm thử</h2>
-    <div class="sub">Số liệu lấy từ BENCHMARKS.md và bộ test của dự án, không ước lượng</div>
-    <div class="kp4">
-      <div class="kpi"><div class="big" style="color:var(--title)">1 / 10</div><div class="lab">Mượn đồng thời</div><div class="d">10 yêu cầu cho 1 bản sao cuối: đúng 1 thành công, 9 nhận báo hết sách. Không mượn trùng.</div></div>
-      <div class="kpi"><div class="big" style="color:var(--blue)">2,41 ms</div><div class="lab">Tìm kiếm toàn văn</div><div class="d">Trên 20.000 sách khi có GIN index, so với 4,58 ms khi quét toàn bảng.</div></div>
-      <div class="kpi"><div class="big" style="color:var(--title)">15</div><div class="lab">Test tự động</div><div class="d">Gồm mượn đồng thời, mượn trả, tìm kiếm sách và phân quyền độc giả. Toàn bộ đạt.</div></div>
-      <div class="kpi"><div class="big" style="color:var(--light)">28</div><div class="lab">API REST</div><div class="d">Kèm WebSocket cho thông báo và tài liệu Swagger tự sinh.</div></div>
-    </div>
-    <div class="band">Frontend đã qua type-check (tsc) và lint (oxlint) sạch, build Docker image thành công</div>
-  </section>
-
-  <!-- 7 Lộ trình -->
-  <section class="s">
-    <div class="tag">LỘ TRÌNH</div>
-    <h2>Hiện trạng <span>&amp;</span> lộ trình</h2>
-    <div class="sub">Phần lõi đã hoàn thành, các bước tiếp theo tập trung vào vận hành thực tế</div>
-    <div class="line"></div>
-    <div class="col3 tl">
-      <div class="card big"><span class="ic c1"><svg><use href="#i-check"/></svg></span><u>HIỆN TẠI</u><b>Đã hoàn thành</b><p>Hạ tầng Docker, schema và migration, CRUD API, kiểm soát mượn đồng thời, xác thực JWT, cache, benchmark, thống kê, giao diện web.</p></div>
-      <div class="card big"><span class="ic c2"><svg><use href="#i-rocket"/></svg></span><u>TIẾP THEO</u><b>Đưa vào vận hành</b><p>Build giao diện tĩnh phục vụ qua Nginx, đóng cổng CSDL ra ngoài, đổi toàn bộ mật khẩu và khoá bí mật mặc định.</p></div>
-      <div class="card big"><span class="ic c3"><svg><use href="#i-trending-up"/></svg></span><u>TUỲ CHỌN</u><b>Mở rộng</b><p>Sao lưu và khôi phục theo thời điểm (PITR), thu phí trễ hạn trực tuyến, gateway NestJS phía trước API.</p></div>
-    </div>
-  </section>
-
-  <!-- 8 Kết luận -->
-  <section class="s">
-    <div class="tag">KẾT LUẬN</div>
-    <h2>Giá trị <span>&amp;</span> đề xuất</h2>
-    <div class="sub">QLTV sẵn sàng để triển khai thử nghiệm tại thư viện</div>
-    <div class="col3">
-      <div class="card big"><span class="ic c1"><svg><use href="#i-shield-check"/></svg></span><b>Đáng tin cậy</b><p>Khoá dòng ở tầng CSDL bảo đảm không mượn trùng, có audit_log và bộ test kiểm chứng.</p></div>
-      <div class="card big"><span class="ic c2"><svg><use href="#i-zap"/></svg></span><b>Nhanh &amp; trực quan</b><p>Tìm kiếm vài mili-giây nhờ index và cache; thông báo thời gian thực cho thủ thư.</p></div>
-      <div class="card big"><span class="ic c3"><svg><use href="#i-rocket"/></svg></span><b>Dễ triển khai</b><p>Một lệnh docker compose up, công nghệ phổ biến, dễ bảo trì và mở rộng.</p></div>
-    </div>
-    <div class="cta"><div><b>Đề xuất:</b> chạy thử với dữ liệu thật của thư viện, hoàn tất các hạng mục vận hành, sau đó đưa vào sử dụng chính thức.</div><span>github.com/ckq7703/qltv</span></div>
-  </section>
+<i>-- Ngày trả không thể trước ngày mượn</i>
+CHECK (returned_at IS NULL
+    OR returned_at &gt;= borrowed_at)</pre>
+<p style="margin-top:22px;font-size:23px">Dù ứng dụng có lỗi tính sai ngày trả, PostgreSQL vẫn từ chối lưu dữ liệu vô lý đó.</p>
+</div></div></section>
+<section class="s"><div class="tag">CƠ SỞ DỮ LIỆU</div><h2>Transaction và xử lý mượn đồng thời</h2><div class="sub">Làm sao hai người không thể cùng mượn một cuốn sách?</div>
+<div class="g g2" style="top:226px;gap:24px">
+<div class="card" style="height:210px;padding:22px 32px"><h3><span class="no">✗</span> Khi không có cơ chế khoá</h3><p style="font-size:22px;line-height:1.4">Còn đúng 1 bản. An và Bình cùng đọc thấy "còn 1", cùng ghi phiếu mượn. Kết quả: <b class="t">một cuốn, hai người mượn</b> (race condition).</p></div>
+<div class="card" style="height:210px;padding:22px 32px"><h3><span class="ok">✓</span> Với QLTV</h3><p style="font-size:22px;line-height:1.4">Toàn bộ việc mượn nằm trong <b class="t">một transaction</b> (hoặc thành công trọn vẹn, hoặc không gì thay đổi). Bản sao được <b class="t">khoá</b> ngay khi chọn; người đến sau nhận bản khác hoặc thông báo hết sách.</p></div>
+</div>
+<div class="card dark" style="left:108px;top:456px;width:900px;height:440px;padding:26px 34px">
+<div style="font-size:19px;color:#bcd9ee;margin-bottom:10px">Luồng mượn sách thật trong hệ thống (PostgreSQL)</div>
+<pre class="code" style="font-size:19.5px;line-height:1.5">BEGIN;
+<i>-- 1. Khoá một bản sao còn sẵn</i>
+SELECT id FROM book_copies
+ WHERE book_id = :sach AND status = 'available'
+ LIMIT 1
+ FOR UPDATE SKIP LOCKED;
+<i>-- 2. Kiểm tra độc giả đang mượn &lt; 3 cuốn</i>
+SELECT COUNT(*) FROM loans
+ WHERE member_id = :doc_gia AND returned_at IS NULL;
+<i>-- 3. Tạo phiếu, hạn trả 14 ngày</i>
+INSERT INTO loans (book_copy_id, member_id, due_date)
+VALUES (:ban_sao, :doc_gia, now() + interval '14 days');
+COMMIT;  <i>-- trigger tự đổi bản sao sang "borrowed"</i></pre></div>
+<div class="card" style="left:1032px;top:456px;width:780px;height:440px;padding:26px 34px">
+<div style="display:grid;gap:12px">
+<p style="font-size:22px;line-height:1.38"><b class="t">FOR UPDATE</b> khoá đúng dòng bản sao cần mượn; giao dịch khác phải đợi.</p>
+<p style="font-size:22px;line-height:1.38"><b class="t">SKIP LOCKED</b> bỏ qua bản đang bị giữ và lấy bản trống khác, không ai phải chờ vô ích.</p>
+<p style="font-size:22px;line-height:1.38"><b class="t">Giới hạn 3 cuốn</b> được kiểm tra trong cùng transaction nên không thể vượt khi bấm đồng thời.</p>
+<p style="font-size:22px;line-height:1.38"><b class="t">Mức cô lập READ COMMITTED</b> (mặc định) là đủ nhờ khoá dòng; không cần SERIALIZABLE.</p>
+<p style="font-size:22px;line-height:1.38"><b class="t">Phương án dự phòng:</b> cột <code>version</code> cho optimistic locking đã có sẵn trong <code>book_copies</code>.</p>
+</div></div>
+<div class="band" style="top:914px;padding:20px 40px;font-size:26px">Kiểm thử thực tế: <b>10 yêu cầu</b> mượn cùng lúc 1 bản cuối → <b>1 thành công</b>, 9 nhận báo hết sách, <b>0 lỗi, 0 deadlock</b>.</div>
+</section>
+<section class="s tight"><div class="tag">CƠ SỞ DỮ LIỆU</div><h2>Tự động hoá và báo cáo ngay trong dữ liệu</h2><div class="sub">Trigger giữ dữ liệu đồng bộ; View cho báo cáo luôn sẵn sàng</div>
+<div class="card" style="left:108px;top:236px;width:830px;height:590px">
+<div class="ttl">Trigger: tự động phản ứng khi dữ liệu đổi</div><div class="bar"></div>
+<div class="tr" style="grid-template-columns:1fr;gap:4px;padding-top:6px"><div><b class="t">Mượn / trả sách</b><br><code>trg_after_loan_insert</code> <code>trg_after_loan_return</code><br>Tạo hoặc đóng phiếu thì bản sao tự đổi trạng thái borrowed / available.</div></div>
+<div class="tr" style="grid-template-columns:1fr;gap:4px"><div><b class="t">Chỉ mục tìm kiếm</b><br><code>trg_books_search_vector_update</code><br>Đổi tên sách thì dữ liệu phục vụ tìm kiếm tự cập nhật.</div></div>
+<div class="tr" style="grid-template-columns:1fr;gap:4px"><div><b class="t">Nhật ký thay đổi</b><br><code>trg_audit_books</code> <code>trg_audit_loans</code><br>Ghi mọi thêm, sửa, xoá vào <code>audit_log</code>.</div></div>
+</div>
+<div class="card" style="left:962px;top:236px;width:850px;height:590px">
+<div class="ttl">View: báo cáo được định nghĩa một lần</div><div class="bar"></div>
+<div class="tr" style="grid-template-columns:1fr;gap:4px;padding-top:6px"><div><code>v_top_borrowed_books</code><br>Xếp hạng sách được mượn nhiều nhất bằng <code>RANK()</code>.</div></div>
+<div class="tr" style="grid-template-columns:1fr;gap:4px"><div><code>v_overdue_loans</code><br>Phiếu quá hạn, tính từ <code>due_date &lt; now()</code>: không cần tiến trình nền đánh dấu.</div></div>
+<div class="tr" style="grid-template-columns:1fr;gap:4px"><div><code>v_active_members</code><br>Xếp hạng độc giả tích cực bằng <code>DENSE_RANK()</code>.</div></div>
+<div class="tr" style="grid-template-columns:1fr;gap:4px"><div><code>mv_monthly_stats</code> <span class="ok">Materialized View</span><br>Thống kê theo tháng, lưu sẵn kết quả, làm mới khi cần.</div></div>
+</div>
+<div class="band" style="top:852px;padding:22px 40px"><b>Truy vết:</b> <code>audit_log</code> lưu dữ liệu <b>trước và sau</b> mỗi thay đổi dưới dạng JSONB. Sửa sai có thể xem lại giá trị cũ mà không cần khôi phục cả bản sao lưu.</div>
+</section>
+<section class="s"><div class="tag">CƠ SỞ DỮ LIỆU</div><h2>Chỉ mục (Index) và hiệu năng truy vấn</h2><div class="sub">Chỉ mục giống mục lục sách: tìm đúng trang thay vì lật cả cuốn</div>
+<div class="card" style="left:108px;top:236px;width:900px;height:640px;padding:28px 32px">
+<div class="tr th" style="grid-template-columns:.95fr 1fr 1.25fr;gap:14px;font-size:17px"><div>Chỉ mục</div><div>Loại</div><div>Phục vụ</div></div>
+<div class="tr" style="grid-template-columns:.95fr 1fr 1.25fr;gap:14px;font-size:21px"><div><code style="font-size:.8em">idx_books_search</code></div><div>GIN trên tsvector</div><div>Tìm sách theo tên (full-text search)</div></div>
+<div class="tr" style="grid-template-columns:.95fr 1fr 1.25fr;gap:14px;font-size:21px"><div><code style="font-size:.8em">idx_books_category</code></div><div>B-tree</div><div>Lọc sách theo thể loại</div></div>
+<div class="tr" style="grid-template-columns:.95fr 1fr 1.25fr;gap:14px;font-size:21px"><div><code style="font-size:.8em">idx_copies_book_status</code></div><div>B-tree ghép</div><div>Tìm nhanh bản sao còn sẵn khi mượn</div></div>
+<div class="tr" style="grid-template-columns:.95fr 1fr 1.25fr;gap:14px;font-size:21px"><div><code style="font-size:.8em">idx_loans_member</code></div><div>B-tree</div><div>Lịch sử mượn của từng độc giả</div></div>
+<div class="tr" style="grid-template-columns:.95fr 1fr 1.25fr;gap:14px;font-size:21px"><div><code style="font-size:.8em">idx_loans_open</code></div><div>B-tree một phần <code style="font-size:.75em">WHERE returned_at IS NULL</code></div><div>Chỉ lập chỉ mục phiếu chưa trả: nhỏ gọn, nhanh</div></div>
+</div>
+<div class="card" style="left:1032px;top:236px;width:780px;height:420px">
+<div class="ttl">Đo bằng EXPLAIN ANALYZE</div><div class="bar"></div>
+<p style="font-size:21px;margin-bottom:16px">20.005 đầu sách thử nghiệm, tìm từ khoá khớp 3.334 dòng</p>
+<div class="bars">
+<div class="r"><div class="lbl">Không chỉ mục<br><span style="font-size:19px">Seq Scan toàn bảng</span></div><div class="b" style="width:330px;background:#7a8fa3">4,58 ms</div></div>
+<div class="r"><div class="lbl">Có chỉ mục GIN<br><span style="font-size:19px">Bitmap Index Scan</span></div><div class="b" style="width:174px;background:var(--blue)">2,41 ms</div></div>
+</div>
+<p style="font-size:21px;margin-top:6px">Kế hoạch truy vấn đổi chiến lược: không còn đọc cả bảng rồi loại 16.671 dòng thừa. Bảng càng lớn, khoảng cách càng rộng.</p>
+</div>
+<div class="card dark" style="left:1032px;top:676px;width:780px;height:200px;padding:26px 36px">
+<h3 style="margin-bottom:8px">Bộ nhớ đệm Redis</h3><p style="font-size:22px">Kết quả tìm kiếm lặp lại được giữ 60 giây, và tự xoá ngay khi sách hoặc phiếu mượn thay đổi nên không bao giờ hiển thị số liệu cũ.</p></div>
+<div class="band" style="top:896px;padding:22px 40px;font-size:26px"><b>Nguyên tắc:</b> index nào cũng gắn với một truy vấn thật của hệ thống, không tạo thừa.</div>
+</section>
+<section class="s"><div class="tag">NỀN TẢNG</div><h2>Kiến trúc và bảo mật</h2><div class="sub">Gọn nhẹ, tách lớp rõ ràng, dễ triển khai</div>
+<div class="flow" style="position:absolute;left:108px;top:236px;width:1704px">
+<div class="fl" style="text-align:center"><b>Người dùng</b>Thủ thư, độc giả</div>
+<div class="fl" style="text-align:center"><b>Giao diện web</b>React, TypeScript</div>
+<div class="fl" style="text-align:center"><b>Dịch vụ xử lý</b>FastAPI (Python)</div>
+<div class="fl" style="text-align:center;background:var(--title);border-color:var(--title)"><b style="color:#fff">PostgreSQL 16</b><span style="color:#e6f0f8">Nguồn dữ liệu chính</span></div>
+<div class="fl" style="text-align:center"><b>Redis 7</b>Bộ nhớ đệm, thông báo</div>
+</div>
+<div class="g g3" style="top:390px">
+<div class="card" style="height:400px"><span class="ic c1"><svg><use href="#i-shield-check"/></svg></span><h3>Phân quyền rõ ràng</h3><p>Hai vai trò: <b class="t">admin</b> (thủ thư) và <b class="t">member</b> (độc giả). Độc giả chỉ mượn, trả và xem phiếu của chính mình; danh tính lấy từ token đăng nhập, không tin dữ liệu người dùng gửi lên.</p></div>
+<div class="card" style="height:400px"><span class="ic c3"><svg><use href="#i-cog"/></svg></span><h3>Đăng nhập an toàn</h3><p>Token JWT có thời hạn, kèm refresh token luân phiên: dùng một lần rồi đổi. Mật khẩu chỉ lưu dạng băm (<code>password_hash</code>).</p></div>
+<div class="card" style="height:400px"><span class="ic c2"><svg><use href="#i-rocket"/></svg></span><h3>Triển khai nhanh</h3><p>Đóng gói bằng Docker Compose gồm 4 dịch vụ, chạy bằng một lệnh. Cấu trúc bảng được quản lý bằng migration (Alembic), nâng cấp có phiên bản và có thể hoàn tác.</p></div>
+</div>
+<div class="band" style="top:826px"><b>Công nghệ phổ biến, cộng đồng lớn:</b> dễ tìm nhân sự, dễ bảo trì và không bị phụ thuộc vào một nhà cung cấp.</div></section>
+<section class="s"><div class="tag">LỘ TRÌNH</div><h2>Hiện trạng và bước tiếp theo</h2><div class="sub">Lõi hệ thống đã hoàn thiện; các hạng mục sau tập trung vào vận hành và cơ sở dữ liệu nâng cao</div>
+<div class="g g3" style="top:236px">
+<div class="card" style="height:430px"><span class="ic c1"><svg><use href="#i-check"/></svg></span><h3>Đã hoàn thành</h3><p>Lược đồ 9 bảng, trigger, view, index, kiểm soát mượn đồng thời, phân quyền, tìm kiếm, thống kê, giao diện web và 15 bài kiểm thử tự động.</p></div>
+<div class="card" style="height:430px"><span class="ic c2"><svg><use href="#i-rocket"/></svg></span><h3>Chuẩn bị vận hành</h3><p>Đóng cổng cơ sở dữ liệu ra ngoài, đổi toàn bộ mật khẩu và khoá bí mật mặc định, phục vụ giao diện qua Nginx, sao lưu định kỳ.</p></div>
+<div class="card" style="height:430px"><span class="ic c3"><svg><use href="#i-database"/></svg></span><h3>Cơ sở dữ liệu nâng cao</h3><p><b class="t">Row Level Security</b> đẩy phân quyền xuống tầng dữ liệu · sao lưu và khôi phục theo thời điểm (<b class="t">PITR/WAL</b>) · <b class="t">partition</b> bảng <code>loans</code> theo thời gian · tự động làm mới materialized view.</p></div>
+</div>
+<div class="band" style="top:694px;padding:30px 40px;height:250px"><div style="font-size:30px;font-weight:700;margin-bottom:12px">Đề xuất các bước tiếp theo</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:28px;font-size:24px;line-height:1.4">
+<div><b>1. Buổi demo &amp; review lược đồ</b><br>cùng đội cơ sở dữ liệu của quý khách.</div>
+<div><b>2. Chạy thử với dữ liệu thật</b><br>nhập sách, độc giả hiện có để đánh giá.</div>
+<div><b>3. Thống nhất phạm vi mở rộng</b><br>chọn hạng mục nâng cao theo ưu tiên.</div></div></div>
+<div style="position:absolute;right:108px;top:964px;font-size:19px;color:var(--title);font-weight:700">Mã nguồn tham khảo: github.com/ckq7703/qltv</div>
+</section>
 </div>
 <div class="nav"><button id="pv">‹</button><span id="dots"></span><button id="nx">›</button></div>
 <script>
@@ -305,6 +329,5 @@
   addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key))show(cur+1);if(['ArrowLeft','PageUp'].includes(e.key))show(cur-1);});
   addEventListener('resize',fit);addEventListener('hashchange',()=>show((parseInt(location.hash.slice(1))||1)-1));fit();show(cur);
 </script>
-
 </body>
 </html>
