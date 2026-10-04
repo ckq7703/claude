@@ -17,15 +17,8 @@
   /* Sân khấu cố định 1920x1080, tự co theo cửa sổ */
   #stage{position:relative;width:1920px;height:1080px;background:#fff;overflow:hidden;flex:none;transform-origin:center center}
 
-  /* ===== NỀN TEMPLATE KQ-SLIDE ===== */
-  .bg-swirl{position:absolute;right:-120px;top:-60px;width:1100px;height:1300px;opacity:.06}
-  .bg-bar{position:absolute;left:0;top:0;width:34px;height:1080px;
-    background:radial-gradient(circle at 0% 0%, #f15e34 0%, #16598c 100%)}
-  .bg-line{position:absolute;top:1020px;height:4px}
-  .bg-line.l{left:108px;width:790px;background:linear-gradient(90deg,#16598c,#ef5e34)}
-  .bg-line.r{left:1014px;width:798px;background:linear-gradient(90deg,#f15e34,#16598c)}
-  .bg-dot{position:absolute;top:1017px;width:10px;height:10px;border-radius:50%}
-  .bg-logo{position:absolute;left:912px;top:981px;width:87px;height:83px}
+  /* ===== NỀN TEMPLATE KQ-SLIDE (từ KQ-SLIDE.pdf) ===== */
+  .bg{position:absolute;left:0;top:0;width:1920px;height:1080px;display:block}
 
   /* ===== NỘI DUNG ===== */
   h1{position:absolute;left:108px;top:84px;width:1704px;font-size:58px;line-height:1.2;font-weight:700;color:var(--title);letter-spacing:-.5px}
@@ -114,21 +107,8 @@
 </svg>
 
 <div id="stage">
-  <!-- Nền KQ-SLIDE -->
-  <svg class="bg-swirl" viewBox="0 0 400 480" fill="none" stroke="#00325a" stroke-width="1.2">
-    <path d="M0 40C120 20 260 90 400 60"/><path d="M0 70C130 50 250 120 400 100"/><path d="M0 100C140 90 250 150 400 140"/>
-    <path d="M0 130C150 130 250 180 400 180"/><path d="M0 160C160 170 250 210 400 220"/><path d="M0 190C170 210 250 240 400 260"/>
-    <path d="M0 220C180 250 250 270 400 300"/><path d="M0 250C190 290 250 300 400 340"/><path d="M0 280C200 330 250 330 400 380"/>
-  </svg>
-  <div class="bg-bar"></div>
-  <div class="bg-line l"></div><div class="bg-dot" style="left:104px;background:#16598c"></div><div class="bg-dot" style="left:894px;background:#ef5e34"></div>
-  <div class="bg-line r"></div><div class="bg-dot" style="left:1010px;background:#f15e34"></div><div class="bg-dot" style="left:1808px;background:#16598c"></div>
-  <!-- Logo giữa chân trang (mô phỏng) -->
-  <svg class="bg-logo" viewBox="0 0 87 83" fill="none" stroke-linecap="round">
-    <path d="M44 6C20 8 8 30 14 52c5 16 24 26 42 20" stroke="#2777b6" stroke-width="5"/>
-    <path d="M60 14c14 8 20 26 12 42-5 10-14 16-26 18" stroke="#f05d32" stroke-width="5"/>
-    <circle cx="44" cy="42" r="8" fill="#2777b6" stroke="none"/>
-  </svg>
+  <!-- Nền KQ-SLIDE: vector xuất từ KQ-SLIDE.pdf -->
+  <img class="bg" src="kq-background.png" alt="">
 
   <!-- Nội dung -->
   <div class="tag">PROPOSAL</div>
