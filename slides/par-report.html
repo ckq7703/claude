@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tiểu luận Data Mining – PAR</title>
+<style>
+  :root{--title:#16598c;--orange:#f05d32;--blue:#2777b6;--light:#4a93c9;--card:#eef4fa;--pill:#fde7df;--text:#333;--line:#cfe0ee}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:#0f1b27;overflow:hidden}
+  body{display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Arial,'Liberation Sans','Helvetica Neue',Helvetica,sans-serif}
+  #stage{position:relative;width:1920px;height:1080px;background:#fff;overflow:hidden;flex:none;margin:-20px 0}
+  .bg{position:absolute;left:0;top:0;width:1920px;height:1080px;display:block}
+  .pg{position:absolute;right:108px;bottom:22px;font-size:18px;color:var(--title);font-weight:700;z-index:3}
+  .s{position:absolute;inset:0;display:none}.s.on{display:block}
+  h2{position:absolute;left:108px;top:74px;font-size:56px;line-height:1.15;font-weight:700;color:var(--title)}
+  h2 span,.big1 span{color:var(--orange)}
+  .sub{position:absolute;left:108px;top:154px;font-size:27px;color:#444}
+  .tag{position:absolute;right:108px;top:88px;background:var(--pill);color:var(--orange);font-weight:700;font-size:22px;padding:10px 26px;border-radius:40px;letter-spacing:1px}
+  .ttl{font-size:30px;font-weight:700;color:var(--title)}
+  .bar{width:72px;height:6px;border-radius:4px;background:var(--orange);margin:10px 0 18px}
+  .ic{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;margin-bottom:16px;flex:none}
+  .ic svg{width:36px;height:36px;color:#fff}
+  .c1{background:var(--blue)}.c2{background:var(--light)}.c3{background:var(--title)}
+  .card{position:absolute;border-radius:28px;background:var(--card);padding:34px 36px}
+  .card.dark{background:var(--title);color:#fff}.card.dark .ttl{color:#fff}
+  .card p,.card li{font-size:27px;line-height:1.45;color:var(--text)}
+  .dark p,.dark li{color:#e6f0f8}
+  b.t{color:var(--title)}.dark b.t{color:#fff}
+  /* cover */
+  .kick{position:absolute;left:108px;top:292px;font-size:28px;font-weight:700;color:var(--blue);letter-spacing:1px}
+  .big1{position:absolute;left:108px;top:340px;font-size:92px;line-height:1.12;font-weight:700;color:var(--title)}
+  .sub1{position:absolute;left:108px;top:610px;width:1150px;font-size:36px;line-height:1.4;color:#444}
+  .chips{position:absolute;left:108px;top:790px;display:flex;gap:24px}
+  .chip{background:var(--card);border-radius:24px;padding:22px 30px;font-size:22px;color:var(--title);font-weight:700;min-width:230px}
+  .chip b{display:block;font-size:54px;color:var(--blue);line-height:1.05;margin-bottom:4px}
+  /* grids */
+  .g{position:absolute;left:108px;display:grid;gap:24px;width:1704px}
+  .g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:1fr 1fr}
+  .g .card{position:relative}
+  .card h3{font-size:32px;color:var(--title);margin-bottom:10px;line-height:1.2}
+  .dark h3{color:#fff}
+  .band{position:absolute;left:108px;width:1704px;background:var(--title);color:#fff;border-radius:26px;padding:28px 40px;font-size:27px;line-height:1.4}
+  .band b{color:#fff;border-bottom:3px solid var(--light)}
+  /* flow */
+  .flow{display:flex;gap:0;align-items:stretch}
+  .fl{flex:1;background:#fff;border:2px solid var(--line);border-radius:22px;padding:20px 22px;font-size:25px;line-height:1.35;color:var(--text);position:relative}
+  .fl b{display:block;color:var(--title);font-size:28px;margin-bottom:4px}
+  .fl+.fl{margin-left:34px}
+  .fl+.fl:before{content:"›";position:absolute;left:-30px;top:50%;margin-top:-22px;font-size:44px;color:var(--light);font-weight:700}
+  .lane{font-size:24px;font-weight:700;color:#fff;background:var(--blue);border-radius:16px;padding:8px 22px;display:inline-block;margin-bottom:14px}
+  /* table rows */
+  .tr{display:grid;gap:18px;align-items:center;padding:22px 0;border-top:2px solid var(--line);font-size:26px;line-height:1.35;color:var(--text)}
+  .tr:first-of-type{border-top:0}
+  .th{font-size:19px;font-weight:700;color:var(--blue);letter-spacing:.5px;text-transform:uppercase;border-top:0;padding:0 0 8px}
+  code,.code{font-family:'Courier New','Liberation Mono',monospace}
+  code{background:#fff;border:2px solid var(--line);border-radius:10px;padding:2px 9px;font-size:.88em;color:var(--title);font-weight:700;white-space:nowrap}
+  .dark code{background:rgba(255,255,255,.14);border-color:transparent;color:#fff}
+  pre.code{font-size:20px;line-height:1.5;color:#e6f0f8;white-space:pre}
+  pre.code i{font-style:normal;color:#8fc4ea}
+  pre.code em{font-style:normal;color:#9fdba7}
+  .no{color:var(--orange);font-weight:700}.ok{color:var(--blue);font-weight:700}
+  .bars div.r{display:flex;align-items:center;gap:18px;margin-bottom:16px;font-size:23px}
+  .bars .lbl{width:230px;color:var(--text)}
+  .bars .b{height:46px;border-radius:12px;color:#fff;font-weight:700;font-size:23px;padding:0 16px;display:flex;align-items:center}
+  /* nav */
+  .nav{position:fixed;bottom:6px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;z-index:9}
+  .nav button{background:none;border:0;color:#fff;font-size:26px;cursor:pointer;opacity:.7}
+  #dots i{display:inline-block;width:10px;height:10px;border-radius:50%;background:#556;margin:0 5px;cursor:pointer}#dots i.a{background:var(--light)}
+  .tight .tr{padding:12px 0}
+
+  .tb{border-collapse:collapse;font-size:26px;width:100%}
+  .tb th{background:var(--title);color:#fff;padding:9px 12px;font-weight:700}
+  .tb td{padding:9px 12px;border-bottom:2px solid var(--line);text-align:center;color:var(--text);background:#fff}
+  .tb td:first-child{font-weight:700;color:var(--title)}
+  .tb td.hl{background:#dbe9f5;font-weight:700;color:var(--title)}
+  .tb td.z{color:#b0bccb}
+  .cap{font-size:30px;font-weight:700;color:var(--title);margin-bottom:10px}
+  .fm{background:#fff;border:2px solid var(--line);border-radius:16px;padding:16px 22px;font-size:30px;color:var(--title);line-height:1.5;text-align:center}
+  .fm i{font-family:'Times New Roman',serif}
+  .meal{display:flex;align-items:center;gap:14px;margin-bottom:18px;font-size:30px;color:var(--text)}
+  .meal b{width:120px;color:var(--title)}
+  .food{display:inline-block;border-radius:12px;padding:8px 16px;font-size:28px;margin-bottom:6px;font-weight:700;margin-right:8px;background:#fff;border:2px solid var(--blue);color:var(--title)}
+  .food.in{background:var(--blue);color:#fff}
+  .food.rc{border-color:var(--light);background:#e6f1fa}
+  .barrow{display:flex;align-items:center;gap:16px;margin-bottom:14px;font-size:27px;color:var(--text)}
+  .barrow .l{width:250px}
+  .barrow .b{height:44px;border-radius:10px;color:#fff;font-weight:700;display:flex;align-items:center;padding:0 14px;font-size:25px;min-width:70px}
+  .step{display:flex;gap:18px;align-items:flex-start;margin-bottom:22px;font-size:31px;line-height:1.4;color:var(--text)}
+  .step .n{flex:none;width:58px;height:58px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font-weight:700;font-size:28px}
+  .small{font-size:21px;color:#555}
+  /* script drawer */
+  #nbtn{position:absolute;left:108px;bottom:14px;z-index:6;font:700 19px Arial,sans-serif;color:var(--title);background:#fff;border:2px solid var(--line);border-radius:22px;padding:6px 18px;cursor:pointer;opacity:.55}
+  #nbtn:hover,#nbtn.on{opacity:1}
+  #notes{position:absolute;left:0;right:0;bottom:0;height:520px;background:rgba(14,38,60,.97);color:#fff;z-index:5;display:none;padding:34px 120px 70px;overflow:auto}
+  #notes.on{display:block}
+  #notes h4{font-size:24px;color:#8fc4ea;margin-bottom:12px;letter-spacing:1px}
+  #notes p{font-size:31px;line-height:1.55;margin-bottom:14px;color:#f1f6fb}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-library" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 6 4 14" />
+  <path d="M12 6v14" />
+  <path d="M8 8v12" />
+  <path d="M4 4v16" /></symbol>
+<symbol id="i-repeat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4" />
+  <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+  <path d="m7 22-4-4 4-4" />
+  <path d="M21 13v1a4 4 0 0 1-4 4H3" /></symbol>
+<symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+  <path d="M16 3.128a4 4 0 0 1 0 7.744" />
+  <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+  <circle cx="9" cy="7" r="4" /></symbol>
+<symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34" />
+  <circle cx="11" cy="11" r="8" /></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0" />
+  <path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" /></symbol>
+<symbol id="i-chart-column" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16" />
+  <path d="M18 17V9" />
+  <path d="M13 17V5" />
+  <path d="M8 17v-3" /></symbol>
+<symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" />
+  <path d="M12 6v6l4 2" /></symbol>
+<symbol id="i-triangle-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
+  <path d="M12 9v4" />
+  <path d="M12 17h.01" /></symbol>
+<symbol id="i-trending-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7h6v6" />
+  <path d="m22 7-8.5 8.5-5-5L2 17" /></symbol>
+<symbol id="i-rocket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
+  <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09" />
+  <path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z" />
+  <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05" /></symbol>
+<symbol id="i-shield-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+  <path d="m9 12 2 2 4-4" /></symbol>
+<symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z" /></symbol>
+<symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" />
+  <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" />
+  <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" /></symbol>
+<symbol id="i-cog" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 10.27 7 3.34" />
+  <path d="m11 13.73-4 6.93" />
+  <path d="M12 22v-2" />
+  <path d="M12 2v2" />
+  <path d="M14 12h8" />
+  <path d="m17 20.66-1-1.73" />
+  <path d="m17 3.34-1 1.73" />
+  <path d="M2 12h2" />
+  <path d="m20.66 17-1.73-1" />
+  <path d="m20.66 7-1.73 1" />
+  <path d="m3.34 17 1.73-1" />
+  <path d="m3.34 7 1.73 1" />
+  <circle cx="12" cy="12" r="2" />
+  <circle cx="12" cy="12" r="8" /></symbol>
+<symbol id="i-database" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3" />
+  <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+  <path d="M3 12A9 3 0 0 0 21 12" /></symbol>
+
+</svg>
+<div id="stage">
+<img class="bg" src="kq-background.png" alt="">
+<div class="pg" id="pg"></div>
+<section class="s">
+<div class="tag">TIỂU LUẬN KHAI PHÁ DỮ LIỆU</div>
+<div class="kick">ASSOCIATION RULE MINING · RECOMMENDER SYSTEMS</div>
+<h1 class="big1" style="font-size:78px;top:330px">Gợi ý món ăn bằng<br><span>luật kết hợp theo cặp</span></h1>
+<div class="sub1" style="top:600px;font-size:32px">Recommender system based on pairwise association rules<br><span style="color:var(--title);font-weight:700">Osadchiy, Poliakov, Olivier, Rowland, Foster · Expert Systems with Applications 115 (2019), 535–542</span></div>
+<div class="chips" style="top:800px">
+<div class="chip"><b>3</b>thuật toán được so sánh</div>
+<div class="chip"><b>20.000</b>bữa ăn thật dùng để đánh giá</div>
+<div class="chip"><b>79,1%</b>món bỏ sót được nhận ra</div>
+</div>
+<div style="position:absolute;left:108px;top:935px;font-size:22px;color:#555">Học viên: [CẦN BỔ SUNG] · MSHV: [CẦN BỔ SUNG] · Giảng viên: [CẦN BỔ SUNG]</div>
+<div class="note" hidden><p>Em xin chào thầy cô và các bạn. Hôm nay em trình bày về một bài báo ứng dụng khai phá luật kết hợp vào hệ khuyến nghị, của nhóm Osadchiy ở Newcastle, đăng trên Expert Systems with Applications năm 2019.</p><p>Bài toán cụ thể là gợi ý món ăn mà người ta hay quên khai báo khi tự ghi lại bữa ăn của mình. Phần lớn nội dung hôm nay em đi từ ví dụ nhỏ, có tính tay từng bước, để mọi người theo dõi được công thức.</p><p>Ba con số trên slide là: bài so sánh ba thuật toán, đánh giá trên hai mươi nghìn bữa ăn thật, và thuật toán tốt nhất nhận ra được bảy mươi chín phẩy một phần trăm món bị bỏ sót khi gợi ý theo nhóm món. Em sẽ giải thích rõ từng con số này ở các slide sau.</p></div>
+</section>
+<section class="s"><div class="tag">BÀI TOÁN</div><h2>Người dùng hay quên món ăn kèm</h2><div class="sub">Hệ thống Intake24: người tham gia tự khai báo những gì đã ăn hôm trước</div>
+<div class="card" style="left:108px;top:236px;width:820px;height:520px">
+<div class="cap">Người dùng khai báo</div>
+<div class="meal"><b>Bữa sáng</b><span class="food in">Bánh mì nướng</span><span class="food in">Trà</span></div>
+<p style="font-size:31px;margin-top:20px">Họ nhớ bánh mì nướng và trà. Họ quên bơ trên bánh mì, và sữa trong trà.</p>
+<p style="font-size:31px;margin-top:14px">Món bị quên làm báo cáo dinh dưỡng thấp hơn thực tế.</p></div>
+<div class="card dark" style="left:952px;top:236px;width:860px;height:520px">
+<div class="cap" style="color:#fff">Hệ thống cần nhắc đúng lúc</div>
+<div style="background:#fff;border-radius:18px;padding:22px 26px;color:var(--title);font-size:34px;line-height:1.5"><b>Bạn có dùng thêm món nào sau đây không?</b><br>☐ Bơ &nbsp; ☐ Sữa &nbsp; ☐ Mứt</div>
+<p style="font-size:31px;margin-top:22px">Câu hỏi này gọi là <b>associated food prompt</b>. Vấn đề là ai tạo ra nó.</p></div>
+<div class="band" style="top:790px;padding:26px 40px"><b>Hiện nay</b> các câu hỏi này do chuyên gia dinh dưỡng nhập tay. Với hàng nghìn món, không thể nhập đủ, và thói quen ăn uống đổi theo vùng, theo thời gian.</div>
+<div class="note" hidden><p>Intake24 là hệ thống để người tham gia tự khai báo những món đã ăn hôm trước. Khi tự khai báo, người ta hay bỏ sót những món đi kèm. Ví dụ ở đây là khai báo bánh mì nướng và trà nhưng quên bơ và sữa. Em đặt tên món như vậy để dễ hình dung, còn bài gốc dùng chữ cái a, b, c.</p><p>Hệ thống nhắc người dùng bằng những câu hỏi như bạn có dùng bơ không. Trước giờ những câu hỏi này do chuyên gia dinh dưỡng nhập tay. Theo bài báo, có hàng nghìn món thì không thể nhập đủ, và thói quen ăn uống khác nhau theo vùng, theo thời gian nên phải nhập lại nhiều lần.</p><p>Câu hỏi của bài báo là: có thể để dữ liệu tự cho biết món nào thường đi cùng món nào, rồi hệ thống tự gợi ý được không.</p></div>
+</section>
+<section class="s"><div class="tag">VẤN ĐỀ</div><h2>Cách gợi ý thông thường cần lịch sử người dùng</h2><div class="sub">Ở Intake24, mỗi người chỉ dùng hệ thống vài lần trong một đợt khảo sát</div>
+<div class="g g2" style="top:236px;gap:26px">
+<div class="card" style="height:400px"><span class="ic c2"><svg><use href="#i-users"/></svg></span><h3>Collaborative filtering</h3><p style="font-size:30px;line-height:1.5">Tìm những người có hành vi giống bạn, gợi ý thứ họ thích. Cần <b class="t">lịch sử và rating</b> của từng người.</p></div>
+<div class="card" style="height:400px"><span class="ic c2"><svg><use href="#i-search"/></svg></span><h3>Content-based filtering</h3><p style="font-size:30px;line-height:1.5">So khớp mô tả của mặt hàng với những gì bạn đã chọn. Cần <b class="t">hồ sơ và thuộc tính</b> chi tiết.</p></div></div>
+<div class="band" style="top:660px;font-size:33px;padding:30px 40px"><b>Cold start:</b> người dùng mới, chưa có lịch sử, thì hai cách trên không có dữ liệu để bắt đầu. Với Intake24 thì ai cũng là người dùng mới.</div>
+<div class="card" style="left:108px;top:850px;width:1704px;height:110px;padding:24px 36px;background:#dbe9f5"><p style="font-size:31px;color:var(--title)"><b>Hướng của bài báo:</b> bỏ hồ sơ cá nhân, học thói quen của <b>cả quần thể</b> từ các bữa ăn đã có.</p></div>
+<div class="note" hidden><p>Hai cách làm quen thuộc trong hệ khuyến nghị là collaborative filtering và content-based filtering. Cách thứ nhất dựa vào hành vi của những người giống mình, cách thứ hai dựa vào mô tả của mặt hàng. Cả hai đều cần dữ liệu về người dùng.</p><p>Khi người dùng mới, chưa có lịch sử, thì không có dữ liệu để bắt đầu. Đó là vấn đề cold start. Trong khảo sát dinh dưỡng, mỗi người chỉ dùng hệ thống vài lần nên hầu như ai cũng ở trạng thái này.</p><p>Vì vậy bài báo chọn hướng khác: không xây hồ sơ cho từng người, mà học thói quen chung của cả quần thể từ các bữa ăn đã khai báo, rồi dùng vài món người dùng vừa chọn để gợi ý.</p></div>
+</section>
+<section class="s"><div class="tag">Ý TƯỞNG</div><h2>Đếm xem những món nào hay đi cùng nhau</h2><div class="sub">Dữ liệu mẫu: 4 bữa ăn của quần thể (tên món do tiểu luận đặt, bài gốc dùng chữ cái a–e)</div>
+<div class="card" style="left:108px;top:236px;width:900px;height:560px">
+<div class="cap">Các bữa ăn đã khai báo</div><div class="meal"><b>Bữa 1</b><span class="food ">Bánh mì nướng</span><span class="food ">Bơ</span><span class="food ">Mứt</span><span class="food ">Trà</span></div><div class="meal"><b>Bữa 2</b><span class="food ">Bánh mì nướng</span><span class="food ">Trà</span><span class="food ">Sữa</span></div><div class="meal"><b>Bữa 3</b><span class="food ">Trà</span><span class="food ">Sữa</span></div><div class="meal"><b>Bữa 4</b><span class="food ">Bánh mì nướng</span><span class="food ">Bơ</span></div>
+<p class="small" style="margin-top:14px">a = Bánh mì nướng · b = Bơ · c = Mứt · d = Trà · e = Sữa</p></div>
+<div class="card dark" style="left:1032px;top:236px;width:780px;height:560px;padding:34px 38px">
+<div class="cap" style="color:#fff">Quan sát</div>
+<p style="font-size:33px;line-height:1.5">Bánh mì nướng xuất hiện <b class="t">3 lần</b>, trong đó 2 lần có bơ.</p>
+<p style="font-size:33px;line-height:1.5;margin-top:14px">Vậy khi ai đó chọn bánh mì nướng, bơ là món đáng gợi ý.</p>
+<p style="font-size:33px;line-height:1.5;margin-top:14px">Làm việc này cho <b class="t">từng cặp món</b> là toàn bộ ý tưởng của PAR (pairwise association rules).</p></div>
+<div class="band" style="top:830px;padding:26px 40px"><b>Không có hồ sơ cá nhân, không có rating.</b> Chỉ cần biết món nào nằm trong cùng một bữa.</div>
+<div class="note" hidden><p>Đây là bộ dữ liệu mẫu có bốn bữa ăn. Em đặt tên cho dễ hình dung: a là bánh mì nướng, b là bơ, c là mứt, d là trà, e là sữa. Bài báo dùng chữ cái, các con số em tính sau đây vẫn đúng như trong bài.</p><p>Nhìn vào dữ liệu, bánh mì nướng xuất hiện ba lần, trong hai lần đó có bơ. Nên nếu ai chọn bánh mì nướng, gợi ý bơ là hợp lý.</p><p>Ý tưởng của thuật toán đúng là như vậy, nhưng làm cho mọi cặp món cùng lúc. Nó không cần biết người dùng là ai, chỉ cần biết những món nào nằm cùng một bữa.</p></div>
+</section>
+<section class="s"><div class="tag">KIẾN THỨC NỀN</div><h2>Luật kết hợp và độ tin cậy (confidence)</h2><div class="sub">Luật X ⇒ Y: nếu bữa ăn có X thì thường có Y (Agrawal và cs., 1993)</div>
+<div class="card" style="left:108px;top:236px;width:830px;height:600px">
+<div class="cap">Hai độ đo cơ bản</div>
+<div class="fm" style="margin-bottom:18px"><b>support</b>(X) = <i>tỉ lệ bữa ăn chứa X</i></div>
+<div class="fm" style="margin-bottom:18px"><b>confidence</b>(X ⇒ Y) = <i>số bữa chứa cả X và Y</i> ÷ <i>số bữa chứa X</i></div>
+<p style="font-size:29px">Confidence chính là xác suất có điều kiện P(Y | X): đã có X thì có Y với xác suất bao nhiêu.</p></div>
+<div class="card dark" style="left:962px;top:236px;width:850px;height:600px">
+<div class="cap" style="color:#fff">Ví dụ trên dữ liệu mẫu</div>
+<div class="step" style="color:#fff"><span class="n" style="background:var(--light)">1</span><div>Bánh mì nướng có trong <b>3</b> bữa (bữa 1, 2, 4).</div></div>
+<div class="step" style="color:#fff"><span class="n" style="background:var(--light)">2</span><div>Trong 3 bữa đó, <b>2</b> bữa có bơ (bữa 1 và 4).</div></div>
+<div class="step" style="color:#fff"><span class="n" style="background:var(--light)">3</span><div>confidence(bánh mì nướng ⇒ bơ) = 2/3 ≈ <b>0,67</b></div></div>
+<p style="font-size:27px;margin-top:10px;color:#cfe3f3">Khớp với Bảng 1 trong bài (luật a ⇒ b: 0,67).</p></div>
+<div class="band" style="top:870px;padding:24px 40px;font-size:30px">Luật theo cặp là trường hợp X và Y mỗi bên chỉ có <b>một món</b>.</div>
+<div class="note" hidden><p>Luật kết hợp có dạng X kéo theo Y, nghĩa là nếu một bữa ăn có X thì thường có Y. Có hai độ đo cần nhớ. Support là tỉ lệ bữa ăn chứa một tập món. Confidence của luật X kéo theo Y là số bữa có cả X và Y chia cho số bữa có X, nói cách khác là xác suất có Y khi đã có X.</p><p>Tính thử trên dữ liệu mẫu. Bánh mì nướng có trong ba bữa. Trong ba bữa đó có hai bữa có bơ. Vậy confidence của luật bánh mì nướng kéo theo bơ là hai phần ba, khoảng không phẩy sáu mươi bảy. Con số này khớp với bảng một trong bài báo.</p><p>Luật theo cặp chỉ là trường hợp đặc biệt: vế trái và vế phải mỗi bên chỉ có một món.</p></div>
+</section>
+<section class="s"><div class="tag">PAR · BƯỚC 1</div><h2>Huấn luyện: chỉ cần hai bảng đếm</h2><div class="sub">Không có ngưỡng support/confidence, không sinh luật nhiều món</div>
+<div class="card" style="left:108px;top:236px;width:1180px;height:560px;padding:28px 30px">
+<table class="tb"><tr><th></th><th>OD</th><th>Bánh mì nướng</th><th>Bơ</th><th>Mứt</th><th>Trà</th><th>Sữa</th></tr><tr><td>Bánh mì nướng</td><td class="hl">3</td><td class="z">–</td><td class="hl">2</td><td class="hl">1</td><td class="hl">2</td><td class="hl">1</td></tr><tr><td>Bơ</td><td class="hl">2</td><td class="hl">2</td><td class="z">–</td><td class="hl">1</td><td class="hl">1</td><td class="z">0</td></tr><tr><td>Mứt</td><td class="hl">1</td><td class="hl">1</td><td class="hl">1</td><td class="z">–</td><td class="hl">1</td><td class="z">0</td></tr><tr><td>Trà</td><td class="hl">3</td><td class="hl">2</td><td class="hl">1</td><td class="hl">1</td><td class="z">–</td><td class="hl">2</td></tr><tr><td>Sữa</td><td class="hl">2</td><td class="hl">1</td><td class="z">0</td><td class="z">0</td><td class="hl">2</td><td class="z">–</td></tr></table>
+<p class="small" style="margin-top:12px">Cột OD: số bữa chứa món đó. Các cột còn lại, CD: số bữa chứa cả hai món (dòng, cột).</p></div>
+<div class="card" style="left:1312px;top:236px;width:500px;height:560px;padding:28px 30px">
+<div class="cap">Cách đếm</div>
+<div class="step"><span class="n">1</span><div>Với mỗi món f trong bữa: <b>OD[f] += 1</b></div></div>
+<div class="step"><span class="n">2</span><div>Với mỗi cặp {f, f1} trong bữa: <b>CD[f, f1] += 1</b></div></div>
+<p style="font-size:24px">Chạy một lượt qua dữ liệu là xong.</p></div>
+<div class="band" style="top:830px;padding:26px 40px">Ví dụ: Bánh mì nướng và Bơ cùng có trong <b>2</b> bữa (bữa 1 và 4), Bánh mì nướng có trong <b>3</b> bữa.</div>
+<div class="note" hidden><p>Bước huấn luyện của PAR rất đơn giản. Với mỗi bữa ăn, ta đếm từng món một: OD của món đó tăng một. Rồi với mỗi cặp món trong bữa, ta đếm CD của cặp đó tăng một. Chạy qua dữ liệu một lượt là có mô hình.</p><p>Bảng này là kết quả trên bốn bữa mẫu. Cột OD cho biết mỗi món có trong bao nhiêu bữa, ví dụ bánh mì nướng có trong ba bữa. Các ô còn lại cho biết hai món cùng xuất hiện trong bao nhiêu bữa, ví dụ bánh mì nướng và bơ cùng xuất hiện hai lần.</p><p>Điểm cần chú ý là PAR không đặt ngưỡng support hay confidence nào. Ngưỡng ba nhân mười mũ trừ bốn mà bài báo có nhắc, sau khi tác giả đính chính, là của thuật toán AR, không phải của PAR.</p></div>
+</section>
+<section class="s"><div class="tag">PAR · BƯỚC 2</div><h2>Gợi ý: gộp xác suất và trọng số</h2><div class="sub">Người dùng đã chọn Bánh mì nướng và Bơ. Món nào nên được nhắc tiếp?</div>
+<div class="card" style="left:108px;top:236px;width:760px;height:600px;padding:26px 30px">
+<div class="cap">Với mỗi món đã chọn (inf) và món ứng viên f</div>
+<div class="fm" style="margin-bottom:14px"><i>p</i> = CD[inf, f] ÷ OD[inf]</div>
+<div class="fm" style="margin-bottom:14px"><i>w</i> = OD[inf]</div>
+<div class="fm" style="background:#dbe9f5"><b>RF[f] = (Σ p) × (Σ w)</b></div>
+<p class="small" style="margin-top:12px">p: xác suất f có mặt khi đã có inf. w: món inf phổ biến đến đâu. Tổng lấy trên các món đã chọn có đi cùng f.</p></div>
+<div class="card" style="left:892px;top:236px;width:920px;height:600px;padding:26px 30px">
+<div class="cap">Tính cho từng món ứng viên</div>
+<table class="tb" style="font-size:24px"><tr><th>Món</th><th>Σ p</th><th>Σ w</th><th>Điểm RF</th></tr><tr><td>Trà</td><td>2/3 + 1/2 = 1.17</td><td>3 + 2 = 5</td><td class="hl">5.83</td></tr><tr><td>Mứt</td><td>1/3 + 1/2 = 0.83</td><td>3 + 2 = 5</td><td class="hl">4.17</td></tr><tr><td>Sữa</td><td>1/3 = 0.33</td><td>3 = 3</td><td class="hl">1.00</td></tr></table>
+<p class="small" style="margin-top:12px">Dùng OD(Bánh mì nướng) = 3, OD(Bơ) = 2. Điểm khớp Bảng 3 của bài: d 5,8 · c 4,2 · e 1.</p>
+<div style="margin-top:14px"><div class="barrow"><div class="l">Trà</div><div class="b" style="width:350px;background:var(--title)">5.83</div></div>
+<div class="barrow"><div class="l">Mứt</div><div class="b" style="width:250px;background:var(--blue)">4.17</div></div>
+<div class="barrow"><div class="l">Sữa</div><div class="b" style="width:60px;background:var(--light)">1.00</div></div></div></div>
+<div class="band" style="top:860px;padding:24px 40px">Kết quả: nhắc <b>Trà</b> trước, rồi <b>Mứt</b>, rồi <b>Sữa</b>. Các món người dùng đã chọn không bao giờ được gợi ý lại.</div>
+<div class="note" hidden><p>Bây giờ đến bước gợi ý. Giả sử người dùng đã chọn bánh mì nướng và bơ. Với mỗi món ứng viên f, và mỗi món người dùng đã chọn, em tính hai số. Số p là CD chia OD, tức xác suất f có mặt khi đã có món đó. Số w là OD, tức món đó phổ biến cỡ nào. Điểm cuối cùng là tổng các p nhân với tổng các w.</p><p>Tính cho món trà. Từ bánh mì nướng, trà đi cùng hai trên ba lần. Từ bơ, trà đi cùng một trên hai lần. Tổng p là bảy phần sáu. Tổng w là ba cộng hai bằng năm. Nhân lại ra khoảng năm phẩy tám ba.</p><p>Làm tương tự cho mứt được bốn phẩy mười bảy, cho sữa được một. Kết quả trùng với bảng ba của bài báo. Thứ tự gợi ý là trà, mứt, rồi sữa. Một lưu ý: điểm này dùng để xếp hạng, không phải xác suất.</p></div>
+</section>
+<section class="s"><div class="tag">PAR · GIẢI THÍCH</div><h2>Vì sao phải nhân thêm tổng w?</h2><div class="sub">Hai ví dụ mà chính bài báo dùng để giải thích</div>
+<div class="g g2" style="top:236px;gap:26px">
+<div class="card" style="height:430px"><h3>Ví dụ 1: đi cùng nhiều món đã chọn</h3><p style="font-size:29px;line-height:1.45">Đầu vào gồm C và D. Món A từng đi cùng <b class="t">cả C lẫn D</b>. Món B chỉ từng đi cùng C.</p><p style="font-size:29px;line-height:1.45;margin-top:14px">Nếu chỉ cộng xác suất, hai món có thể bằng điểm. Nhưng A có nhiều bằng chứng hơn nên cần xếp cao hơn.</p></div>
+<div class="card" style="height:430px"><h3>Ví dụ 2: món đầu vào phổ biến hơn</h3><p style="font-size:29px;line-height:1.45">Món A chỉ từng đi cùng C, món B chỉ từng đi cùng D. Cả hai có xác suất 0,5.</p><p style="font-size:29px;line-height:1.45;margin-top:14px">Nhưng C xuất hiện <b class="t">10 lần</b>, D xuất hiện <b class="t">100 lần</b>. Tín hiệu từ D đáng tin hơn, nên cần tính nặng hơn.</p></div></div>
+<div class="band" style="top:690px;padding:28px 40px;font-size:28px"><b>Cách xử lý:</b> nhân tổng p với tổng w (w là số bữa chứa món đầu vào), để món có nhiều bằng chứng và dựa vào món đầu vào phổ biến được điểm cao hơn.</div>
+<div class="card" style="left:108px;top:850px;width:1704px;height:120px;padding:20px 36px;background:#fff;border:2px solid var(--line)"><p style="font-size:24px"><b class="t">Nhận xét của tiểu luận:</b> tích hai tổng làm điểm chịu ảnh hưởng của độ phổ biến, và không còn là xác suất. Bài không đo riêng đóng góp của từng thành phần.</p></div>
+<div class="note" hidden><p>Câu hỏi hợp lý là tại sao lại nhân thêm tổng w mà không chỉ cộng xác suất. Bài báo giải thích bằng hai ví dụ.</p><p>Ví dụ thứ nhất: đầu vào có hai món C và D. Món A từng đi cùng cả hai, món B chỉ từng đi cùng C. Nếu chỉ cộng xác suất thì hai món có thể bằng điểm, trong khi A có nhiều bằng chứng hơn.</p><p>Ví dụ thứ hai: hai món có cùng xác suất không phẩy năm, nhưng một món đầu vào xuất hiện mười lần, một món xuất hiện một trăm lần. Món xuất hiện nhiều hơn cho tín hiệu đáng tin hơn, nên w được dùng làm trọng số. Đây là lý giải của tác giả. Em ghi thêm một nhận xét riêng ở dưới: cách làm này khiến điểm bị ảnh hưởng bởi độ phổ biến, và bài không tách riêng xem thành phần nào đóng góp nhiều hơn.</p></div>
+</section>
+<section class="s"><div class="tag">SO SÁNH</div><h2>Ba thuật toán trên cùng một ví dụ</h2><div class="sub">Cùng dữ liệu, cùng đầu vào {Bánh mì nướng, Bơ}; điểm lấy từ Bảng 1–3 của bài</div>
+<div class="g g3" style="top:236px;gap:22px">
+<div class="card" style="height:420px;padding:26px 28px"><h3>AR</h3><p style="font-size:28px">Luật nhiều món ở vế trái, khai phá bằng FP-growth. Điểm = confidence × độ giống giữa vế trái và đầu vào.</p><div style="margin-top:16px;font-size:30px;line-height:1.6">Trà <b>2,50</b><br>Mứt <b>1,96</b><br>Sữa <b>0,29</b></div></div>
+<div class="card" style="height:420px;padding:26px 28px"><h3>TIC</h3><p style="font-size:28px">Lưu các bữa ăn đã gặp. Điểm = số món chung với đầu vào × xác suất của món trong bữa đó.</p><div style="margin-top:16px;font-size:30px;line-height:1.6">Trà <b>3,00</b><br>Mứt <b>2,00</b><br>Sữa <b>0,50</b></div></div>
+<div class="card dark" style="height:420px;padding:26px 28px"><h3>PAR</h3><p style="font-size:28px">Chỉ lưu bảng đếm món và cặp. Điểm = (Σp) × (Σw).</p><div style="margin-top:16px;font-size:30px;line-height:1.6">Trà <b>5,83</b><br>Mứt <b>4,17</b><br>Sữa <b>1,00</b></div></div></div>
+<div class="card" style="left:108px;top:680px;width:1704px;height:300px;padding:24px 34px">
+<table class="tb" style="font-size:28px"><tr><th></th><th>AR</th><th>TIC</th><th>PAR</th></tr>
+<tr><td>Huấn luyện (ms)</td><td>3905,1</td><td>93710,2</td><td>6904,9</td></tr>
+<tr><td>Một lần gợi ý (ms)</td><td>39,5</td><td>32,0</td><td class="hl">2,5</td></tr></table>
+<p class="small" style="margin-top:10px">Thời gian trong Bảng 4 của bài, đo trên Mac Pro 2,9 GHz Intel Core i5, RAM 16 GB. Cả ba cho cùng thứ tự gợi ý trên ví dụ nhỏ này; khác biệt xuất hiện trên dữ liệu thật.</p></div>
+<div class="note" hidden><p>Bài báo không chỉ trình bày PAR mà so sánh ba cách cài đặt. AR dùng luật kết hợp thông thường, vế trái có thể gồm nhiều món. TIC chuyển thể từ một phương pháp gợi ý người nhận email, lưu lại các bữa ăn đã gặp. PAR chỉ lưu bảng đếm món và cặp món.</p><p>Trên ví dụ nhỏ, cả ba cho cùng thứ tự: trà, mứt, sữa, chỉ khác thang điểm. Khác biệt rõ hơn khi chạy trên dữ liệu thật. Về thời gian trong bảng bốn của bài, TIC huấn luyện rất chậm, gần chín mươi bốn giây. AR sinh một gợi ý mất khoảng bốn mươi mili giây, còn PAR chỉ hai phẩy năm mili giây.</p><p>Em cài lại cả ba thuật toán và chạy trên đúng ví dụ này, các điểm số khớp với các bảng trong bài. Có một chỗ pseudocode của TIC viết ngược tử và mẫu so với bảng ví dụ, em dùng theo bảng.</p></div>
+</section>
+<section class="s"><div class="tag">ĐÁNH GIÁ</div><h2>Đo tốt hay không như thế nào?</h2><div class="sub">Giả vờ người dùng bỏ sót món, rồi xem hệ thống đoán lại được bao nhiêu</div>
+<div class="card" style="left:108px;top:236px;width:840px;height:600px;padding:26px 30px">
+<div class="cap">Giao thức trong bài</div>
+<div class="step"><span class="n">1</span><div>Lấy một bữa ăn thật trong tập kiểm thử.</div></div>
+<div class="step"><span class="n">2</span><div>Giữ lại 1–5 món làm <b>đầu vào</b>. Phần còn lại coi như món <b>bị bỏ sót</b>.</div></div>
+<div class="step"><span class="n">3</span><div>Mô hình trả về <b>15 món</b> điểm cao nhất.</div></div>
+<div class="step"><span class="n">4</span><div>Đối chiếu với món bị bỏ sót: precision, recall, nDCG@15.</div></div>
+<p class="small">Dữ liệu: 20.000 bữa ăn, 10-fold cross validation.</p></div>
+<div class="card dark" style="left:972px;top:236px;width:840px;height:600px;padding:26px 30px">
+<div class="cap" style="color:#fff">Ví dụ minh hoạ (số tự đặt)</div>
+<p style="font-size:27px;line-height:1.5">Bị bỏ sót 2 món. Mô hình trả về 5 món, đúng ở hạng 1 và hạng 3.</p>
+<p style="font-size:29px;line-height:1.6;margin-top:10px"><b class="t">Precision</b> = 2/5 = 0,40<br><b class="t">Recall</b> = 2/2 = 1,00<br><b class="t">nDCG</b>: điểm càng cao nếu món đúng nằm càng cao</p>
+<div class="fm" style="margin-top:12px;font-size:28px;text-align:left">DCG = 1/log₂2 + 1/log₂4 = 1,5<br>IDCG (2 món đúng ở hạng 1, 2) = 1 + 1/log₂3 ≈ 1,63<br><b>nDCG ≈ 0,92</b></div></div>
+<div class="band" style="top:866px;padding:22px 40px;font-size:28px">Lưu ý: bài báo coi IDCG = 1 (cho một món đúng ở hạng 1). Tiểu luận dùng cách tính thông thường nên số nDCG không so thẳng với bài.</div>
+<div class="note" hidden><p>Để đánh giá, nhóm tác giả mô phỏng việc người dùng bỏ sót món. Lấy một bữa ăn thật, giữ lại từ một đến năm món làm đầu vào, phần còn lại coi như bị bỏ sót. Mô hình trả về mười lăm món điểm cao nhất, rồi đối chiếu với các món bị bỏ sót.</p><p>Em lấy một ví dụ tự đặt để giải thích ba độ đo. Giả sử bị bỏ sót hai món, mô hình trả về năm món và đúng ở hạng một và hạng ba. Precision là hai trên năm, bằng không phẩy bốn. Recall là hai trên hai, bằng một. nDCG thì tính đến vị trí: món đúng càng cao càng tốt. Ở ví dụ này DCG bằng một phẩy năm, chia cho giá trị lý tưởng một phẩy sáu ba, ra khoảng không phẩy chín hai.</p><p>Một lưu ý nhỏ: bài báo coi giá trị lý tưởng IDCG luôn bằng một, còn em tính theo cách thông thường, nên con số nDCG của em không so thẳng với bài.</p></div>
+</section>
+<section class="s"><div class="tag">KẾT QUẢ CỦA BÀI</div><h2>PAR thắng ở các độ đo và nhanh nhất</h2><div class="sub">Đánh giá trên 20.000 bữa ăn thật của người tham gia ở Anh, 2014–2018</div>
+<div class="card" style="left:108px;top:236px;width:820px;height:560px;padding:26px 30px">
+<div class="cap">So sánh ba thuật toán</div>
+<div class="step"><span class="n" style="background:var(--title)">✓</span><div>Diện tích dưới đường precision-recall của PAR <b>lớn nhất</b>, tăng khi có thêm món đầu vào.</div></div>
+<div class="step"><span class="n" style="background:var(--title)">✓</span><div>nDCG của PAR <b>cao hơn</b> AR và TIC ở mọi cỡ đầu vào.</div></div>
+<div class="step"><span class="n" style="background:var(--title)">✓</span><div>Sinh gợi ý <b>nhanh nhất</b> (2,5 ms).</div></div>
+<p class="small">Bài trình bày bằng đồ thị (Hình 1–3), không nêu số cụ thể. Tác giả cũng nhận xét chất lượng dự đoán còn tương đối thấp.</p></div>
+<div class="card" style="left:952px;top:236px;width:860px;height:560px;padding:26px 30px">
+<div class="cap">So với câu hỏi nhập tay (recall)</div>
+<div class="barrow"><div class="l" style="width:270px">Nhập tay</div><div class="b" style="width:66px;background:#7a8fa3">8,3%</div></div>
+<div class="barrow"><div class="l" style="width:270px">PAR, nhóm cấp 1</div><div class="b" style="width:464px;background:var(--blue)">58,0%</div></div>
+<div class="barrow"><div class="l" style="width:270px">PAR, nhóm cấp 2</div><div class="b" style="width:633px;background:var(--title)">79,1%</div></div>
+<p class="small" style="margin-top:12px">Cấp 1: nhóm cha trực tiếp (ví dụ Flake cereals). Cấp 2: nhóm rộng hơn (Breakfast cereals).</p></div>
+<div class="band" style="top:830px;padding:26px 40px">Gợi ý theo <b>nhóm món</b> còn xử lý được món mới chưa ai khai báo, vì món đó vẫn thuộc một nhóm đã có dữ liệu.</div>
+<div class="note" hidden><p>Kết quả chính của bài. Với ba thuật toán, PAR có diện tích dưới đường precision recall lớn nhất, nDCG cao hơn ở mọi cỡ đầu vào và sinh gợi ý nhanh nhất. Bài trình bày các kết quả này bằng đồ thị chứ không nêu số, nên em chỉ mô tả xu hướng. Tác giả cũng nói thẳng là chất lượng dự đoán còn tương đối thấp ở bước này.</p><p>Phần bên phải là so sánh với các câu hỏi nhập tay. Các câu hỏi nhập tay chỉ nhận ra tối đa tám phẩy ba phần trăm món bị bỏ sót. PAR đạt năm mươi tám phần trăm khi gợi ý nhóm món cấp một, và bảy mươi chín phẩy một phần trăm khi gợi ý nhóm rộng hơn một cấp.</p><p>Gợi ý theo nhóm món có thêm lợi ích là xử lý được món mới chưa ai khai báo, vì món đó vẫn thuộc một nhóm đã có dữ liệu. Em cũng lưu ý tên một số nhóm cấp hai hơi chung chung nên có thể khó hiểu với người dùng.</p></div>
+</section>
+<section class="s"><div class="tag">THỰC TẾ</div><h2>Người dùng nhận nhiều món hơn</h2><div class="sub">Hai khảo sát thật (arXiv:1903.12264): prompt nhập tay so với prompt do PAR sinh ra. Precision của PAR thấp</div>
+<div class="card" style="left:108px;top:236px;width:1704px;height:400px;padding:24px 30px">
+<table class="tb" style="font-size:28px"><tr><th></th><th colspan="2">Khảo sát 1 (50 người)</th><th colspan="2">Khảo sát 2 (91 người)</th></tr>
+<tr><td></td><td><b>Nhập tay</b></td><td><b>PAR</b></td><td><b>Nhập tay</b></td><td><b>PAR</b></td></tr>
+<tr><td>Số món chấp nhận mỗi recall</td><td>1,1</td><td class="hl">2,3</td><td>1,5</td><td class="hl">2,1</td></tr>
+<tr><td>Recall có nhận ≥ 1 món</td><td>66%</td><td>63%</td><td>50%</td><td class="hl">72%</td></tr>
+<tr><td>Số món khác nhau được chấp nhận</td><td>15</td><td class="hl">30</td><td>16</td><td class="hl">35</td></tr>
+<tr><td>Precision</td><td class="hl">24%</td><td>2%</td><td class="hl">16%</td><td>2%</td></tr></table></div>
+<div class="g g2" style="top:670px;gap:26px">
+<div class="card" style="height:270px;padding:26px 30px"><h3 style="font-size:30px">Vì sao precision chỉ 2%?</h3><p style="font-size:27px">Danh sách gợi ý dài (tối đa 15 món), trong khi chỉ một số ít món hay bị quên.</p></div>
+<div class="card" style="height:270px;padding:26px 30px"><h3 style="font-size:30px">Cần thận trọng khi đọc</h3><p style="font-size:27px">Hai loại prompt hiển thị khác nhau; chưa xác minh người dùng thật sự đã ăn các món chấp nhận.</p></div></div>
+<div class="note" hidden><p>Bài thứ hai trên arXiv của cùng nhóm tác giả đưa PAR vào Intake24 và thử với người dùng thật, qua hai khảo sát. Một khảo sát có năm mươi người, khảo sát kia có chín mươi mốt người.</p><p>Kết quả: số món người dùng chấp nhận mỗi lần khai báo tăng từ một phẩy một lên hai phẩy ba ở khảo sát một, và từ một phẩy năm lên hai phẩy một ở khảo sát hai. Số món khác nhau được chấp nhận cũng nhiều gấp đôi. Nhưng precision của gợi ý tự động chỉ khoảng hai phần trăm, thấp hơn nhiều so với hai mươi bốn và mười sáu phần trăm của câu hỏi nhập tay.</p><p>Lý do tác giả đưa ra là danh sách gợi ý dài, trong khi chỉ một số ít món hay bị quên. Họ cũng lưu ý hai loại prompt hiển thị khác nhau, và chưa kiểm tra được người dùng có thật sự ăn các món đã chấp nhận hay không. Vì vậy con số bảy mươi chín phần trăm ở slide trước là từ mô phỏng, còn hai phần trăm này là từ người dùng thật, hai con số đo hai việc khác nhau.</p></div>
+</section>
+<section class="s"><div class="tag">TỰ THỰC HIỆN</div><h2>Thực nghiệm trên dữ liệu tổng hợp</h2><div class="sub">Chạy lại giao thức của bài. Dữ liệu Intake24 không công khai nên không tái lập được số liệu gốc</div>
+<div class="card" style="left:108px;top:236px;width:960px;height:610px;padding:22px 26px">
+<div class="cap">nDCG@15 theo số món đầu vào &nbsp; <span style="color:#4a93c9">■ AR</span> <span style="color:#2777b6">■ TIC</span> <span style="color:#16598c">■ PAR</span></div><svg width="860" height="340" viewBox="0 0 860 340"><line x1="60" x2="840" y1="264.2857142857143" y2="264.2857142857143" stroke="#e1eaf2"/><text x="52" y="270.2857142857143" font-size="18" fill="#667" text-anchor="end">0.68</text><line x1="60" x2="840" y1="192.85714285714297" y2="192.85714285714297" stroke="#e1eaf2"/><text x="52" y="198.85714285714297" font-size="18" fill="#667" text-anchor="end">0.72</text><line x1="60" x2="840" y1="121.42857142857147" y2="121.42857142857147" stroke="#e1eaf2"/><text x="52" y="127.42857142857147" font-size="18" fill="#667" text-anchor="end">0.76</text><line x1="60" x2="840" y1="50.0" y2="50.0" stroke="#e1eaf2"/><text x="52" y="56.0" font-size="18" fill="#667" text-anchor="end">0.8</text><polyline points="70,278.03571428571433 245,136.0714285714286 420,110.00000000000014 595,138.75000000000014 770,186.6071428571429" fill="none" stroke="#4a93c9" stroke-width="3"/><circle cx="70" cy="278.03571428571433" r="4" fill="#4a93c9"/><circle cx="245" cy="136.0714285714286" r="4" fill="#4a93c9"/><circle cx="420" cy="110.00000000000014" r="4" fill="#4a93c9"/><circle cx="595" cy="138.75000000000014" r="4" fill="#4a93c9"/><circle cx="770" cy="186.6071428571429" r="4" fill="#4a93c9"/><polyline points="70,269.1071428571429 245,120.17857142857142 420,104.64285714285728 595,144.2857142857144 770,178.39285714285728" fill="none" stroke="#2777b6" stroke-width="3"/><circle cx="70" cy="269.1071428571429" r="4" fill="#2777b6"/><circle cx="245" cy="120.17857142857142" r="4" fill="#2777b6"/><circle cx="420" cy="104.64285714285728" r="4" fill="#2777b6"/><circle cx="595" cy="144.2857142857144" r="4" fill="#2777b6"/><circle cx="770" cy="178.39285714285728" r="4" fill="#2777b6"/><polyline points="70,264.82142857142867 245,99.82142857142864 420,82.49999999999997 595,102.67857142857159 770,138.3928571428573" fill="none" stroke="#16598c" stroke-width="5"/><circle cx="70" cy="264.82142857142867" r="6" fill="#16598c"/><circle cx="245" cy="99.82142857142864" r="6" fill="#16598c"/><circle cx="420" cy="82.49999999999997" r="6" fill="#16598c"/><circle cx="595" cy="102.67857142857159" r="6" fill="#16598c"/><circle cx="770" cy="138.3928571428573" r="6" fill="#16598c"/><text x="70" y="326" font-size="20" fill="#333" text-anchor="middle">1</text><text x="245" y="326" font-size="20" fill="#333" text-anchor="middle">2</text><text x="420" y="326" font-size="20" fill="#333" text-anchor="middle">3</text><text x="595" y="326" font-size="20" fill="#333" text-anchor="middle">4</text><text x="770" y="326" font-size="20" fill="#333" text-anchor="middle">5</text></svg>
+<div class="small" style="text-align:center">Số món đầu vào · trục dọc cắt từ 0,66 để thấy khác biệt · baseline phổ biến: 0,22–0,29</div></div>
+<div class="card" style="left:1092px;top:236px;width:720px;height:610px;padding:24px 30px">
+<div class="cap">Đọc kết quả</div>
+<p style="font-size:28px;line-height:1.45">PAR đứng đầu ở mọi cỡ đầu vào, nhưng chỉ hơn <b class="t">0.018</b> so với AR và <b class="t">0.014</b> so với TIC (sai số chuẩn khoảng 0,0015).</p>
+<p style="font-size:28px;line-height:1.45;margin-top:12px">Khác không về thống kê, nhưng nhỏ. Cả ba hơn xa baseline xếp theo độ phổ biến.</p>
+<p style="font-size:28px;line-height:1.45;margin-top:12px">Xu hướng theo số món đầu vào <b class="t">không giống bài</b>: ở đây nDCG giảm nhẹ khi từ 3 lên 5 món.</p></div>
+<div class="band" style="top:870px;padding:22px 40px;font-size:28px;line-height:1.45"><b>Giới hạn:</b> 20.000 bữa tổng hợp, 175 món, quan hệ do tiểu luận đặt ra; 5-fold; AR chỉ khai phá tập tối đa 4 món. Kết quả chỉ minh hoạ giao thức.</div>
+<div class="note" hidden><p>Vì dữ liệu Intake24 không công khai, em chạy lại giao thức của bài trên dữ liệu bữa ăn tổng hợp do chương trình sinh ra. Có hai mươi nghìn bữa ăn, một trăm bảy mươi lăm món, các mối liên hệ giữa món do em đặt ra, không phải thói quen ăn uống thật.</p><p>Biểu đồ cho thấy PAR đứng đầu ở mọi cỡ đầu vào, nhưng chỉ hơn AR khoảng không phẩy không mười tám và hơn TIC khoảng không phẩy không mười bốn. Sai số chuẩn khoảng không phẩy không không mười lăm, nên khác biệt có ý nghĩa thống kê nhưng rất nhỏ. Cả ba thuật toán hơn xa cách chỉ gợi ý món phổ biến.</p><p>Em cũng thấy một điểm khác với bài: ở dữ liệu của em, nDCG giảm nhẹ khi đầu vào từ ba lên năm món. Em chưa kiểm tra lý do. Vì dữ liệu là tổng hợp, kết quả này chỉ để minh hoạ cách chạy giao thức, không thay cho số liệu của bài báo.</p></div>
+</section>
+<section class="s"><div class="tag">THẢO LUẬN</div><h2>Điểm mạnh, điểm yếu và câu hỏi mở</h2><div class="sub"></div>
+<div class="g g3" style="top:200px;gap:22px">
+<div class="card" style="height:560px;padding:26px 28px"><span class="ic c1"><svg><use href="#i-check"/></svg></span><h3>Điểm mạnh</h3><p style="font-size:29px;line-height:1.5">Mô hình chỉ gồm các bảng đếm, không tham số. Dễ cập nhật khi có dữ liệu mới và dễ chạy lại cho quần thể khác. Gợi ý nhanh. Không cần lịch sử cá nhân.</p></div>
+<div class="card" style="height:560px;padding:26px 28px"><span class="ic c2"><svg><use href="#i-triangle-alert"/></svg></span><h3>Điểm yếu</h3><p style="font-size:29px;line-height:1.5">Precision thấp (2% ở khảo sát thật). Chỉ nhìn quan hệ từng cặp, bỏ qua bữa sáng hay tối, chế độ ăn. Dữ liệu chỉ từ người dùng ở Anh.</p></div>
+<div class="card" style="height:560px;padding:26px 28px"><span class="ic c3"><svg><use href="#i-search"/></svg></span><h3>Hướng tiếp theo</h3><p style="font-size:29px;line-height:1.5">Đưa tỉ lệ chấp nhận vào mô hình để rút ngắn danh sách. Đánh giá ở vùng khác. Áp dụng cho gợi ý người nhận email, tag (theo tác giả).</p></div></div>
+<div class="band" style="top:790px;padding:28px 40px;font-size:31px"><b>Nhận xét của tiểu luận:</b> 79,1% (mô phỏng) và 2% precision (người dùng thật) không mâu thuẫn. Mô phỏng coi mọi món đều có thể bị quên, còn thực tế chỉ một số ít món hay bị quên.</div>
+<div class="note" hidden><p>Về điểm mạnh, PAR gần như không có tham số, mô hình chỉ là các bảng đếm nên dễ cập nhật khi có dữ liệu mới, dễ chạy lại cho một quần thể khác, và gợi ý rất nhanh. Nó không cần lịch sử cá nhân.</p><p>Về điểm yếu, precision thấp, chỉ khoảng hai phần trăm ở khảo sát thật. Mô hình chỉ xét quan hệ từng cặp nên không biết bữa sáng hay bữa tối, cũng không biết chế độ ăn của người dùng. Dữ liệu huấn luyện chỉ từ người tham gia ở Anh nên chưa biết chạy thế nào ở nơi khác.</p><p>Em có một nhận xét riêng về con số. Bảy mươi chín phần trăm và hai phần trăm nghe như mâu thuẫn, nhưng chúng đo hai việc khác nhau. Mô phỏng coi món nào cũng có thể bị quên như nhau, còn người dùng thật chỉ quên một số món nhất định.</p></div>
+</section>
+<section class="s"><div class="tag">KẾT LUẬN</div><h2>Tóm tắt và tài liệu tham khảo</h2><div class="sub"></div>
+<div class="card" style="left:108px;top:200px;width:820px;height:770px;padding:28px 32px">
+<div class="ttl">Điều rút ra</div><div class="bar"></div>
+<div class="step"><span class="n">1</span><div>Gợi ý không cần hồ sơ cá nhân: đếm món và cặp món trong các bữa ăn của quần thể.</div></div>
+<div class="step"><span class="n">2</span><div>PAR: <b>RF = (Σp) × (Σw)</b>. Trong ba thuật toán, PAR tốt nhất về nDCG và nhanh nhất.</div></div>
+<div class="step"><span class="n">3</span><div>Nhận ra 79,1% món bỏ sót (gợi ý nhóm cấp hai), nhưng precision ở thực tế chỉ 2%.</div></div>
+<div class="step"><span class="n">4</span><div>Thực nghiệm tự chạy: PAR đứng đầu nhưng chỉ hơn 0,01–0,02 nDCG.</div></div></div>
+<div class="card dark" style="left:952px;top:200px;width:860px;height:770px;padding:28px 32px">
+<div class="ttl">Tài liệu tham khảo</div><div class="bar"></div>
+<p style="font-size:22px;line-height:1.4;margin-bottom:12px">[1] Osadchiy, T., Poliakov, I., Olivier, P., Rowland, M., Foster, E. (2019). Recommender system based on pairwise association rules. <i>Expert Systems with Applications</i>, 115, 535–542. doi:10.1016/j.eswa.2018.07.077</p>
+<p style="font-size:22px;line-height:1.4;margin-bottom:12px">[2] Osadchiy, T. và cs. (2019). Corrigendum to [1]. doi:10.1016/j.eswa.2019.05.022</p>
+<p style="font-size:22px;line-height:1.4;margin-bottom:12px">[3] Osadchiy, T. và cs. (2019). Validation of a recommender system for prompting omitted foods in online dietary assessment surveys. arXiv:1903.12264.</p>
+<p style="font-size:22px;line-height:1.4;margin-bottom:12px">[4] Agrawal, R., Imielinski, T., Swami, A. (1993). Mining association rules between sets of items in large databases. <i>ACM SIGMOD</i>, 207–216 (trích theo [1]).</p>
+<p style="font-size:22px;line-height:1.4">[5] Roth, M. và cs. (2010). Suggesting friends using the implicit social graph. <i>ACM SIGKDD</i>, 233–242 (trích theo [1]).</p></div>
+<div class="note" hidden><p>Em tóm tắt lại bốn ý. Một, có thể gợi ý món ăn mà không cần hồ sơ cá nhân, chỉ cần đếm món và cặp món trong các bữa ăn của cả quần thể. Hai, thuật toán PAR cho điểm bằng tổng xác suất nhân tổng trọng số, và trong ba thuật toán được so sánh nó tốt nhất về nDCG và nhanh nhất.</p><p>Ba, PAR nhận ra bảy mươi chín phẩy một phần trăm món bị bỏ sót khi gợi ý theo nhóm món, nhưng ở khảo sát thực tế precision chỉ khoảng hai phần trăm nên cần bước lọc hoặc xếp hạng lại. Bốn, thực nghiệm em tự chạy trên dữ liệu tổng hợp cho cùng xu hướng, PAR đứng đầu nhưng chỉ hơn các thuật toán khác một chút.</p><p>Slide cuối là tài liệu tham khảo, trong đó hai tài liệu cuối em trích theo danh mục của bài báo chính. Em xin cảm ơn thầy cô và các bạn đã lắng nghe, em sẵn sàng trả lời câu hỏi.</p></div>
+</section>
+<button id="nbtn">Script (N)</button>
+<div id="notes"></div>
+</div>
+<div class="nav"><button id="pv">‹</button><span id="dots"></span><button id="nx">›</button></div>
+<script>
+  const stage=document.getElementById('stage'),S=[...document.querySelectorAll('.s')];
+  const nb=document.getElementById('nbtn'),nt=document.getElementById('notes');
+  let cur=Math.max(0,Math.min(S.length-1,(parseInt(location.hash.slice(1))||1)-1)),open=false;
+  function fit(){const s=Math.min(innerWidth/1920,(innerHeight-40)/1080);stage.style.transform='scale('+s+')';}
+  function render(){S.forEach((e,k)=>e.classList.toggle('on',k==cur));
+    document.getElementById('pg').textContent=(cur+1)+' / '+S.length;
+    document.getElementById('dots').innerHTML=S.map((_,k)=>'<i class="'+(k==cur?'a':'')+'" data-k="'+k+'"></i>').join('');
+    const n=S[cur].querySelector('.note');nt.innerHTML='<h4>SCRIPT TRÌNH BÀY · SLIDE '+(cur+1)+'</h4>'+(n?n.innerHTML:'');
+    nt.classList.toggle('on',open);nb.classList.toggle('on',open);nb.textContent=open?'Ẩn script (N)':'Script (N)';
+    history.replaceState(null,'','#'+(cur+1));}
+  function show(i){cur=Math.max(0,Math.min(S.length-1,i));nt.scrollTop=0;render();}
+  function toggle(){open=!open;render();}
+  document.getElementById('pv').onclick=()=>show(cur-1);document.getElementById('nx').onclick=()=>show(cur+1);
+  nb.onclick=toggle;nt.onclick=toggle;
+  document.getElementById('dots').onclick=e=>{if(e.target.dataset.k)show(+e.target.dataset.k)};
+  addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key))show(cur+1);if(['ArrowLeft','PageUp'].includes(e.key))show(cur-1);if(e.key=='n'||e.key=='N')toggle();});
+  addEventListener('resize',fit);addEventListener('hashchange',()=>{cur=Math.max(0,Math.min(S.length-1,(parseInt(location.hash.slice(1))||1)-1));render();});
+  fit();render();
+</script>
+</body>
+</html>
