@@ -1,0 +1,19 @@
+n = 6
+item counts: {'biscuit': 2, 'butter': 3, 'coffee': 2, 'jam': 1, 'milk': 4, 'tea': 4, 'toast': 4}
+pair counts: {('biscuit', 'coffee'): 1, ('biscuit', 'milk'): 2, ('biscuit', 'tea'): 1, ('butter', 'coffee'): 1, ('butter', 'jam'): 1, ('butter', 'milk'): 1, ('butter', 'tea'): 2, ('butter', 'toast'): 3, ('coffee', 'jam'): 1, ('coffee', 'milk'): 1, ('coffee', 'toast'): 1, ('jam', 'toast'): 1, ('milk', 'tea'): 3, ('milk', 'toast'): 2, ('tea', 'toast'): 3}
+rules kept with support>=0.333, confidence>=0.5:
+  biscuit  -> milk     supp=0.333 conf=1.000 lift=1.500
+  butter   -> toast    supp=0.500 conf=1.000 lift=1.500
+  milk     -> tea      supp=0.500 conf=0.750 lift=1.125
+  tea      -> milk     supp=0.500 conf=0.750 lift=1.125
+  tea      -> toast    supp=0.500 conf=0.750 lift=1.125
+  toast    -> butter   supp=0.500 conf=0.750 lift=1.500
+  toast    -> tea      supp=0.500 conf=0.750 lift=1.125
+  butter   -> tea      supp=0.333 conf=0.667 lift=1.000
+  milk     -> biscuit  supp=0.333 conf=0.500 lift=1.500
+  milk     -> toast    supp=0.333 conf=0.500 lift=0.750
+  tea      -> butter   supp=0.333 conf=0.500 lift=1.000
+  toast    -> milk     supp=0.333 conf=0.500 lift=0.750
+context = ['tea', 'toast']
+max-confidence ranking: [('butter', 0.75), ('milk', 0.75)]
+sum-confidence ranking: [('butter', 1.25), ('milk', 1.25)]
