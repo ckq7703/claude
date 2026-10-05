@@ -1,0 +1,17 @@
+{
+  "AR": {
+    "mean_ndcg_diff": 0.0181,
+    "se": 0.0015,
+    "n": 7500
+  },
+  "TIC": {
+    "mean_ndcg_diff": 0.0144,
+    "se": 0.0013,
+    "n": 7500
+  },
+  "Popularity": {
+    "mean_ndcg_diff": 0.4894,
+    "se": 0.0037,
+    "n": 7500
+  }
+}

@@ -1,0 +1,6 @@
+AR (Table 1)   d: 2.50 (paper 2.5), c: 1.96 (paper 1.96), e: 0.29 (paper 0.29)   -> OK
+TIC (Table 2)  d: 3.00 (paper 3.0), c: 2.00 (paper 2.0), e: 0.50 (paper 0.5)   -> OK
+PAR (Table 3)  d: 5.83 (paper 5.8), c: 4.17 (paper 4.2), e: 1.00 (paper 1.0)   -> OK
+PAR model OD: {'a': 3, 'c': 1, 'd': 3, 'b': 2, 'e': 2}
+TIC model (unique meals): {'ade': {'a': 0.5, 'e': 0.5, 'd': 1.0}, 'abcd': {'a': 1.0, 'c': 1.0, 'd': 1.0, 'b': 1.0}, 'ab': {'a': 1.0, 'b': 0.67}, 'de': {'e': 0.67, 'd': 1.0}}
+ALL TABLES REPRODUCED

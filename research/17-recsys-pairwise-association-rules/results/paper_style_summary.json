@@ -1,0 +1,27 @@
+{
+  "n_meals": 20000,
+  "folds": 5,
+  "queries_per_k_per_fold": 300,
+  "n_foods": 175,
+  "mean_meal_size": 5.35415,
+  "ar_min_count": 6,
+  "ar_rules_last_fold": 46266,
+  "timing": {
+    "Popularity": {
+      "train_s": 0.002,
+      "mean_recommend_ms": 0.008
+    },
+    "AR": {
+      "train_s": 0.545,
+      "mean_recommend_ms": 1.325
+    },
+    "TIC": {
+      "train_s": 1.283,
+      "mean_recommend_ms": 0.259
+    },
+    "PAR": {
+      "train_s": 0.024,
+      "mean_recommend_ms": 0.02
+    }
+  }
+}

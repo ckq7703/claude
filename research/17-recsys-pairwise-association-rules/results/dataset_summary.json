@@ -1,8 +1,0 @@
-{
-  "n_train": 20000,
-  "n_test": 4000,
-  "n_items": 175,
-  "n_cases": 4000,
-  "density": 0.067442,
-  "avg_items_per_recall": 11.80235
-}

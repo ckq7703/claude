@@ -1,41 +1,27 @@
-# Thông tin bài báo
+# Thông tin bài báo (đối chiếu với bản PDF)
 
-| Trường | Giá trị | Mức |
-|---|---|---|
-| Tiêu đề | Recommender system based on pairwise association rules | V |
-| Tác giả | Timur Osadchiy, Ivan Poliakov, Patrick Olivier, Maisie (K.) Rowland, Emma Foster | V |
-| Đơn vị | Newcastle University (Open Lab / Digital Interaction Group, School of Computing; Human Nutrition Research Centre) | V (từ trang Intake24 và Open Lab) |
-| Tạp chí | Expert Systems with Applications (Elsevier) | V |
-| Tập / trang | 115, 535–542 | V |
-| Năm | Online 2018; số tạp chí tập 115 thuộc năm 2019 (corrigendum ghi "(2018)"; nhiều nguồn ghi 2019) | V |
-| DOI | 10.1016/j.eswa.2018.07.077 | V |
-| PII | S095741741830441X | V |
-| Corrigendum | 2019, sửa giá trị tham số: min support và min confidence là **3×10^-4** (bản gốc in nhầm 3×10^4) | V |
+| Trường | Giá trị |
+|---|---|
+| Tiêu đề | Recommender system based on pairwise association rules |
+| Tác giả | Timur Osadchiy, Ivan Poliakov, Patrick Olivier, Maisie Rowland, Emma Foster |
+| Đơn vị | Osadchiy, Poliakov, Olivier: Open Lab, School of Computing, Newcastle University. Rowland, Foster: Institute of Health and Society, Newcastle University. Trong corrigendum, Olivier ghi thêm Monash University |
+| Tạp chí | Expert Systems With Applications, tập 115 (2019), trang 535–542 |
+| Mốc thời gian | Nhận 04/04/2018; sửa 09/07/2018; chấp nhận 10/07/2018; online 21/08/2018 |
+| DOI | 10.1016/j.eswa.2018.07.077 |
+| Từ khoá (do tác giả nêu) | Association rules; Cold-start problem; Data mining; Ontologies; Recommender systems |
+| Giấy phép | CC BY 4.0 |
+| Corrigendum | DOI 10.1016/j.eswa.2019.05.022 |
 
-## Tóm tắt (diễn giải lại từ các bản tóm tắt tìm thấy)
+## Corrigendum, nói đúng phạm vi
 
-- Các hệ khuyến nghị dựa trên lọc cộng tác và lọc theo nội dung cần hồ sơ người dùng, mô tả mặt hàng và lịch sử sở thích dài; chúng gặp khó với **cold start** trong hệ thống dùng không đều, với **quyền riêng tư**, và khi dải chỉ báo thể hiện sở thích bị hạn chế.
-- Bài báo đề xuất thuật toán xây **mô hình sở thích tập thể**, độc lập với sở thích cá nhân, **không cần hệ thống đánh giá (rating) phức tạp**.
-- Hiệu năng được phân tích trên **tập dữ liệu giao dịch lớn** sinh ra từ một **hệ thống hồi tưởng khẩu phần ăn thực tế** (Intake24).
-- Điểm nhấn (highlights): hệ khuyến nghị **kháng cold start**; chứng minh ứng dụng cho cả bài toán **khuyến nghị** và **xếp hạng**; mô hình sở thích được xây từ các giao dịch của một quần thể.
+Câu bị in sai nằm ở Mục 4: "To gather as many association rules as possible we set both the minimum support and the minimum confidence to the lowest value (3 × 10⁴)…". Giá trị đúng là 3 × 10⁻⁴. Corrigendum giải thích lỗi xuất hiện khi chuyển từ LaTeX sang PDF.
+
+Câu này nói về thuật toán **AR** (khai phá bằng FP-growth trong Apache Spark), không phải PAR. PAR không dùng ngưỡng support hay confidence. Bản nháp đầu của tiểu luận gán nhầm ngưỡng này cho PAR và đã được sửa.
 
 ## Trích dẫn
 
-- APA: Osadchiy, T., Poliakov, I., Olivier, P., Rowland, M., & Foster, E. (2019). Recommender system based on pairwise association rules. *Expert Systems with Applications, 115*, 535–542. https://doi.org/10.1016/j.eswa.2018.07.077
+Osadchiy, T., Poliakov, I., Olivier, P., Rowland, M., & Foster, E. (2019). Recommender system based on pairwise association rules. *Expert Systems with Applications, 115*, 535–542. https://doi.org/10.1016/j.eswa.2018.07.077
 
-```bibtex
-@article{osadchiy2019pairwise,
-  author  = {Osadchiy, Timur and Poliakov, Ivan and Olivier, Patrick and Rowland, Maisie and Foster, Emma},
-  title   = {Recommender system based on pairwise association rules},
-  journal = {Expert Systems with Applications},
-  volume  = {115},
-  pages   = {535--542},
-  year    = {2019},
-  doi     = {10.1016/j.eswa.2018.07.077}
-}
-```
+Osadchiy, T., Poliakov, I., Olivier, P., Rowland, M., & Foster, E. (2019). Corrigendum to "Recommender system based on pairwise association rules" [Expert Systems with Applications 115 (2018) 535–542]. https://doi.org/10.1016/j.eswa.2019.05.022
 
-## Công trình đi kèm
-
-- Osadchiy, Poliakov, Olivier, Rowland, Foster. *Validation of a recommender system for prompting omitted foods in online dietary assessment surveys.* arXiv:1903.12264 (2019).
-- Osadchiy, Poliakov, Olivier, Rowland, Foster. *Progressive 24-Hour Recall: Usability Study of Short Retention Intervals in Web-Based Dietary Assessment Surveys.* J Med Internet Res 22(2):e13266 (2020).
+Osadchiy, T., Poliakov, I., Olivier, P., Rowland, M., & Foster, E. (2019). Validation of a recommender system for prompting omitted foods in online dietary assessment surveys. arXiv:1903.12264.

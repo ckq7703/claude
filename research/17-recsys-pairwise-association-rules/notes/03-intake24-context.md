@@ -1,28 +1,7 @@
-# Bối cảnh ứng dụng: Intake24
+# Bối cảnh: Intake24 (theo bài báo và bài kiểm chứng)
 
-**Intake24** là hệ thống hồi tưởng khẩu phần ăn 24 giờ (24-hour dietary recall) trực tuyến, mã nguồn mở, người trả lời tự điền, dựa trên quy trình *multiple-pass* (nhiều lượt nhắc để người dùng nhớ lại đủ món). [V]
-
-## Thông tin đã xác minh
-
-- Phát triển ban đầu tại Newcastle University với kinh phí từ cơ quan thực phẩm Scotland (Food Standards Scotland / Food Standards Agency, Scotland), thiết kế cho nhóm 11–24 tuổi; nay được duy trì cùng Cambridge và Monash. [V]
-- Nhóm tác giả gồm các thành viên Human Nutrition Research Centre và Digital Interaction Group (Open Lab), trùng với nhóm tác giả bài báo. [V]
-- Cơ sở dữ liệu hơn 2500 món ăn và hơn 2500 ảnh khẩu phần; hệ thống có nhiều **prompt** nhắc món "hay bị quên" và "hay ăn cùng nhau". [V]
-- Phát triển lặp qua 4 vòng thử nghiệm người dùng, kết hợp phỏng vấn recall bởi người phỏng vấn để phát hiện món hay bị bỏ sót. [V]
-- Thử nghiệm thực địa (Rowland và cs., *Nutrients* 2018): khoảng 60% (n = 230) người đồng ý tham gia hoàn thành ít nhất một recall, khoảng 50% (n = 195) hoàn thành từ hai recall trở lên; khó khăn chính được báo cáo là tìm món trong cơ sở dữ liệu. [V]
-
-## Vì sao đây là bài toán hợp với luật kết hợp theo cặp
-
-| Đặc điểm của Intake24 | Hệ quả cho thuật toán |
-|---|---|
-| Người dùng đăng nhập không đều, nhiều khảo sát chỉ một hai lần | Không có lịch sử cá nhân dài, lọc cộng tác bị cold start |
-| Dữ liệu là **giao dịch**: tập món đã chọn trong một recall | Phù hợp trực tiếp với mô hình giỏ hàng (basket) của luật kết hợp |
-| Không có rating, chỉ có "đã ăn món này" | Dữ liệu nhị phân ngầm định (implicit, binary) |
-| Quyền riêng tư dữ liệu ăn uống nhạy cảm | Mô hình tập thể không cần hồ sơ cá nhân |
-| Cần nhắc món bị quên dựa trên vài món đã chọn | Ngữ cảnh ngắn: luật theo cặp (1 món gợi ý món khác) tính nhanh theo thời gian thực |
-| Trước đây prompt do nutritionist viết tay | Cần tự động hoá, dễ cập nhật theo dữ liệu mới |
-
-Bài kiểm chứng đi kèm (arXiv 1903.12264) cho thấy prompt sinh tự động **bắt được nhiều món bị quên hơn** prompt viết tay nhưng **độ chính xác thấp hơn đáng kể**. [V, định tính]
-
-## Công trình sau đó của nhóm
-
-Progressive 24-hour recall (JMIR 2020): cho phép thêm nhiều recall nhỏ trong ngày; 33 người tham gia; 65% cho biết nhớ tốt hơn về nội dung bữa ăn và khẩu phần; cải thiện độ chính xác ở mức nhỏ. [V]
+- Intake24 là hệ thống hồi tưởng khẩu phần 24 giờ trực tuyến, theo phương pháp multiple-pass, để thay công việc của người phỏng vấn (bài báo, mục 3.1).
+- Người trả lời nhập các món đã ăn hôm trước theo từng bữa, bằng văn bản tự do. Hệ thống trả về danh sách món liên quan trong một taxonomy khoảng **4800 món** (bài báo). Một ngày thường có 4–7 bữa. Trang giới thiệu Intake24 hiện nêu con số khác (hơn 2500 món); hai con số lấy từ hai thời điểm và nguồn khác nhau, tiểu luận dùng số của bài báo và ghi rõ nguồn.
+- Người tham gia thường chỉ dùng hệ thống trong một đợt khảo sát ngắn. Vì vậy hệ thống không có lịch sử cá nhân dài, đây là lý do bài báo chọn mô hình của cả quần thể.
+- Trước đây "associated food prompts" (ví dụ: chọn toast thì hỏi "có bơ không?") do chuyên gia dinh dưỡng nhập tay. Bài báo nêu hai vấn đề: tốn công với hàng nghìn món, và thói quen ăn uống đổi theo vùng, văn hoá, chế độ ăn, theo thời gian.
+- Dữ liệu huấn luyện và đánh giá: 20.000 bữa ăn lấy ngẫu nhiên, mỗi bữa có ít nhất 2 món, do người tham gia ở Anh khai báo trong giai đoạn 2014–2018.
