@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A/D Battle Map</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Share+Tech+Mono&family=Teko:wght@500;600;700&display=swap">
+<style>
+/* Layout: command-centre HUD. Stat strip on top, framed tactical map on the left,
+   scoreboard + round log rail on the right (stacks under the map on narrow screens). */
+:root{
+  --void:#05080d; --panel:#0a121b; --panel-2:#0f1a26; --line:#1d3144; --line-hi:#2f5874;
+  --ink:#e6edf3; --ink-dim:#8ea3b6; --ink-faint:#506678;
+  --amber:#f2b134; --red:#ff4d4d; --red-deep:#5c1820; --cyan:#4fd1e8; --green:#3ee08f;
+  --f-display:"Teko","Arial Narrow",Impact,sans-serif;
+  --f-ui:"Chakra Petch","Segoe UI",system-ui,sans-serif;
+  --f-mono:"Share Tech Mono",ui-monospace,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--void);color:var(--ink);margin:0}
+body{font-family:var(--f-ui);font-size:14px;-webkit-font-smoothing:antialiased}
+button,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+
+.app{max-width:1720px;margin:0 auto;display:grid;gap:12px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px 22px}
+
+/* ---------- top strip ---------- */
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px;
+  border-bottom:1px solid var(--line);padding-bottom:10px}
+.brand{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;min-width:0}
+.logo{font-family:var(--f-display);font-weight:700;font-size:44px;line-height:.8;letter-spacing:.01em;font-style:italic;
+  transform:skewX(-6deg);padding-top:6px;white-space:nowrap}
+.logo em{font-style:inherit;color:var(--amber);margin-left:8px}
+.sub{font-family:var(--f-mono);font-size:13px;letter-spacing:.22em;color:var(--ink-dim);white-space:nowrap}
+.phase{font-family:var(--f-display);font-size:24px;line-height:1;font-weight:600;letter-spacing:.06em;color:var(--red);
+  border:1.5px solid var(--red);padding:6px 12px 2px;box-shadow:0 0 18px -6px var(--red) inset;white-space:nowrap}
+.demo{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;color:var(--void);background:var(--amber);padding:3px 7px}
+.stats{display:flex;flex-wrap:wrap;align-items:center;gap:10px 26px}
+.stat{display:grid;justify-items:center;line-height:1}
+.stat b{font-family:var(--f-display);font-weight:600;font-size:34px;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.stat span{font-family:var(--f-mono);font-size:11px;letter-spacing:.2em;color:var(--ink-dim)}
+.stat.alert b{color:var(--red)}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line-hi);
+  font-family:var(--f-mono);font-size:12px;letter-spacing:.16em;color:var(--amber);padding:7px 11px;cursor:pointer}
+.btn:hover{background:var(--panel-2)}
+.btn[aria-pressed="false"]{color:var(--ink-faint)}
+.btn select{background:transparent;border:0;color:var(--amber);font-family:var(--f-mono);letter-spacing:.1em;cursor:pointer}
+.btn select option{background:var(--panel);color:var(--ink)}
+
+/* ---------- main grid ---------- */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) clamp(300px,23vw,380px);gap:14px}
+.rail{position:relative;min-width:0}
+.rail-in{position:absolute;inset:0;display:grid;grid-template-rows:minmax(0,1.25fr) minmax(0,1fr);gap:12px}
+@media (max-width:980px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .rail{position:static}
+  .rail-in{position:static;grid-template-rows:none}
+  .card{max-height:440px}
+}
+
+/* ---------- map ---------- */
+.map{position:relative;aspect-ratio:1.52;max-width:100%;container-type:inline-size;overflow:hidden;
+  background:#0b1f2c;border:1px solid var(--line)}
+.map canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.map::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.07) 0 1px,transparent 1px 3px);mix-blend-mode:multiply}
+.corner{position:absolute;width:3cqw;height:3cqw;border:2px solid var(--amber);opacity:.85;pointer-events:none}
+.corner.tl{left:1.2cqw;top:1.2cqw;border-right:0;border-bottom:0}
+.corner.tr{right:1.2cqw;top:1.2cqw;border-left:0;border-bottom:0}
+.corner.bl{left:1.2cqw;bottom:1.2cqw;border-right:0;border-top:0}
+.corner.br{right:1.2cqw;bottom:1.2cqw;border-left:0;border-top:0}
+.cols,.rows{position:absolute;display:flex;font-family:var(--f-mono);font-size:clamp(8px,.85cqw,13px);color:rgba(230,237,243,.55);pointer-events:none}
+.cols{left:0;right:0;top:.4cqw;justify-content:space-around}
+.rows{top:0;bottom:0;left:.6cqw;flex-direction:column;justify-content:space-around}
+.sea{position:absolute;transform:translate(-50%,-50%);font-family:var(--f-mono);font-size:clamp(7px,1cqw,15px);
+  letter-spacing:.35em;color:rgba(200,225,240,.55);white-space:nowrap;pointer-events:none}
+.sea.dim{color:rgba(200,225,240,.32)}
+
+.radar{position:absolute;left:56%;top:23%;width:10cqw;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,transparent 0 30%,rgba(79,209,232,.18) 31% 31.6%,transparent 32% 62%,rgba(79,209,232,.18) 63% 63.6%,transparent 64% 97%,rgba(79,209,232,.3) 98%)}
+.radar::before{content:"";position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(from 0deg,rgba(62,224,143,.55),rgba(62,224,143,0) 70deg,transparent 360deg);animation:sweep 3.2s linear infinite}
+.radar::after{content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}
+@keyframes sweep{to{transform:rotate(360deg)}}
+
+.banner{position:absolute;left:50%;top:2.6cqw;transform:translateX(-50%);display:grid;justify-items:center;gap:.7cqw;pointer-events:none;width:max-content;max-width:94%}
+.count{display:flex;align-items:baseline;gap:.8cqw;background:rgba(5,8,13,.82);border:1.5px solid var(--amber);
+  padding:.4cqw 1.6cqw .1cqw;font-family:var(--f-display);font-weight:600;font-size:clamp(14px,2.6cqw,40px);line-height:1.1;color:var(--amber);letter-spacing:.04em}
+.count b{color:var(--ink);font-variant-numeric:tabular-nums}
+.live{display:flex;align-items:center;gap:.7cqw;background:rgba(5,8,13,.82);border:1px solid var(--line-hi);padding:.45cqw 1.1cqw;
+  font-family:var(--f-mono);font-size:clamp(8px,.95cqw,14px);letter-spacing:.18em;color:var(--ink);white-space:nowrap}
+.live i{width:.8cqw;height:.8cqw;min-width:6px;min-height:6px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red);animation:blink 1.2s steps(2) infinite}
+@keyframes blink{50%{opacity:.25}}
+.compass{position:absolute;right:6%;top:8%;width:2cqw;pointer-events:none;opacity:.85}
+.foot{position:absolute;left:50%;bottom:1.4cqw;transform:translateX(-50%);font-family:var(--f-mono);font-size:clamp(7px,.9cqw,13px);
+  letter-spacing:.08em;color:rgba(230,237,243,.7);background:rgba(5,8,13,.6);padding:.25cqw .9cqw;white-space:nowrap;pointer-events:none}
+.scale{position:absolute;left:3.4cqw;bottom:3.4cqw;font-family:var(--f-mono);font-size:clamp(7px,.7cqw,11px);color:rgba(230,237,243,.6);pointer-events:none}
+.scale i{display:block;width:9cqw;height:.45cqw;margin-top:.3cqw;border:1px solid rgba(230,237,243,.6);
+  background:linear-gradient(90deg,rgba(230,237,243,.6) 50%,transparent 50%)}
+
+/* team nodes */
+.node{position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-38%);display:grid;justify-items:center;gap:.35cqw;
+  background:none;border:0;padding:0;cursor:pointer;z-index:2}
+.hex{position:relative;width:clamp(18px,4cqw,64px);aspect-ratio:100/115;transition:transform .2s}
+.hex svg{width:100%;height:100%;display:block;overflow:visible;filter:drop-shadow(0 2px 4px rgba(0,0,0,.6))}
+.hx-o{fill:#eef2f6;stroke:rgba(0,0,0,.35);stroke-width:2}
+.hx-i{fill:hsl(var(--h) 68% 44%)}
+.hex text{font-family:var(--f-display);font-weight:600;font-size:44px;fill:#fff;text-anchor:middle}
+.rings{position:absolute;left:50%;top:calc(clamp(18px,4cqw,64px)*.575);width:clamp(30px,7.4cqw,116px);aspect-ratio:1;transform:translate(-50%,-50%);
+  border-radius:50%;border:1px solid rgba(225,240,210,.22);pointer-events:none}
+.rings::before{content:"";position:absolute;inset:14%;border-radius:50%;border:1px dashed rgba(225,240,210,.3);animation:sweep 18s linear infinite}
+.st{position:absolute;right:2%;top:6%;width:22%;aspect-ratio:1;border-radius:50%;background:var(--green);border:1.5px solid #05080d;box-shadow:0 0 6px var(--green)}
+.tag{font-family:var(--f-mono);font-weight:700;font-size:clamp(8px,.95cqw,14px);letter-spacing:.02em;color:#fff;white-space:nowrap;
+  background:rgba(8,14,20,.82);border:1px solid rgba(230,237,243,.35);padding:.1cqw .6cqw;text-shadow:0 1px 0 #000}
+.node:hover .hex,.node:focus-visible .hex,.node.sel .hex{transform:scale(1.12)}
+.node.sel .tag{border-color:var(--amber);color:var(--amber)}
+.node.down .st{background:var(--red);box-shadow:0 0 8px var(--red)}
+.node.down .hx-i{fill:hsl(var(--h) 15% 32%)}
+.node.down .rings{border-color:rgba(255,77,77,.55)}
+.node.down .tag{border-color:var(--red)}
+.node.hit .hex{animation:shake .35s}
+@keyframes shake{20%{transform:translate(-2px,1px)}40%{transform:translate(2px,-1px)}60%{transform:translate(-1px,-1px)}80%{transform:translate(1px,1px)}}
+@container (max-width:600px){.tag{display:none}.node.sel .tag,.node:hover .tag{display:block}.live,.foot{display:none}}
+
+/* ---------- rail ---------- */
+.card{display:flex;flex-direction:column;min-height:0;background:var(--panel);border:1px solid var(--line)}
+.card>header{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:10px 14px 8px;border-bottom:1px solid var(--line)}
+.card h2{margin:0;font-family:var(--f-display);font-weight:600;font-size:26px;line-height:1;letter-spacing:.1em}
+.card header span{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;color:var(--ink-dim)}
+.card ol{list-style:none;margin:0;padding:4px 0;overflow-y:auto;min-height:0;scrollbar-width:thin;scrollbar-color:var(--line-hi) transparent}
+
+.row{display:grid;grid-template-columns:2.2em 14px minmax(0,1fr) auto 3.6em;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;transition:background .3s}
+.row:hover,.row.sel{background:var(--panel-2)}
+.row .rk{font-family:var(--f-mono);color:var(--ink-dim);font-variant-numeric:tabular-nums}
+.row .nm{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .sc{font-family:var(--f-display);font-size:21px;line-height:1;font-variant-numeric:tabular-nums}
+.row .dl{font-family:var(--f-mono);font-size:11px;text-align:right;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+.row .dl.up{color:var(--green)}.row .dl.dn{color:var(--red)}
+.row .chip{font-family:var(--f-mono);font-size:10px;letter-spacing:.1em;color:var(--red);border:1px solid var(--red);padding:0 4px;margin-left:6px;vertical-align:2px}
+.row.flash{background:rgba(242,177,52,.14)}
+.hx{width:12px;height:14px;background:hsl(var(--h) 68% 52%);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+.row.lead .rk{color:var(--amber)}
+
+.ev{display:grid;grid-template-columns:5.2em minmax(0,1fr);gap:4px 10px;padding:8px 14px;border-bottom:1px solid rgba(29,49,68,.6)}
+.ev time{font-family:var(--f-mono);font-size:12px;color:var(--ink-dim);padding-top:2px;font-variant-numeric:tabular-nums}
+.ev .who{display:flex;align-items:center;gap:6px;font-weight:700;font-size:15px;color:var(--cyan);min-width:0}
+.ev .who span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ev p{margin:2px 0 0;color:var(--ink-dim);font-size:13px;line-height:1.35}
+.ev.sys p{margin:0;font-family:var(--f-mono);letter-spacing:.06em;color:var(--amber);font-size:13px}
+.ev.round p{margin:0;color:var(--ink);font-size:13px}
+.ev.round p b{font-family:var(--f-mono);color:var(--cyan);font-weight:400;letter-spacing:.08em}
+.ev.down .who{color:var(--red)}
+.ev.up .who{color:var(--green)}
+.ev.blood .who{color:var(--amber)}
+.ev.new{animation:slidein .5s ease-out}
+@keyframes slidein{from{background:rgba(79,209,232,.12)}}
+
+.over{position:absolute;inset:0;display:grid;place-items:center;background:rgba(5,8,13,.55);z-index:5}
+.over div{display:grid;justify-items:center;gap:12px;background:rgba(5,8,13,.9);border:1.5px solid var(--amber);padding:2cqw 4cqw}
+.over h3{margin:0;font-family:var(--f-display);font-weight:600;font-size:clamp(22px,4cqw,56px);line-height:1;color:var(--amber);letter-spacing:.06em}
+.over p{margin:0;font-family:var(--f-mono);color:var(--ink);letter-spacing:.08em}
+
+@media (prefers-reduced-motion:reduce){
+  .radar::before,.rings::before,.live i{animation:none}
+  .node.hit .hex{animation:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <span class="logo" id="ev-name">CYBER<em>2026</em></span>
+      <span class="sub" id="ev-div">BATTLE MAP · DIVISION A</span>
+      <span class="phase">PHASE 2 · ATTACK – DEFENSE</span>
+      <span class="demo">DEMO · SIMULATED DATA</span>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="s-round">1/42</b><span>ROUND</span></div>
+      <div class="stat"><b id="s-time">10:00</b><span>TIME LEFT</span></div>
+      <div class="stat"><b id="s-unlocked">19/19</b><span>UNLOCKED</span></div>
+      <div class="stat" id="s-down-wrap"><b id="s-down">–</b><span>TEAMS DOWN</span></div>
+      <div class="ctrls">
+        <button class="btn" id="btn-sound" type="button" aria-pressed="false">◖ SOUND OFF</button>
+        <button class="btn" id="btn-music" type="button" aria-pressed="false">♫ MUSIC OFF</button>
+        <label class="btn" for="speed">SPEED
+          <select id="speed">
+            <option value="1">1×</option>
+            <option value="10" selected>10×</option>
+            <option value="30">30×</option>
+            <option value="120">120×</option>
+          </select>
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="map" id="map" aria-label="Battle map">
+      <canvas id="terrain"></canvas>
+      <canvas id="fx"></canvas>
+      <div class="cols" aria-hidden="true"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span></div>
+      <div class="rows" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span></div>
+      <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+      <span class="sea" style="left:66%;top:8.5%">OVERFLOW OCEAN</span>
+      <span class="sea" style="left:41%;top:23%">NULL STRAIT</span>
+      <span class="sea dim" style="left:43%;top:31%">THE PACKET SEA</span>
+      <span class="sea dim" style="left:56%;top:31%">GAMESERVER</span>
+      <span class="sea" style="left:69%;top:88%">BAY OF BUFFERS</span>
+      <span class="sea dim" style="left:74%;top:94%">SEA OF SHELLS</span>
+      <div class="radar" aria-hidden="true"></div>
+      <svg class="compass" viewBox="0 0 20 40" aria-hidden="true"><path d="M10 0 L17 22 L10 17 L3 22 Z" fill="#d7e3ee"/><rect x="8" y="27" width="4" height="7" fill="#d7e3ee"/></svg>
+      <div class="banner">
+        <div class="count" id="b-count">ROUND <b id="b-round">1</b> ENDS IN <b id="b-time">10:00</b></div>
+        <div class="live"><i></i>BATTLE IN PROGRESS · THE BOARD SHOWS THE LAST JUDGED ROUND</div>
+      </div>
+      <div id="nodes"></div>
+      <div class="scale" aria-hidden="true">0 &nbsp;&nbsp;&nbsp;&nbsp; 50 &nbsp;&nbsp;&nbsp; 100 KM<i></i></div>
+      <div class="foot">Simulated effects only · they do not show which team is really attacking which</div>
+      <div class="over" id="over" hidden><div><h3>GAME OVER</h3><p id="over-txt"></p><button class="btn" id="btn-restart" type="button">↻ RESTART DEMO</button></div></div>
+    </section>
+
+    <aside class="rail">
+      <div class="rail-in">
+        <section class="card">
+          <header><h2>SCOREBOARD</h2><span id="sb-note">no round closed yet</span></header>
+          <ol id="board"></ol>
+        </section>
+        <section class="card">
+          <header><h2>ROUNDS</h2><span>newest first</span></header>
+          <ol id="log"></ol>
+        </section>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<script>
+(() => {
+"use strict";
+
+/* ===== Config: edit names, positions (percent of the map) and timings here ===== */
+const CONFIG = {
+  event: ["CYBER", "2026"],
+  division: "DIVISION A",
+  rounds: 42,
+  roundSeconds: 600,
+  startClock: "12:35:37",
+  services: ["notebook", "vault", "pixelbank"],
+  teams: [
+    ["n0p_sl3d",        14.0,  8.3], ["R3dShift",        14.2, 21.0],
+    ["0xDEADBEEF",      22.4, 32.9], ["HeapSpray",       14.6, 44.6],
+    ["rop_chain",       25.4, 53.5], ["Kernel Panic",    10.6, 64.6],
+    ["BufferBros",      10.7, 82.2], ["sh3llc0de",       23.0, 79.0],
+    ["XOR Cats",        40.0, 46.5], ["UAF_Squad",       54.8, 49.7],
+    ["pwn4ever",        67.9, 42.7], ["BitFlippers",     76.7, 47.1],
+    ["StackSmash",      89.8, 43.9], ["Race.Condition",  90.8, 59.2],
+    ["Format_Str",      40.8, 69.4], ["OffByOne",        51.3, 80.9],
+    ["ret2libc",        65.4, 75.8], ["SegFault Society",79.5, 68.8],
+    ["nullbyte.hcm",    93.0, 75.8],
+  ],
+};
+
+/* ===== Seeded random ===== */
+let seed = 20261017;
+const rand = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
+const pick = a => a[(rand() * a.length) | 0];
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2, "0");
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ===== Teams ===== */
+const initials = n => {
+  const p = n.split(/[\s._\-]+/).filter(Boolean);
+  return (p.length > 1 ? p[0][0] + p[1][0] : n.replace(/[^A-Za-z0-9]/g, "").slice(0, 2)).toUpperCase();
+};
+let teams;
+function makeTeams() {
+  seed = 20261017;
+  teams = CONFIG.teams.map(([name, x, y], i) => ({
+    id: i, name, x: x / 100, y: y / 100, hue: Math.round((i * 137.5 + 20) % 360),
+    skill: 0.25 + rand() * 0.75, score: 0, delta: 0, rank: i + 1, prevRank: i + 1,
+    down: 0, downSvc: null, el: null,
+  }));
+}
+
+/* ===== Terrain (procedural, drawn once to an offscreen canvas) ===== */
+function hash(x, y) {
+  let h = (Math.imul(x, 374761393) + Math.imul(y, 668265263) + 1442695041) | 0;
+  h = Math.imul(h ^ (h >>> 13), 1274126177);
+  return ((h ^ (h >>> 16)) >>> 0) / 4294967295;
+}
+const sm = t => t * t * (3 - 2 * t);
+function vnoise(x, y) {
+  const xi = Math.floor(x), yi = Math.floor(y), u = sm(x - xi), v = sm(y - yi);
+  const a = hash(xi, yi), b = hash(xi + 1, yi), c = hash(xi, yi + 1), d = hash(xi + 1, yi + 1);
+  return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+}
+function fbm(x, y) { let s = 0, a = .5; for (let i = 0; i < 5; i++) { s += a * vnoise(x, y); x *= 2; y *= 2; a *= .5; } return s; }
+
+// [cx, cy, rx, ry, weight] in map fractions; negative weight carves water
+const BLOBS = [
+  [.15,.14,.12,.14,1],[.2,.35,.13,.15,1],[.17,.6,.14,.18,1],[.2,.86,.13,.13,1],[.29,.47,.07,.12,.8],
+  [.42,.5,.07,.12,1],[.47,.76,.12,.14,1],[.55,.5,.08,.06,.8],[.64,.79,.06,.07,1],
+  [.7,.42,.1,.1,1],[.85,.45,.1,.14,1],[.77,.67,.11,.11,1],[.92,.72,.07,.14,1],[.73,.25,.06,.08,.7],
+  [.88,.15,.06,.06,.8],[.81,.11,.03,.04,.6],[.6,.6,.06,.07,-1.5],[.33,.66,.03,.18,-.9],
+];
+const RAMP = [ // height -> rgb
+  [-.6,[10,30,44]],[-.2,[16,50,66]],[-.02,[34,88,96]],[0,[186,180,98]],[.04,[192,204,72]],
+  [.2,[156,180,60]],[.36,[118,138,54]],[.5,[140,122,82]],[.7,[196,184,150]],
+];
+function ramp(h) {
+  if (h <= RAMP[0][0]) return RAMP[0][1];
+  for (let i = 1; i < RAMP.length; i++) {
+    if (h <= RAMP[i][0]) {
+      const [h0, c0] = RAMP[i - 1], [h1, c1] = RAMP[i], t = (h - h0) / (h1 - h0);
+      return [c0[0] + (c1[0] - c0[0]) * t, c0[1] + (c1[1] - c0[1]) * t, c0[2] + (c1[2] - c0[2]) * t];
+    }
+  }
+  return RAMP[RAMP.length - 1][1];
+}
+function buildTerrain(W, H) {
+  const hg = new Float32Array(W * H), rg = new Uint8Array(W * H);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const nx = x / W, ny = y / H; let m = 0;
+    for (const [cx, cy, rx, ry, w] of BLOBS) { const dx = (nx - cx) / rx, dy = (ny - cy) / ry; m += w * Math.exp(-(dx * dx + dy * dy)); }
+    m = Math.min(m, 1.3);
+    const n = fbm(nx * 7, ny * 4.6);
+    const ridge = 1 - Math.abs(vnoise(nx * 10 + 7, ny * 6.6 + 3) * 2 - 1);
+    let h = m * .9 + (n - .5) * .85 - .42 + ridge * .22 * Math.max(0, m - .5);
+    h -= Math.max(0, .05 - Math.min(nx, ny, 1 - nx, 1 - ny)) * 8;
+    const i = y * W + x; hg[i] = h;
+    rg[i] = (vnoise(nx * 6 + (n - .5) * 3, ny * 4 + (n - .5) * 3) * 6) | 0;
+  }
+  const c = document.createElement("canvas"); c.width = W; c.height = H;
+  const g = c.getContext("2d"), img = g.createImageData(W, H), d = img.data;
+  for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
+    const i = y * W + x, h = hg[i];
+    let [r, gg, b] = ramp(h);
+    if (h > 0) {
+      const s = (hg[i - W - 1] - hg[i + W + 1]) * 9;
+      const l = Math.max(.6, Math.min(1.3, 1 + s));
+      r *= l; gg *= l; b *= l;
+      if (rg[i] !== rg[i + 1] || rg[i] !== rg[i + W]) { r = r * .55 + 225 * .45; gg = gg * .55 + 232 * .45; b = b * .55 + 205 * .45; }
+      if (h > .03 && h < .3 && Math.abs(((h * 40) % 1) - .5) < .03) { r *= .92; gg *= .92; b *= .92; }
+    } else {
+      if (h > -.025) { r += 40; gg += 70; b += 70; }
+      else if (h > -.3 && ((-h * 18) % 1) < .07) { r += 8; gg += 18; b += 22; }
+    }
+    const o = i * 4; d[o] = r; d[o + 1] = gg; d[o + 2] = b; d[o + 3] = 255;
+  }
+  g.putImageData(img, 0, 0);
+  return c;
+}
+let terrainImg = null;
+
+/* ===== Map canvases ===== */
+const map = $("map"), tc = $("terrain"), fc = $("fx"), tctx = tc.getContext("2d"), fctx = fc.getContext("2d");
+let MW = 0, MH = 0, DPR = 1;
+function resize() {
+  const r = map.getBoundingClientRect(); DPR = Math.min(2, window.devicePixelRatio || 1);
+  MW = r.width; MH = r.height;
+  for (const c of [tc, fc]) { c.width = Math.round(MW * DPR); c.height = Math.round(MH * DPR); }
+  fctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  drawTerrain();
+}
+function drawTerrain() {
+  if (!terrainImg || !MW) return;
+  const g = tctx; g.setTransform(DPR, 0, 0, DPR, 0, 0);
+  g.imageSmoothingEnabled = true; g.imageSmoothingQuality = "high";
+  g.drawImage(terrainImg, 0, 0, MW, MH);
+  g.strokeStyle = "rgba(220,235,245,.07)"; g.lineWidth = 1; g.beginPath();
+  for (let i = 1; i < 10; i++) { const x = Math.round(MW * i / 10) + .5; g.moveTo(x, 0); g.lineTo(x, MH); }
+  for (let i = 1; i < 6; i++) { const y = Math.round(MH * i / 6) + .5; g.moveTo(0, y); g.lineTo(MW, y); }
+  g.stroke();
+  const v = g.createRadialGradient(MW / 2, MH / 2, MH * .35, MW / 2, MH / 2, MW * .7);
+  v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(0,0,0,.4)");
+  g.fillStyle = v; g.fillRect(0, 0, MW, MH);
+}
+
+/* ===== Nodes ===== */
+function buildNodes() {
+  const wrap = $("nodes"); wrap.innerHTML = "";
+  for (const t of teams) {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "node";
+    b.style.cssText = `--x:${t.x * 100}%;--y:${t.y * 100}%;--h:${t.hue}`;
+    b.setAttribute("aria-label", t.name);
+    b.innerHTML = `<span class="rings"></span><span class="hex"><svg viewBox="0 0 100 115" aria-hidden="true">
+      <polygon class="hx-o" points="50,2 98,29.5 98,85.5 50,113 2,85.5 2,29.5"/>
+      <polygon class="hx-i" points="50,17 85,37 85,78 50,98 15,78 15,37"/>
+      <text x="50" y="74">${initials(t.name)}</text></svg><b class="st"></b></span>
+      <span class="tag"></span>`;
+    b.querySelector(".tag").textContent = t.name;
+    b.addEventListener("click", () => select(t.id));
+    wrap.appendChild(b); t.el = b;
+  }
+}
+let selected = null;
+function select(id) {
+  selected = selected === id ? null : id;
+  teams.forEach(t => t.el.classList.toggle("sel", t.id === selected));
+  document.querySelectorAll(".row").forEach(r => r.classList.toggle("sel", +r.dataset.id === selected));
+}
+
+/* ===== Game state ===== */
+let round, judged, gameTime, firstBlood, finished, logItems, base;
+const clockAt = s => { const t = Math.floor(base + s); return `${pad(Math.floor(t / 3600) % 24)}:${pad(Math.floor(t / 60) % 60)}:${pad(t % 60)}`; };
+const fmt = s => `${pad(Math.floor(s / 60))}:${pad(Math.floor(s % 60))}`;
+
+function log(kind, time, team, text, html) {
+  logItems.unshift({ kind, time, team, text, html, fresh: true });
+  if (logItems.length > 80) logItems.length = 80;
+}
+function renderLog() {
+  const ol = $("log"); ol.innerHTML = "";
+  for (const e of logItems) {
+    const li = document.createElement("li");
+    li.className = `ev ${e.kind}${e.fresh ? " new" : ""}`; e.fresh = false;
+    const tm = document.createElement("time"); tm.textContent = e.time; li.appendChild(tm);
+    const box = document.createElement("div");
+    if (e.team) {
+      const w = document.createElement("div"); w.className = "who";
+      w.innerHTML = `<i class="hx" style="--h:${e.team.hue}"></i><span></span>`;
+      w.querySelector("span").textContent = e.team.name; box.appendChild(w);
+    }
+    const p = document.createElement("p");
+    if (e.html) p.innerHTML = e.html; else p.textContent = e.text;
+    box.appendChild(p); li.appendChild(box); ol.appendChild(li);
+  }
+}
+
+function renderBoard(flash) {
+  const ol = $("board"); ol.innerHTML = "";
+  const list = judged ? [...teams].sort((a, b) => a.rank - b.rank) : teams;
+  for (const t of list) {
+    const li = document.createElement("li");
+    li.className = "row" + (judged && t.rank === 1 ? " lead" : "") + (t.id === selected ? " sel" : "") + (flash && t.rank < t.prevRank ? " flash" : "");
+    li.dataset.id = t.id;
+    const move = t.prevRank - t.rank;
+    const dl = !judged ? "–" : (t.delta >= 0 ? "+" : "") + t.delta;
+    li.innerHTML = `<span class="rk">${pad(judged ? t.rank : t.id + 1)}</span><i class="hx" style="--h:${t.hue}"></i>
+      <span class="nm"></span><span class="sc">${judged ? t.score.toLocaleString("en-US") : "–"}</span>
+      <span class="dl ${judged ? (move > 0 ? "up" : move < 0 ? "dn" : "") : ""}">${judged && move ? (move > 0 ? "▲" : "▼") + Math.abs(move) : dl}</span>`;
+    const nm = li.querySelector(".nm"); nm.textContent = t.name;
+    if (judged && t.down) { const c = document.createElement("span"); c.className = "chip"; c.textContent = "DOWN"; nm.appendChild(c); }
+    li.title = judged ? `${t.name}: ${t.score} pts (${dl} this round)` : t.name;
+    li.addEventListener("click", () => select(t.id));
+    ol.appendChild(li);
+  }
+  $("sb-note").textContent = judged ? `after round ${judged}` : "no round closed yet";
+  const downN = teams.filter(t => t.down).length;
+  $("s-down").textContent = judged ? downN : "–";
+  $("s-down-wrap").classList.toggle("alert", judged > 0 && downN > 0);
+  teams.forEach(t => t.el.classList.toggle("down", judged > 0 && t.down > 0));
+}
+
+function closeRound() {
+  const n = round, now = clockAt(gameTime);
+  const delta = new Map(teams.map(t => [t.id, 0]));
+  for (const t of teams) {
+    if (t.down) {
+      t.down--;
+      if (!t.down) log("up", now, t, `restored service “${t.downSvc}”`);
+    } else if (n > 1 && rand() < .04 + (1 - t.skill) * .09) {
+      t.down = 1 + ((rand() * 2) | 0); t.downSvc = pick(CONFIG.services);
+      log("down", now, t, `service “${t.downSvc}” failed the SLA check`);
+    }
+  }
+  const warm = Math.min(1, n / 3);
+  for (const a of teams) for (const v of teams) {
+    if (a === v) continue;
+    for (const svc of CONFIG.services) {
+      if (rand() < a.skill * .3 * (1.15 - v.skill) * warm) {
+        delta.set(a.id, delta.get(a.id) + 10); delta.set(v.id, delta.get(v.id) - 4);
+        if (!firstBlood[svc]) { firstBlood[svc] = a; log("blood", now, a, `first blood on “${svc}” — exploited ${v.name}`); }
+      }
+    }
+  }
+  for (const t of teams) {
+    delta.set(t.id, delta.get(t.id) + (t.down ? 0 : 25 * CONFIG.services.length));
+    t.delta = delta.get(t.id); t.score += t.delta; t.prevRank = t.rank;
+  }
+  [...teams].sort((a, b) => b.score - a.score || a.id - b.id).forEach((t, i) => t.rank = i + 1);
+  judged = n;
+  const lead = teams.find(t => t.rank === 1);
+  if (lead.prevRank !== 1 && n > 1) log("blood", now, lead, "takes the lead");
+  log("round", now, null, null, `<b>ROUND ${n} CLOSED</b> · leader: ${esc(lead.name)} with ${lead.score.toLocaleString("en-US")} pts`);
+  renderBoard(true); renderLog(); sfx.chime();
+  if (n >= CONFIG.rounds) {
+    finished = true;
+    log("sys", now, null, "ATTACK – DEFENSE HAS ENDED"); renderLog();
+    $("over-txt").textContent = `Winner: ${lead.name} · ${lead.score.toLocaleString("en-US")} pts`;
+    $("over").hidden = false;
+  } else round++;
+}
+const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function updateHud() {
+  const left = finished ? 0 : Math.max(0, CONFIG.roundSeconds * round - gameTime);
+  $("s-round").textContent = `${round}/${CONFIG.rounds}`;
+  $("s-time").textContent = fmt(left);
+  $("b-round").textContent = round;
+  $("b-time").textContent = fmt(left);
+}
+
+function reset() {
+  makeTeams(); buildNodes();
+  round = 1; judged = 0; gameTime = 0; firstBlood = {}; finished = false; logItems = [];
+  const [hh, mm, ss] = CONFIG.startClock.split(":").map(Number); base = hh * 3600 + mm * 60 + ss;
+  // Phase 1 recap: every team decrypts its box before attack-defense opens
+  const order = [...teams].sort(() => rand() - .5);
+  order.forEach((t, i) => {
+    const s = i >= order.length - 3 ? -21 : -21 - (order.length - 3 - i) * (6 + ((rand() * 9) | 0));
+    logItems.unshift({ kind: "", time: clockAt(s), team: t, text: "broke free of the ransomware" });
+  });
+  log("sys", clockAt(0), null, "ATTACK – DEFENSE HAS BEGUN");
+  logItems.forEach(e => e.fresh = false);
+  $("s-unlocked").textContent = `${teams.length}/${teams.length}`;
+  $("over").hidden = true;
+  missiles.length = 0; parts.length = 0; rings.length = 0;
+  renderBoard(false); renderLog(); updateHud();
+  teams.forEach(t => t.el.classList.toggle("sel", t.id === selected));
+}
+
+/* ===== Sound (WebAudio, starts only after a click) ===== */
+const sfx = (() => {
+  let ctx = null, out = null, on = false, music = false, timer = null, step = 0, lastBoom = 0;
+  const init = () => {
+    try {
+      if (!ctx) { ctx = new (window.AudioContext || window.webkitAudioContext)(); out = ctx.createGain(); out.gain.value = .45; out.connect(ctx.destination); }
+      if (ctx.state === "suspended") ctx.resume();
+      return true;
+    } catch (e) { return false; }
+  };
+  const tone = (f, dur, type, vol, at = 0) => {
+    const t0 = ctx.currentTime + at, o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type; o.frequency.value = f; g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(.0001, t0 + dur);
+    o.connect(g); g.connect(out); o.start(t0); o.stop(t0 + dur + .02);
+  };
+  const boom = () => {
+    if (!on || !ctx) return;
+    const now = performance.now(); if (now - lastBoom < 140) return; lastBoom = now;
+    const len = ctx.sampleRate * .35, buf = ctx.createBuffer(1, len, ctx.sampleRate), ch = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) ch[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.4);
+    const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    s.buffer = buf; f.type = "lowpass"; f.frequency.value = 520 + Math.random() * 400; g.gain.value = .32;
+    s.connect(f); f.connect(g); g.connect(out); s.start();
+  };
+  const chime = () => { if (on && ctx) { tone(880, .25, "sine", .08); tone(1320, .4, "sine", .06, .12); } };
+  const SCALE = [220, 261.63, 293.66, 329.63, 392, 440];
+  const tick = () => {
+    if (!ctx) return;
+    if (step % 8 === 0) tone([55, 55, 43.65, 49][(step / 8 | 0) % 4], 1.6, "sawtooth", .045);
+    if (step % 2 === 0) tone(SCALE[(step * 7 + (step >> 3)) % SCALE.length] * (step % 16 < 8 ? 1 : 2), .22, "triangle", .028);
+    step++;
+  };
+  return {
+    boom, chime,
+    toggleSound() { if (!init()) return false; on = !on; if (on) tone(660, .08, "square", .04); return on; },
+    toggleMusic() { if (!init()) return false; music = !music; clearInterval(timer); if (music) timer = setInterval(tick, 230); return music; },
+  };
+})();
+$("btn-sound").addEventListener("click", e => { const v = sfx.toggleSound(); e.currentTarget.setAttribute("aria-pressed", v); e.currentTarget.textContent = `◖ SOUND ${v ? "ON" : "OFF"}`; });
+$("btn-music").addEventListener("click", e => { const v = sfx.toggleMusic(); e.currentTarget.setAttribute("aria-pressed", v); e.currentTarget.textContent = `♫ MUSIC ${v ? "ON" : "OFF"}`; });
+let speed = 10;
+$("speed").addEventListener("change", e => { speed = +e.target.value; });
+$("btn-restart").addEventListener("click", reset);
+
+/* ===== Effects: simulated missiles, impacts and fires ===== */
+const missiles = [], parts = [], rings = [];
+let nextSpawn = 0;
+function spawn(now) {
+  const a = pick(teams); let b = pick(teams); while (b === a) b = pick(teams);
+  missiles.push({ a, b, t0: now, dur: 1100 + rand() * 1000, trail: [], bend: .25 + rand() * .2 });
+}
+function impact(t, now) {
+  const x = t.x * MW, y = t.y * MH;
+  rings.push({ x, y, t0: now });
+  for (let i = 0; i < 16; i++) {
+    const ang = rand() * Math.PI * 2, sp = 20 + rand() * 60;
+    parts.push({ x, y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp, t0: now, life: 400 + rand() * 500 });
+  }
+  t.el.classList.remove("hit"); void t.el.offsetWidth; t.el.classList.add("hit");
+  sfx.boom();
+}
+function bez(m) {
+  const x0 = m.a.x * MW, y0 = m.a.y * MH, x1 = m.b.x * MW, y1 = m.b.y * MH;
+  const d = Math.hypot(x1 - x0, y1 - y0);
+  return { x0, y0, x1, y1, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 - d * m.bend };
+}
+function frame(now, dt) {
+  const g = fctx; g.clearRect(0, 0, MW, MH);
+  const unit = MW / 100;
+
+  // fires on teams that are down
+  g.globalCompositeOperation = "lighter";
+  for (const t of teams) if (judged && t.down) {
+    const x = t.x * MW, y = t.y * MH + unit * 1.2, f = .7 + Math.sin(now / 90 + t.id) * .15 + Math.random() * .15;
+    const r = unit * 3.2 * f, gr = g.createRadialGradient(x, y, 0, x, y, r);
+    gr.addColorStop(0, "rgba(255,170,60,.8)"); gr.addColorStop(.4, "rgba(255,80,30,.35)"); gr.addColorStop(1, "rgba(255,40,20,0)");
+    g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill();
+  }
+
+  if (!finished && !reduceMotion && now > nextSpawn) { spawn(now); nextSpawn = now + 250 + rand() * 650; }
+
+  for (let i = missiles.length - 1; i >= 0; i--) {
+    const m = missiles[i], p = Math.min(1, (now - m.t0) / m.dur), q = bez(m), u = 1 - p;
+    const x = u * u * q.x0 + 2 * u * p * q.cx + p * p * q.x1, y = u * u * q.y0 + 2 * u * p * q.cy + p * p * q.y1;
+    m.trail.push([x, y]); if (m.trail.length > 22) m.trail.shift();
+    for (let k = 1; k < m.trail.length; k++) {
+      const a = k / m.trail.length;
+      g.strokeStyle = `rgba(255,${150 + a * 80 | 0},${90 + a * 80 | 0},${a * .7})`; g.lineWidth = Math.max(1, unit * .22 * a);
+      g.beginPath(); g.moveTo(m.trail[k - 1][0], m.trail[k - 1][1]); g.lineTo(m.trail[k][0], m.trail[k][1]); g.stroke();
+    }
+    const hr = Math.max(3, unit * .55), hg = g.createRadialGradient(x, y, 0, x, y, hr * 2.4);
+    hg.addColorStop(0, "rgba(255,245,220,1)"); hg.addColorStop(.35, "rgba(255,190,90,.6)"); hg.addColorStop(1, "rgba(255,120,40,0)");
+    g.fillStyle = hg; g.beginPath(); g.arc(x, y, hr * 2.4, 0, Math.PI * 2); g.fill();
+    if (p >= 1) { impact(m.b, now); missiles.splice(i, 1); }
+  }
+  for (let i = rings.length - 1; i >= 0; i--) {
+    const r = rings[i], p = (now - r.t0) / 700;
+    if (p >= 1) { rings.splice(i, 1); continue; }
+    g.strokeStyle = `rgba(255,110,70,${(1 - p) * .9})`; g.lineWidth = Math.max(1, unit * .2);
+    g.beginPath(); g.arc(r.x, r.y, unit * (1 + p * 4), 0, Math.PI * 2); g.stroke();
+  }
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const s = parts[i], p = (now - s.t0) / s.life;
+    if (p >= 1) { parts.splice(i, 1); continue; }
+    s.x += s.vx * dt; s.y += s.vy * dt; s.vx *= .96; s.vy *= .96;
+    g.fillStyle = `rgba(255,${200 - p * 120 | 0},80,${1 - p})`;
+    g.fillRect(s.x, s.y, Math.max(1.5, unit * .25), Math.max(1.5, unit * .25));
+  }
+  g.globalCompositeOperation = "source-over";
+}
+
+/* ===== Main loop ===== */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.min(.1, (now - last) / 1000); last = now;
+  if (!finished) {
+    gameTime += dt * speed;
+    while (!finished && gameTime >= CONFIG.roundSeconds * round) closeRound();
+    updateHud();
+  }
+  if (MW) frame(now, dt);
+  requestAnimationFrame(loop);
+}
+
+/* ===== Boot ===== */
+$("ev-name").innerHTML = `${esc(CONFIG.event[0])}<em>${esc(CONFIG.event[1])}</em>`;
+$("ev-div").textContent = `BATTLE MAP · ${CONFIG.division}`;
+reset();
+new ResizeObserver(resize).observe(map);
+requestAnimationFrame(() => {
+  terrainImg = buildTerrain(640, 421);
+  drawTerrain();
+  requestAnimationFrame(loop);
+});
+})();
+</script>
+</body>
+</html>
