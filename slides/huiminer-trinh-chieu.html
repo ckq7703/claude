@@ -1,0 +1,965 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>HUI-Miner trình chiếu</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="katex/katex.min.css">
+<style>
+/* Layout: thanh điều khiển gọn · sân khấu 1920×1080 (khuôn KQ-SLIDE) chiếm gần hết màn hình · lời trình bày mở bằng phím N */
+:root{
+  color-scheme:dark;
+  --title:#16598c;--orange:#f05d32;--blue:#2777b6;--light:#4a93c9;
+  --card:#eef4fa;--pill:#fde7df;--text:#333333;--muted:#555555;--line:#cfe0ee;--hl:#dbe9f5;
+  --grey:#7a8fa3;--greybg:#f3f6f9;--white:#ffffff;
+  --shell:#0f1b27;--shell2:#16212e;--shell-line:#2a3a4c;--shell-text:#e6f0f8;--shell-muted:#9fb3c8;
+  --font:Arial,'Liberation Sans','Helvetica Neue',Helvetica,sans-serif;
+  --mono:'Courier New','Liberation Mono',monospace;
+  /* Thang chữ duy nhất cho mọi slide (đơn vị trên khung 1920×1080) */
+  --fs-hero:84px;   /* tên đề tài ở trang bìa */
+  --fs-num:60px;    /* con số lớn */
+  --fs-title:64px;  /* tiêu đề slide */
+  --fs-h3:40px;     /* tiêu đề thẻ */
+  --fs-body:36px;   /* nội dung */
+  --fs-table:34px;  /* bảng, danh sách, phép tính */
+  --fs-small:30px;  /* nhãn, chú thích: cỡ nhỏ nhất */
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--shell);color:var(--shell-text);font-family:var(--font);overflow:hidden}
+
+/* ===== khung ứng dụng ===== */
+.app{height:100%;display:grid;grid-template-rows:auto 1fr auto;gap:6px;padding-block:6px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.tool{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
+.tool .nm{font-weight:700;font-size:16px}
+.tool .ct{font-size:15px;color:var(--shell-muted);font-variant-numeric:tabular-nums}
+.tool .sp{flex:1}
+.tool .hint{font-size:14px;color:var(--shell-muted)}
+.btn{font:inherit;font-size:15px;font-weight:700;color:var(--shell-text);background:var(--shell2);border:1px solid var(--shell-line);border-radius:8px;padding:6px 14px;cursor:pointer}
+.btn:hover{border-color:var(--light)}
+.btn:focus-visible{outline:3px solid var(--light);outline-offset:2px}
+.btn.pr{background:var(--blue);border-color:var(--blue);color:var(--white)}
+.btn[aria-pressed="true"]{border-color:var(--orange)}
+.prog{width:100%;height:4px;background:var(--shell-line);border-radius:2px;overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--orange);transition:width .3s}
+.vp{position:relative;min-height:0;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;background:var(--white);overflow:hidden;transform-origin:center center;cursor:pointer;color:var(--text)}
+.notes{background:var(--shell2);border:1px solid var(--shell-line);border-radius:10px;max-height:24vh;overflow:auto;padding:10px 16px;min-width:0}
+.notes[hidden]{display:none!important}
+.nh{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;font-size:14px;color:var(--shell-muted);margin-bottom:6px}
+.nh b{color:var(--shell-text);font-size:15px}
+.nl{display:grid;gap:6px}
+.nl p{font-size:19px;line-height:1.5;max-width:120ch;padding:6px 12px;border-left:4px solid transparent;border-radius:4px}
+.nl p.past{color:var(--shell-muted)}
+.nl p.now{border-left-color:var(--orange);background:#22344a;color:var(--white)}
+.nl p.future{opacity:.45}
+.nl p .k{font-family:var(--mono);font-size:14px;color:var(--shell-muted);margin-right:8px}
+
+/* ===== slide ===== */
+.bg{position:absolute;left:0;top:0;width:1920px;height:1080px;display:block}
+.s{position:absolute;inset:0;display:none}.s.on{display:block}
+.tag{position:absolute;right:108px;top:22px;background:var(--pill);color:var(--orange);font-weight:700;font-size:var(--fs-small);padding:10px 28px;border-radius:40px;letter-spacing:1px}
+.s h2{position:absolute;left:108px;top:80px;font-size:var(--fs-title);line-height:1.15;font-weight:700;color:var(--title)}
+.s h2 span{color:var(--orange)}
+.sub{position:absolute;left:108px;top:164px;font-size:var(--fs-small);color:var(--muted)}
+.bd{position:absolute;left:108px;top:232px;width:1704px;height:752px;display:flex;flex-direction:column;gap:28px}
+.pg{position:absolute;right:108px;bottom:22px;font-size:var(--fs-small);color:var(--title);font-weight:700}
+.s p,.s li{font-size:var(--fs-body);line-height:1.4;color:var(--text)}
+.s h3{font-size:var(--fs-h3);line-height:1.2;color:var(--title);font-weight:700}
+.s b{color:var(--title)}
+.cap{font-size:var(--fs-body)!important;font-weight:700;color:var(--title)!important}
+.num{font-size:var(--fs-num)!important;line-height:1.05!important;font-weight:700;color:var(--blue)!important}
+.mut{color:var(--muted)!important}
+.sm{font-size:var(--fs-small)!important}
+.o{color:var(--orange)!important;font-weight:700}
+.mono{font-family:var(--mono);font-weight:700}
+.row{display:flex;gap:32px;align-items:flex-start}
+.f1{flex:1;min-width:0}
+.col{display:flex;flex-direction:column;gap:18px}
+.card{background:var(--card);border-radius:28px;padding:28px 36px;display:flex;flex-direction:column;gap:14px}
+.card.dark{background:var(--title)}
+.card.dark p,.card.dark h3,.card.dark b,.card.dark .cap,.card.dark .num{color:var(--white)!important}
+.band{background:var(--title);border-radius:26px;padding:24px 40px}
+.band p,.band b{color:var(--white)!important}
+.bar{width:72px;height:6px;border-radius:4px;background:var(--orange)}
+.fm{background:var(--white);border:2px solid var(--line);border-radius:18px;padding:14px 26px;font-size:var(--fs-body);color:var(--title)}
+.katex{font-size:1.05em}
+.katex-display{margin:0}
+
+/* bảng */
+.tb{border-collapse:collapse;font-size:var(--fs-table);background:var(--white)}
+.tb th{background:var(--title);color:var(--white);padding:10px 18px;font-weight:700;text-align:left}
+.tb td{padding:10px 18px;border-bottom:2px solid var(--line);color:var(--text);font-variant-numeric:tabular-nums;line-height:1.3}
+.tb .r{text-align:right}.tb .c{text-align:center}
+.tb tr.hl td{background:var(--hl)}
+.tb tr.hl td:first-child{box-shadow:inset 6px 0 0 var(--blue)}
+.tb td.hl{background:var(--hl);font-weight:700;color:var(--title)}
+
+/* nhãn trạng thái */
+.pl{display:inline-block;font-size:var(--fs-small);font-weight:700;border-radius:30px;padding:2px 18px;border:2px solid;line-height:1.4;vertical-align:middle}
+.pl.hui{background:var(--blue);border-color:var(--blue);color:var(--white)}
+.pl.go{background:var(--white);border-color:var(--blue);color:var(--blue)}
+.pl.cut{background:var(--greybg);border-color:var(--grey);border-style:dashed;color:var(--grey)}
+.pl.warn{background:var(--pill);border-color:var(--orange);color:var(--orange)}
+
+/* trạng thái theo bước */
+[data-s],[data-only]{transition:opacity .35s ease,transform .35s ease}
+.pre{opacity:0!important;transform:translateY(12px);pointer-events:none}
+.x{opacity:.4;text-decoration:line-through}
+.stk{display:grid}.stk>*{grid-area:1/1}
+@media (prefers-reduced-motion:reduce){[data-s],[data-only],.prog i,.e,.seg,.bk,.nd{transition:none!important}.pre{transform:none}}
+
+/* bìa */
+.kick{position:absolute;left:108px;top:270px;font-size:var(--fs-small);font-weight:700;color:var(--blue);letter-spacing:1px}
+.big1{position:absolute;left:108px;top:322px;font-size:var(--fs-hero);line-height:1.12;font-weight:700;color:var(--title)}
+.big1 span{color:var(--orange)}
+.sub1{position:absolute;left:108px;top:640px;width:1500px;font-size:var(--fs-body);line-height:1.4;color:var(--muted)}
+.chips{position:absolute;left:108px;top:782px;display:flex;gap:24px}
+.chip{background:var(--card);border-radius:24px;padding:18px 30px;font-size:var(--fs-small);color:var(--title);font-weight:700;min-width:270px}
+.chip b{display:block;font-size:var(--fs-num);color:var(--blue);line-height:1.05;margin-bottom:4px}
+.who{position:absolute;left:108px;top:938px;font-size:var(--fs-small);color:var(--muted)}
+
+/* mục lục */
+.ag{display:grid;grid-template-columns:90px 560px 1fr;align-items:center;gap:0 28px;background:var(--card);border-radius:24px;padding:16px 32px}
+.ag.dark{background:var(--title)}
+.ag .n{font-size:var(--fs-num);font-weight:700;color:var(--blue);line-height:1}
+.ag.dark .n,.ag.dark h3,.ag.dark p{color:var(--white)}
+
+/* luồng */
+.flow{display:flex;align-items:stretch}
+.fl{flex:1;background:var(--white);border:2px solid var(--line);border-radius:22px;padding:20px 24px;position:relative;display:flex;flex-direction:column;gap:6px}
+.fl b{font-size:var(--fs-body)}
+.fl p{font-size:var(--fs-small)!important;line-height:1.35}
+.fl+.fl{margin-left:48px}
+.fl+.fl:before{content:"›";position:absolute;left:-40px;top:50%;margin-top:-34px;font-size:var(--fs-num);color:var(--light);font-weight:700}
+.fl.key{background:var(--title);border-color:var(--title)}
+.fl.key p,.fl.key b{color:var(--white)}
+
+/* thứ tự mục */
+.ord{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.it{font-family:var(--mono);font-weight:700;font-size:var(--fs-h3);color:var(--title);background:var(--white);border:2px solid var(--blue);border-radius:14px;padding:4px 24px}
+.it.first{background:var(--blue);color:var(--white)}
+.lt{font-size:var(--fs-h3);font-weight:700;color:var(--light)}
+
+/* biểu đồ cột slide 6 */
+.chart{position:relative;height:400px;width:820px;border-bottom:3px solid var(--title);display:flex;align-items:flex-end;gap:56px;padding:0 40px}
+.bk{width:140px;background:var(--greybg);border:2px solid var(--grey);border-bottom:none;border-radius:12px 12px 0 0;display:flex;justify-content:center;padding-top:10px;font-size:var(--fs-body);font-weight:700;color:var(--muted);transition:background .3s,color .3s,opacity .35s,transform .35s}
+.bk.hl{background:var(--blue);border-color:var(--blue);color:var(--white)}
+.thr{position:absolute;left:0;right:0;border-top:4px dashed var(--orange)}
+.thr span{position:absolute;right:0;top:-48px;font-size:var(--fs-small);font-weight:700;color:var(--orange)}
+.xl{display:flex;gap:56px;padding:0 40px;width:820px}
+.xl p{width:140px;text-align:center;font-size:var(--fs-small)!important;line-height:1.3}
+
+/* thanh giao dịch slide 10 */
+.tbar{display:flex;height:90px}
+.seg{border:3px solid var(--line);margin-right:-3px;background:var(--white);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:var(--fs-body);color:var(--title);transition:background .3s,color .3s,opacity .3s}
+.seg:first-child{border-radius:14px 0 0 14px}.seg:last-child{border-radius:0 14px 14px 0}
+.seg.i.hl{background:var(--blue);border-color:var(--blue);color:var(--white);position:relative;z-index:1}
+.seg.r.hl{background:var(--pill);border-color:var(--orange);color:var(--orange)}
+.seg.x{opacity:.35;text-decoration:none}
+.brs{position:relative;height:96px}
+.br{position:absolute;top:0;border-top:4px solid;padding-top:8px;font-size:var(--fs-small)!important;font-weight:700;line-height:1.25!important;text-align:center}
+.br.i{border-color:var(--blue);color:var(--blue)!important}
+.br.r{border-color:var(--orange);color:var(--orange)!important}
+.br.m{border-color:var(--grey);color:var(--grey)!important}
+
+/* danh sách độ hữu ích */
+.uls{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;flex:1;min-width:0}
+.ul{background:var(--white);border:2px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
+.uh{background:var(--title);color:var(--white);font-size:var(--fs-table);font-weight:700;padding:6px 16px;font-family:var(--mono)}
+.uh small{font-family:var(--font);font-size:var(--fs-small);font-weight:400}
+.e{font-size:var(--fs-table);padding:6px 16px;border-top:2px solid var(--line);color:var(--text);font-variant-numeric:tabular-nums;white-space:nowrap;transition:background .3s,opacity .35s,transform .35s}
+.uh+.e{border-top:0}
+.e.hl{background:var(--hl);box-shadow:inset 6px 0 0 var(--blue);font-weight:700;color:var(--title)}
+.calc{font-size:var(--fs-table)!important;color:var(--text)}
+
+/* cây tìm kiếm slide 16 */
+.tree{position:relative;width:1120px;height:690px;flex:none}
+.tree svg{position:absolute;left:0;top:0}
+.tree line{stroke:var(--light);stroke-width:4;transition:opacity .35s}
+.nd{position:absolute;width:200px;height:130px;border-radius:18px;border:3px solid var(--blue);background:var(--white);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:opacity .35s,transform .35s,box-shadow .3s}
+.nd .a{font-family:var(--mono);font-weight:700;font-size:var(--fs-table);color:var(--title);line-height:1.1}
+.nd .v{font-size:var(--fs-small);color:var(--text);line-height:1.2;font-variant-numeric:tabular-nums}
+.nd .t{font-size:var(--fs-small);font-weight:700;color:var(--blue);line-height:1.2}
+.nd.cut{border-style:dashed;border-color:var(--grey);background:var(--greybg)}
+.nd.cut .a,.nd.cut .v,.nd.cut .t{color:var(--grey)}
+.nd.hui{background:var(--blue)}
+.nd.hui .a,.nd.hui .v,.nd.hui .t{color:var(--white)}
+.nd.hl{box-shadow:0 0 0 8px var(--pill),0 0 0 11px var(--orange)}
+
+/* thanh so sánh slide 18 */
+.hb{display:grid;grid-template-columns:200px 1fr;gap:12px 16px;align-items:center}
+.hb .lb{font-size:var(--fs-small);color:var(--text)}
+.hb .tk{height:52px;background:var(--greybg);border-radius:10px;overflow:hidden}
+.hb .fi{min-width:max-content;height:100%;border-radius:10px;background:var(--grey);color:var(--white);font-size:var(--fs-small);font-weight:700;display:flex;align-items:center;padding:0 14px;white-space:nowrap}
+.hb .fi.me{background:var(--blue)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="tool">
+    <span class="nm">HUI-Miner</span>
+    <span class="ct" id="ct">1 / 20</span>
+    <span class="sp"></span>
+    <span class="hint">→ / Space: bước tiếp · ←: lùi · N: lời trình bày · F: toàn màn hình</span>
+    <button class="btn" id="pv" type="button">← Lùi</button>
+    <button class="btn pr" id="nx" type="button">Tiếp →</button>
+    <button class="btn" id="tn" type="button" aria-pressed="false">Lời trình bày</button>
+    <button class="btn" id="fs" type="button">Toàn màn hình</button>
+    <div class="prog" aria-hidden="true"><i id="pgb"></i></div>
+  </div>
+
+  <div class="vp" id="vp">
+  <div id="stage" role="region" aria-label="Slide">
+  <img class="bg" src="kq-background.png" alt="">
+  <div class="pg" id="pg"></div>
+
+<!-- ================= 1. BÌA ================= -->
+<section class="s" data-time="30 giây">
+  <div class="tag">BÁO CÁO BÀI BÁO KHOA HỌC</div>
+  <div class="kick">KHAI PHÁ DỮ LIỆU · ACM CIKM 2012</div>
+  <h1 class="big1">HUI-Miner <span>–</span><br>Khai phá tập hữu ích cao<br>không phát sinh ứng viên</h1>
+  <div class="sub1"><i>Mining High Utility Itemsets without Candidate Generation</i><br><b>Mengchi Liu &amp; Junfeng Qu · trang 55–64</b></div>
+  <div class="chips">
+    <div class="chip"><b>2 lần</b>quét cơ sở dữ liệu</div>
+    <div class="chip"><b>3 giá trị</b>tid · iutil · rutil</div>
+    <div class="chip"><b>1 pha</b>không lưu ứng viên</div>
+  </div>
+  <div class="who">Người trình bày: [Họ tên] · [Lớp / Nhóm] · [Ngày]</div>
+  <template class="nt">
+    <p data-n="0">Bài trình bày này giới thiệu bài báo "Mining High Utility Itemsets without Candidate Generation" của Mengchi Liu và Junfeng Qu, công bố tại hội nghị CIKM năm 2012. Bài báo đề xuất thuật toán HUI-Miner, dùng để tìm các tập mục có độ hữu ích cao trong cơ sở dữ liệu giao dịch mà không cần bước phát sinh ứng viên.</p>
+  </template>
+</section>
+
+<!-- ================= 2. NỘI DUNG ================= -->
+<section class="s" data-time="30 giây">
+  <div class="tag">NỘI DUNG</div>
+  <h2>Nội dung trình bày</h2>
+  <div class="sub">Một cơ sở dữ liệu 7 giao dịch lấy từ bài báo được dùng xuyên suốt</div>
+  <div class="bd" style="gap:16px">
+    <div class="ag"><span class="n">1</span><h3>Giới thiệu</h3><p>Bài toán, cách làm trước đây, ý tưởng chính</p></div>
+    <div class="ag"><span class="n">2</span><h3>Một số định nghĩa</h3><p>Độ hữu ích, TWU, ví dụ minh họa</p></div>
+    <div class="ag dark"><span class="n">3</span><h3>Cấu trúc Utility List</h3><p>Bộ ba tid, iutil, rutil và phép kết hợp</p></div>
+    <div class="ag dark"><span class="n">4</span><h3>Thuật toán HUI-Miner</h3><p>Quy tắc tỉa, chạy ví dụ từng bước</p></div>
+    <div class="ag"><span class="n">5</span><h3>Thực nghiệm</h3><p>So sánh kết quả và đánh giá</p></div>
+  </div>
+  <template class="nt">
+    <p data-n="0">Bài trình bày gồm năm phần. Phần một giới thiệu bài toán, cách làm của các thuật toán trước và ý tưởng chính của HUI-Miner. Phần hai nêu một số định nghĩa cần thiết. Phần ba trình bày cấu trúc Utility List. Phần bốn trình bày thuật toán HUI-Miner và chạy thử từng bước trên một cơ sở dữ liệu nhỏ lấy từ bài báo, với ngưỡng minutil bằng 30. Phần năm trình bày kết quả thực nghiệm và một số nhận xét đánh giá.</p>
+  </template>
+</section>
+
+<!-- ================= 3. BÀI TOÁN ================= -->
+<section class="s" data-time="1 phút">
+  <div class="tag">1 · GIỚI THIỆU</div>
+  <h2>Từ tần suất đến độ hữu ích</h2>
+  <div class="sub">Không chỉ hỏi “mua gì”, mà hỏi “mua bao nhiêu” và “lời bao nhiêu”</div>
+  <div class="bd">
+    <div class="row" style="align-items:stretch">
+      <div class="card f1"><p class="cap">Khai phá tập phổ biến</p><div class="bar"></div><p>Chỉ đếm <b>số giao dịch chứa tập mục</b>. Mua 1 hay 3 hộp sữa đều tính là một lần.</p></div>
+      <div class="card dark f1" data-s="1"><p class="cap">Khai phá tập hữu ích cao</p><div class="bar"></div><p>Tính <b>số lượng × lợi nhuận</b>. Tìm mọi tập mục có độ hữu ích <b>≥ minutil</b>.</p></div>
+    </div>
+    <div class="row" style="align-items:center">
+      <table class="tb" data-s="2" style="width:860px">
+        <tr><th>Tập mục</th><th class="r">Độ hỗ trợ</th><th class="r">Độ hữu ích</th></tr>
+        <tr><td class="mono">{b, c}</td><td class="r">3</td><td class="r">18</td></tr>
+        <tr data-s="3"><td class="mono">{d, e}</td><td class="r">2</td><td class="r">22</td></tr>
+      </table>
+      <div class="card f1" data-s="4"><p><b>Xuất hiện nhiều hơn chưa chắc có độ hữu ích cao hơn.</b></p></div>
+    </div>
+  </div>
+  <template class="nt">
+    <p data-n="0">Bài toán quen thuộc trong khai phá dữ liệu là tìm tập phổ biến, tức các nhóm mặt hàng thường được mua cùng nhau. Cách này chỉ ghi nhận một mặt hàng có xuất hiện trong giao dịch hay không. Nó không phân biệt khách mua một hay ba đơn vị, cũng không phân biệt mặt hàng có lợi nhuận cao hay thấp.</p>
+    <p data-n="1">Khai phá tập hữu ích cao bổ sung hai thông tin này: số lượng mua và lợi nhuận đơn vị. Mục tiêu là tìm mọi tập mục có tổng độ hữu ích không nhỏ hơn một ngưỡng cho trước, gọi là minutil.</p>
+    <p data-n="2">Ví dụ trong bài báo: tập {b, c} xuất hiện trong ba giao dịch, có độ hữu ích 18.</p>
+    <p data-n="3">Tập {d, e} chỉ xuất hiện trong hai giao dịch nhưng có độ hữu ích 22.</p>
+    <p data-n="4">Như vậy hai thước đo có thể cho thứ hạng khác nhau. Tập xuất hiện nhiều hơn chưa chắc có độ hữu ích cao hơn.</p>
+  </template>
+</section>
+
+<!-- ================= 4. HAI PHA ================= -->
+<section class="s" data-time="1 phút">
+  <div class="tag">1 · GIỚI THIỆU</div>
+  <h2>Hai pha: phát sinh ứng viên rồi kiểm tra</h2>
+  <div class="sub">Two-Phase, IHUP, UP-Growth, UP-Growth+</div>
+  <div class="bd">
+    <div class="flow">
+      <div class="fl"><b>Dữ liệu</b><p>Các giao dịch</p></div>
+      <div class="fl" data-s="1"><b>Pha 1</b><p>Giữ các tập có cận trên ≥ minutil</p></div>
+      <div class="fl" data-s="2"><b>Pha 2</b><p>Quét lại dữ liệu, tính độ hữu ích thật</p></div>
+      <div class="fl key" data-s="2"><b>Kết quả</b><p>Các tập đạt ngưỡng</p></div>
+    </div>
+    <div class="row" style="align-items:stretch">
+      <table class="tb" data-s="3" style="width:1000px;flex:none">
+        <tr><th>chain, minutil 0,007%</th><th class="r">Ứng viên</th><th class="r">HUI</th></tr>
+        <tr><td>IHUP-TWU</td><td class="r">558.254</td><td class="r">6.920</td></tr>
+        <tr><td>UP-Growth</td><td class="r">48.198</td><td class="r">6.920</td></tr>
+        <tr><td>UP-Growth+</td><td class="r">33.966</td><td class="r">6.920</td></tr>
+      </table>
+      <div class="card dark f1" data-s="4"><p class="cap">Hai vấn đề</p><p>Bộ nhớ để lưu ứng viên</p><p>Thời gian để kiểm tra ứng viên</p></div>
+    </div>
+  </div>
+  <template class="nt">
+    <p data-n="0">Để giải bài toán này, trước HUI-Miner, các thuật toán như Two-Phase, IHUP, UP-Growth thường làm theo hai pha, bắt đầu từ cơ sở dữ liệu giao dịch.</p>
+    <p data-n="1">Pha một ước lượng một giá trị lớn hơn hoặc bằng độ hữu ích thật, gọi là cận trên, rồi giữ lại các tập có cận trên đạt ngưỡng. Những tập này là ứng viên.</p>
+    <p data-n="2">Pha hai quét lại cơ sở dữ liệu để tính độ hữu ích chính xác của từng ứng viên, rồi giữ lại các ứng viên đạt ngưỡng.</p>
+    <p data-n="3">Bảng này lấy từ bài báo, trên bộ dữ liệu chain. IHUP-TWU phát sinh hơn 558 nghìn ứng viên, trong khi số tập hữu ích cao thực tế là 6.920. UP-Growth+ giảm số ứng viên xuống khoảng 34 nghìn, vẫn lớn hơn khoảng năm lần so với kết quả cần tìm.</p>
+    <p data-n="4">Cách làm này gặp hai vấn đề: cần bộ nhớ để lưu ứng viên, và cần thời gian để phát sinh rồi kiểm tra chúng.</p>
+  </template>
+</section>
+
+<!-- ================= 5. Ý TƯỞNG ================= -->
+<section class="s" data-time="30 giây">
+  <div class="tag">1 · GIỚI THIỆU</div>
+  <h2>Mỗi tập mục mang theo một <span>utility-list</span></h2>
+  <div class="sub">Danh sách này trả lời hai câu hỏi mà không cần quét lại dữ liệu</div>
+  <div class="bd">
+    <div class="row" style="align-items:stretch">
+      <div class="card f1"><p class="cap">Câu hỏi 1</p><div class="bar"></div><p>Độ hữu ích chính xác của tập mục là bao nhiêu?</p></div>
+      <div class="card f1"><p class="cap">Câu hỏi 2</p><div class="bar"></div><p>Có cần xét tiếp các tập lớn hơn chứa nó không?</p></div>
+    </div>
+    <div class="flow">
+      <div class="fl" data-s="1"><b>Quét lần 1</b><p>Loại các mục không cần xét, sắp xếp các mục còn lại</p></div>
+      <div class="fl" data-s="2"><b>Quét lần 2</b><p>Tạo utility-list cho từng mục</p></div>
+      <div class="fl key" data-s="3"><b>Không quét thêm</b><p>Kết hợp các danh sách, duyệt theo chiều sâu</p></div>
+    </div>
+  </div>
+  <template class="nt">
+    <p data-n="0">Ý tưởng của HUI-Miner là gắn cho mỗi tập mục một danh sách, gọi là utility-list. Danh sách này chứa đủ thông tin để trả lời hai câu hỏi: độ hữu ích chính xác của tập mục là bao nhiêu, và có cần xét tiếp các tập lớn hơn chứa nó hay không.</p>
+    <p data-n="1">Thuật toán quét cơ sở dữ liệu lần thứ nhất để loại các mục chắc chắn không cần xét và sắp xếp các mục còn lại. Cách loại mục được trình bày ở phần định nghĩa.</p>
+    <p data-n="2">Lần quét thứ hai dùng để tạo utility-list cho từng mục đơn.</p>
+    <p data-n="3">Sau đó mọi tính toán dựa trên việc kết hợp các danh sách, không cần quét lại cơ sở dữ liệu và không cần lưu tập ứng viên.</p>
+  </template>
+</section>
+
+<!-- ================= 6. DỮ LIỆU ================= -->
+<section class="s" data-time="1 phút">
+  <div class="tag">2 · MỘT SỐ ĐỊNH NGHĨA</div>
+  <h2>Cơ sở dữ liệu mẫu</h2>
+  <div class="sub">7 mặt hàng, 7 giao dịch · Hình 1 và Hình 2 của bài báo</div>
+  <div class="bd">
+    <div class="row">
+      <table class="tb" style="width:920px;flex:none">
+        <tr><th>Tid</th><th>Mặt hàng × số lượng</th><th class="r">tu(T)</th></tr>
+        <tr data-hl="1"><td>T1</td><td class="mono">b×1 c×2 d×1 g×1</td><td class="r" data-hl="2-">10</td></tr>
+        <tr data-hl="3-"><td>T2</td><td class="mono">a×4 b×1 c×3 d×1 e×1</td><td class="r" data-hl="2-">18</td></tr>
+        <tr><td>T3</td><td class="mono">a×4 c×2 d×1</td><td class="r" data-hl="2-">11</td></tr>
+        <tr><td>T4</td><td class="mono">c×2 e×1 f×1</td><td class="r" data-hl="2-">9</td></tr>
+        <tr><td>T5</td><td class="mono">a×5 b×2 d×1 e×2</td><td class="r" data-hl="2-">22</td></tr>
+        <tr><td>T6</td><td class="mono">a×3 b×4 c×1 f×2</td><td class="r" data-hl="2-">18</td></tr>
+        <tr><td>T7</td><td class="mono">d×1 g×5</td><td class="r" data-hl="2-">10</td></tr>
+      </table>
+      <div class="col f1">
+        <p class="cap">Lợi nhuận đơn vị</p>
+        <table class="tb" style="width:100%">
+          <tr><th class="c">a</th><th class="c">b</th><th class="c">c</th><th class="c">d</th><th class="c">e</th><th class="c">f</th><th class="c">g</th></tr>
+          <tr><td class="c">1</td><td class="c">2</td><td class="c">1</td><td class="c">5</td><td class="c">4</td><td class="c">3</td><td class="c">1</td></tr>
+        </table>
+        <div class="stk">
+          <div class="fm" data-only="1"><div data-tex="\begin{aligned}tu(T_1)&amp;=1\times2+2\times1+1\times5+1\times1\\&amp;=\mathbf{10}\end{aligned}" data-d="1">tu(T1) = 1×2 + 2×1 + 1×5 + 1×1 = 10</div></div>
+          <div class="fm" data-only="2"><p>Tổng 7 giao dịch: <b>98</b></p></div>
+          <div class="card" data-only="3-"><p>Ngưỡng trong ví dụ:<br><b>minutil = 30</b></p><p class="sm mut">T2 có e×1, không phải e×2.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <template class="nt">
+    <p data-n="0">Đây là cơ sở dữ liệu ví dụ, lấy từ Hình 1 của bài báo. Bảng bên phải là lợi nhuận đơn vị của bảy mặt hàng. Bảng bên trái là bảy giao dịch, mỗi mặt hàng đi kèm số lượng mua.</p>
+    <p data-n="1">Cột cuối là tổng độ hữu ích của từng giao dịch. Với T1: b một đơn vị nhân 2, c hai đơn vị nhân 1, d một đơn vị nhân 5, g một đơn vị nhân 1. Tổng là 10.</p>
+    <p data-n="2">Làm tương tự cho các giao dịch còn lại. Cộng cả bảy giao dịch được 98.</p>
+    <p data-n="3">Trong phần còn lại, ngưỡng minutil được đặt bằng 30. Câu hỏi là: những tập mục nào có tổng độ hữu ích từ 30 trở lên? Lưu ý: trong T2, mặt hàng e có số lượng là 1. Một số tài liệu giảng dạy ghi nhầm thành 2, làm các kết quả phía sau bị sai.</p>
+  </template>
+</section>
+
+<!-- ================= 7. ĐỊNH NGHĨA ================= -->
+<section class="s" data-time="1 phút 30">
+  <div class="tag">2 · MỘT SỐ ĐỊNH NGHĨA</div>
+  <h2>Số lượng × lợi nhuận, rồi cộng dồn</h2>
+  <div class="sub">Định nghĩa 1–6, mục 2.1 của bài báo</div>
+  <div class="bd" style="gap:22px">
+    <table class="tb" style="width:100%">
+      <tr><th style="width:36%">Công thức</th><th style="width:30%">Ý nghĩa</th><th>Ví dụ</th></tr>
+      <tr data-hl="0"><td><span data-tex="eu(i)">eu(i)</span></td><td>Lợi nhuận đơn vị</td><td><span data-tex="eu(e)=4">eu(e) = 4</span></td></tr>
+      <tr data-s="1" data-hl="1"><td><span data-tex="iu(i,T)">iu(i, T)</span></td><td>Số lượng mua</td><td><span data-tex="iu(e,T_5)=2">iu(e, T5) = 2</span></td></tr>
+      <tr data-s="2" data-hl="2"><td><span data-tex="u(i,T)=iu(i,T)\times eu(i)">u(i, T) = iu(i, T) × eu(i)</span></td><td>Của mục i trong T</td><td><span data-tex="u(e,T_5)=2\times4=8">u(e, T5) = 2 × 4 = 8</span></td></tr>
+      <tr data-s="3" data-hl="3"><td><span data-tex="u(X,T)=\sum_{i\in X}u(i,T)">u(X, T) = Σ u(i, T)</span></td><td>Của tập X trong T</td><td><span data-tex="u(\{a,e\},T_2)=4+4=8">u({a,e}, T2) = 4 + 4 = 8</span></td></tr>
+      <tr data-s="4" data-hl="4"><td><span data-tex="u(X)=\sum_{T\supseteq X}u(X,T)">u(X) = Σ u(X, T)</span></td><td>Của tập X</td><td><span data-tex="u(\{a,e\})=8+13=21">u({a,e}) = 8 + 13 = 21</span></td></tr>
+      <tr data-s="5" data-hl="5"><td><span data-tex="tu(T)=\sum_{i\in T}u(i,T)">tu(T) = Σ u(i, T)</span></td><td>Của giao dịch T</td><td><span data-tex="tu(T_1)=10">tu(T1) = 10</span></td></tr>
+    </table>
+    <div class="band" data-s="6"><p><b>X là HUI</b> khi <span data-tex="u(X)\ge minutil">u(X) ≥ minutil</span>. Ví dụ: <span data-tex="u(\{a,e\})=21&lt;30">u({a,e}) = 21 &lt; 30</span> nên không phải HUI.</p></div>
+  </div>
+  <template class="nt">
+    <p data-n="0">Bài báo đưa ra sáu định nghĩa, có thể tóm lại thành một phép tính: lấy số lượng nhân lợi nhuận đơn vị, rồi cộng dồn. Ký hiệu eu là lợi nhuận đơn vị. Ví dụ eu của e bằng 4.</p>
+    <p data-n="1">Ký hiệu iu là số lượng của một mục trong một giao dịch. Trong T5, e được mua 2 đơn vị.</p>
+    <p data-n="2">Nhân hai giá trị này được độ hữu ích của một mục trong một giao dịch: e trong T5 bằng 2 nhân 4, tức 8.</p>
+    <p data-n="3">Với một tập mục, cộng độ hữu ích của các mục thuộc tập đó trong cùng giao dịch. Tập {a, e} trong T2 bằng 4 cộng 4, tức 8.</p>
+    <p data-n="4">Sau đó cộng trên mọi giao dịch chứa tập mục. {a, e} có mặt trong T2 và T5, nên độ hữu ích là 8 cộng 13, bằng 21.</p>
+    <p data-n="5">Ký hiệu tu là tổng độ hữu ích của cả giao dịch, ví dụ tu của T1 bằng 10.</p>
+    <p data-n="6">Một tập mục là tập hữu ích cao khi độ hữu ích của nó không nhỏ hơn minutil. {a, e} bằng 21, nhỏ hơn 30, nên không phải tập hữu ích cao.</p>
+  </template>
+</section>
+
+<!-- ================= 8. THÁCH THỨC ================= -->
+<section class="s" data-time="1 phút">
+  <div class="tag">2 · MỘT SỐ ĐỊNH NGHĨA</div>
+  <h2>Thêm mục, độ hữu ích lúc tăng lúc giảm</h2>
+  <div class="sub">Không thể tỉa nhánh bằng chính u(X) như Apriori làm với độ hỗ trợ</div>
+  <div class="bd">
+    <div class="row" style="gap:56px;align-items:flex-end">
+      <div class="col" style="gap:12px">
+        <div class="chart">
+          <div class="bk" style="height:224px">16</div>
+          <div class="bk" data-s="1" data-hl="4-" style="height:364px">26</div>
+          <div class="bk" data-s="2" data-hl="4-" style="height:294px">21</div>
+          <div class="bk" data-s="3" style="height:196px">14</div>
+          <div class="thr" data-s="4" style="bottom:280px"><span>ngưỡng = 20</span></div>
+        </div>
+        <div class="xl">
+          <p><b class="mono">{a}</b><br>hỗ trợ 4</p>
+          <p data-s="1"><b class="mono">{a,b}</b><br>hỗ trợ 3</p>
+          <p data-s="2"><b class="mono">{a,b,c}</b><br>hỗ trợ 2</p>
+          <p data-s="3"><b class="mono">{a,b,c,d}</b><br>hỗ trợ 1</p>
+        </div>
+      </div>
+      <div class="col f1" style="gap:24px">
+        <div class="card" data-s="3"><p>Độ hỗ trợ: 4 → 3 → 2 → 1</p><p>Độ hữu ích: 16 → 26 → 21 → 14</p></div>
+        <div class="col" data-s="4" style="gap:12px"><p><span class="pl cut">{a} không đạt</span></p><p><span class="pl hui">{a,b} đạt</span> <span class="pl hui">{a,b,c} đạt</span></p></div>
+        <div class="band" data-s="5"><p>Không thể bỏ nhánh chỉ vì tập hiện tại chưa đạt ngưỡng.</p></div>
+      </div>
+    </div>
+  </div>
+  <template class="nt">
+    <p data-n="0">Đây là điểm khó chính của bài toán. Bắt đầu với tập {a}: độ hữu ích 16, độ hỗ trợ 4.</p>
+    <p data-n="1">Thêm b được {a, b}: độ hữu ích tăng lên 26.</p>
+    <p data-n="2">Thêm c được {a, b, c}: độ hữu ích giảm còn 21.</p>
+    <p data-n="3">Thêm d được {a, b, c, d}: còn 14. Độ hỗ trợ luôn giảm khi thêm mục, nhưng độ hữu ích thì lúc tăng lúc giảm.</p>
+    <p data-n="4">Với ngưỡng minh họa 20 trong bài báo: {a} không đạt, nhưng {a, b} và {a, b, c} lại đạt.</p>
+    <p data-n="5">Với tập phổ biến, nếu một tập không đạt thì mọi tập chứa nó cũng không đạt, nên có thể bỏ cả nhánh. Đây là nguyên tắc của Apriori. Với độ hữu ích, nguyên tắc này không đúng, nên cần một tiêu chí khác để xác định khi nào được phép bỏ qua một nhánh.</p>
+  </template>
+</section>
+
+<!-- ================= 9. TWU ================= -->
+<section class="s" data-time="1 phút">
+  <div class="tag">2 · MỘT SỐ ĐỊNH NGHĨA</div>
+  <h2>TWU và bước lọc mục ban đầu</h2>
+  <div class="sub">Tính chất 1 (Property 1 trong bài báo)</div>
+  <div class="bd" style="gap:24px">
+    <div class="row" style="align-items:center">
+      <div class="fm"><div data-tex="twu(X)=\sum_{T\supseteq X} tu(T)" data-d="1">twu(X) = Σ tu(T), T chứa X</div></div>
+      <p class="f1">Nếu <span data-tex="twu(X)&lt;minutil">twu(X) &lt; minutil</span> thì X và mọi tập chứa X đều không phải HUI.</p>
+    </div>
+    <div class="fm" data-s="1"><div data-tex="twu(\{f\})=tu(T_4)+tu(T_6)=9+18=\mathbf{27}">twu({f}) = tu(T4) + tu(T6) = 9 + 18 = 27</div></div>
+    <table class="tb" data-s="2" style="width:100%">
+      <tr><th>Mục</th><th class="c">a</th><th class="c">b</th><th class="c">c</th><th class="c">d</th><th class="c">e</th><th class="c">f</th><th class="c">g</th></tr>
+      <tr><td>TWU</td><td class="c">69</td><td class="c">68</td><td class="c">66</td><td class="c">71</td><td class="c">49</td><td class="c" data-x="3-">27</td><td class="c" data-x="3-">20</td></tr>
+      <tr data-s="3"><td>minutil = 30</td><td class="c">giữ</td><td class="c">giữ</td><td class="c">giữ</td><td class="c">giữ</td><td class="c">giữ</td><td class="c o">loại</td><td class="c o">loại</td></tr>
+    </table>
+    <div class="ord" data-s="4"><span class="cap" style="margin-right:12px">Thứ tự TWU tăng dần</span><span class="it first">e</span><span class="lt">≺</span><span class="it">c</span><span class="lt">≺</span><span class="it">b</span><span class="lt">≺</span><span class="it">a</span><span class="lt">≺</span><span class="it">d</span></div>
+  </div>
+  <template class="nt">
+    <p data-n="0">Một cận trên được dùng phổ biến là TWU: tổng độ hữu ích của tất cả giao dịch chứa tập mục. Tính chất 1 nói rằng nếu TWU nhỏ hơn ngưỡng thì tập đó và mọi tập chứa nó đều không phải tập hữu ích cao.</p>
+    <p data-n="1">Ví dụ, f có mặt trong T4 và T6, nên TWU của f bằng 9 cộng 18, tức 27.</p>
+    <p data-n="2">Bảng này là TWU của cả bảy mục. Ghi chú: Hình 3 của bài báo ghi TWU của g là 10; giá trị đúng là 20. Sai lệch này không làm thay đổi kết quả.</p>
+    <p data-n="3">Với minutil bằng 30, f có TWU 27 và g có TWU 20, đều nhỏ hơn 30, nên bị loại ngay từ đầu.</p>
+    <p data-n="4">Năm mục còn lại được sắp xếp theo TWU tăng dần: e, c, b, a, d. Thứ tự này được giữ cố định trong suốt thuật toán và có vai trò quan trọng ở các slide sau. HUI-Miner cũng dùng TWU, nhưng chỉ ở bước lọc ban đầu này.</p>
+  </template>
+</section>
+
+<!-- ================= 10. rutil ================= -->
+<section class="s" data-time="1 phút 30">
+  <div class="tag">3 · CẤU TRÚC UTILITY LIST</div>
+  <h2>Bộ ba ⟨tid, iutil, rutil⟩</h2>
+  <div class="sub">Giao dịch đã chỉnh sửa: bỏ f, g; sắp theo e ≺ c ≺ b ≺ a ≺ d; ghi độ hữu ích</div>
+  <div class="bd">
+    <div class="row" style="gap:40px">
+      <table class="tb" style="width:470px;flex:none">
+        <tr><th>Tid</th><th>Độ hữu ích</th></tr>
+        <tr><td>T1</td><td class="mono">c2 b2 d5</td></tr>
+        <tr data-hl="1-"><td>T2</td><td class="mono">e4 c3 b2 a4 d5</td></tr>
+        <tr><td>T3</td><td class="mono">c2 a4 d5</td></tr>
+        <tr><td>T4</td><td class="mono">e4 c2</td></tr>
+        <tr><td>T5</td><td class="mono">e8 b4 a5 d5</td></tr>
+        <tr><td>T6</td><td class="mono">c1 b8 a3</td></tr>
+        <tr><td>T7</td><td class="mono">d5</td></tr>
+      </table>
+      <div class="col f1" style="gap:20px">
+        <div class="col" data-s="1" style="gap:12px">
+          <p class="cap">Giao dịch T2, tập X = {c}</p>
+          <div class="tbar">
+            <div class="seg" data-x="3-" style="width:240px">e 4</div>
+            <div class="seg i" data-hl="2-" style="width:180px">c 3</div>
+            <div class="seg r" data-hl="3-" style="width:120px">b 2</div>
+            <div class="seg r" data-hl="3-" style="width:240px">a 4</div>
+            <div class="seg r" data-hl="3-" style="width:300px">d 5</div>
+          </div>
+          <div class="brs">
+            <p class="br m" data-s="3" style="left:0;width:234px">đứng trước,<br>không tính</p>
+            <p class="br i" data-s="2" style="left:240px;width:174px">iutil = 3</p>
+            <p class="br r" data-s="3" style="left:420px;width:657px">rutil = 2 + 4 + 5 = 11</p>
+          </div>
+        </div>
+        <div class="stk">
+          <div class="fm" data-only="4"><p>Phần tử của UL({c}) tại T2: <b class="mono">⟨2, 3, 11⟩</b></p></div>
+          <div class="fm" data-only="5-"><div data-tex="rutil=ru(X,T)=\sum_{i\in T/X}u(i,T)" data-d="1">rutil = Σ u(i, T) với i đứng sau X</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <template class="nt">
+    <p data-n="0">Trước khi tạo utility-list, mỗi giao dịch được chỉnh sửa: bỏ các mục đã bị loại là f và g, sắp xếp các mục còn lại theo thứ tự e, c, b, a, d, và ghi độ hữu ích thay cho số lượng.</p>
+    <p data-n="1">Lấy giao dịch T2 làm ví dụ. Sau khi chỉnh sửa, T2 là e 4, c 3, b 2, a 4, d 5. Xét tập X là {c}.</p>
+    <p data-n="2">Giá trị thứ nhất là iutil: độ hữu ích của X trong giao dịch. Độ hữu ích của c trong T2 là 3.</p>
+    <p data-n="3">Giá trị thứ hai là rutil, tức độ hữu ích còn lại: tổng độ hữu ích của các mục đứng sau X. Sau c là b, a, d, có tổng 2 cộng 4 cộng 5 bằng 11. Mục e đứng trước c nên không được tính.</p>
+    <p data-n="4">Mỗi phần tử của utility-list gồm ba giá trị: mã giao dịch, iutil và rutil. Phần tử của {c} tại T2 là 2, 3, 11.</p>
+    <p data-n="5">Viết dưới dạng công thức: rutil là tổng u của các mục thuộc T đứng sau X. Rutil là thông tin mới mà bài báo đưa vào: nó cho biết, trong giao dịch này, tối đa còn có thể thu thêm bao nhiêu nếu mở rộng tập mục.</p>
+  </template>
+</section>
+
+<!-- ================= 11. 1-UL ================= -->
+<section class="s" data-time="1 phút">
+  <div class="tag">3 · CẤU TRÚC UTILITY LIST</div>
+  <h2>Tạo utility-list cho từng mục</h2>
+  <div class="sub">Đọc từng giao dịch đã chỉnh sửa, từ trái sang phải</div>
+  <div class="bd">
+    <div class="row" style="gap:24px">
+      <table class="tb" style="width:450px;flex:none">
+        <tr><th>Tid</th><th>Giao dịch</th></tr>
+        <tr data-hl="1"><td>T1</td><td class="mono">c2 b2 d5</td></tr>
+        <tr data-hl="2"><td>T2</td><td class="mono">e4 c3 b2 a4 d5</td></tr>
+        <tr data-hl="3"><td>T3</td><td class="mono">c2 a4 d5</td></tr>
+        <tr data-hl="4"><td>T4</td><td class="mono">e4 c2</td></tr>
+        <tr data-hl="5"><td>T5</td><td class="mono">e8 b4 a5 d5</td></tr>
+        <tr data-hl="6"><td>T6</td><td class="mono">c1 b8 a3</td></tr>
+        <tr data-hl="7"><td>T7</td><td class="mono">d5</td></tr>
+      </table>
+      <div class="uls">
+        <div class="ul"><div class="uh">{e}</div><div class="e" data-s="2" data-hl="2">⟨2,4,14⟩</div><div class="e" data-s="4" data-hl="4">⟨4,4,2⟩</div><div class="e" data-s="5" data-hl="5">⟨5,8,14⟩</div></div>
+        <div class="ul"><div class="uh">{c}</div><div class="e" data-s="1" data-hl="1">⟨1,2,7⟩</div><div class="e" data-s="2" data-hl="2">⟨2,3,11⟩</div><div class="e" data-s="3" data-hl="3">⟨3,2,9⟩</div><div class="e" data-s="4" data-hl="4">⟨4,2,0⟩</div><div class="e" data-s="6" data-hl="6">⟨6,1,11⟩</div></div>
+        <div class="ul"><div class="uh">{b}</div><div class="e" data-s="1" data-hl="1">⟨1,2,5⟩</div><div class="e" data-s="2" data-hl="2">⟨2,2,9⟩</div><div class="e" data-s="5" data-hl="5">⟨5,4,10⟩</div><div class="e" data-s="6" data-hl="6">⟨6,8,3⟩</div></div>
+        <div class="ul"><div class="uh">{a}</div><div class="e" data-s="2" data-hl="2">⟨2,4,5⟩</div><div class="e" data-s="3" data-hl="3">⟨3,4,5⟩</div><div class="e" data-s="5" data-hl="5">⟨5,5,5⟩</div><div class="e" data-s="6" data-hl="6">⟨6,3,0⟩</div></div>
+        <div class="ul"><div class="uh">{d}</div><div class="e" data-s="1" data-hl="1">⟨1,5,0⟩</div><div class="e" data-s="2" data-hl="2">⟨2,5,0⟩</div><div class="e" data-s="3" data-hl="3">⟨3,5,0⟩</div><div class="e" data-s="5" data-hl="5">⟨5,5,0⟩</div><div class="e" data-s="7" data-hl="7">⟨7,5,0⟩</div></div>
+      </div>
+    </div>
+    <div class="stk">
+      <div class="fm" data-only="0"><p>Mỗi phần tử: <b>⟨tid, iutil, rutil⟩</b>. Ban đầu năm danh sách đều rỗng.</p></div>
+      <div class="fm" data-only="1"><p class="calc"><b>T1:</b> c ⟨1, 2, 2+5 = <b>7</b>⟩ · b ⟨1, 2, <b>5</b>⟩ · d ⟨1, 5, <b>0</b>⟩</p></div>
+      <div class="fm" data-only="2"><p class="calc"><b>T2:</b> e ⟨2, 4, 3+2+4+5 = <b>14</b>⟩ · c ⟨2,3,11⟩ · b ⟨2,2,9⟩ · a ⟨2,4,5⟩ · d ⟨2,5,0⟩</p></div>
+      <div class="fm" data-only="3"><p class="calc"><b>T3:</b> c ⟨3, 2, 4+5 = <b>9</b>⟩ · a ⟨3, 4, 5⟩ · d ⟨3, 5, 0⟩</p></div>
+      <div class="fm" data-only="4"><p class="calc"><b>T4:</b> e ⟨4, 4, <b>2</b>⟩ · c ⟨4, 2, 0⟩</p></div>
+      <div class="fm" data-only="5"><p class="calc"><b>T5:</b> e ⟨5, 8, 4+5+5 = <b>14</b>⟩ · b ⟨5, 4, 10⟩ · a ⟨5, 5, 5⟩ · d ⟨5, 5, 0⟩</p></div>
+      <div class="fm" data-only="6"><p class="calc"><b>T6:</b> c ⟨6, 1, 8+3 = <b>11</b>⟩ · b ⟨6, 8, 3⟩ · a ⟨6, 3, 0⟩</p></div>
+      <div class="fm" data-only="7"><p class="calc"><b>T7:</b> d ⟨7, 5, 0⟩</p></div>
+      <div class="band" data-only="8-"><p>Đã đủ năm danh sách. Từ đây <b>không cần đọc lại dữ liệu</b>.</p></div>
+    </div>
+  </div>
+  <template class="nt">
+    <p data-n="0">Trong lần quét thứ hai, thuật toán tạo utility-list cho từng mục đơn. Cách làm là đọc từng giao dịch đã chỉnh sửa từ trái sang phải. Ban đầu năm danh sách đều rỗng.</p>
+    <p data-n="1">T1 gồm c 2, b 2, d 5. Mục c có iutil 2, các mục phía sau có tổng 7, nên c nhận phần tử 1, 2, 7. Mục b có iutil 2, phía sau còn d bằng 5. Mục d đứng cuối nên rutil bằng 0.</p>
+    <p data-n="2">T2 có đủ năm mục. Mục e đứng đầu nên rutil của e là tổng bốn mục còn lại, bằng 14.</p>
+    <p data-n="3">T3 gồm c, a, d. Ba danh sách tương ứng nhận thêm một phần tử.</p>
+    <p data-n="4">T4 gồm e và c.</p>
+    <p data-n="5">T5 gồm e, b, a, d. Mục e có iutil 8 và rutil 14.</p>
+    <p data-n="6">T6 gồm c, b, a.</p>
+    <p data-n="7">T7 chỉ còn d.</p>
+    <p data-n="8">Sau lần quét này đã có đủ năm danh sách. Từ đây trở đi thuật toán không cần đọc lại cơ sở dữ liệu. Mọi tính toán tiếp theo dựa trên năm danh sách này.</p>
+  </template>
+</section>
+
+<!-- ================= 12. 2-UL ================= -->
+<section class="s" data-time="1 phút">
+  <div class="tag">3 · CẤU TRÚC UTILITY LIST</div>
+  <h2>Tập 2 mục: kết hợp UL({e}) và UL({c})</h2>
+  <div class="sub">Giao theo tid, không đọc lại cơ sở dữ liệu</div>
+  <div class="bd">
+    <div class="row" style="gap:28px">
+      <div class="ul" style="width:260px;flex:none"><div class="uh">{e}</div><div class="e" data-hl="1-">⟨2,4,14⟩</div><div class="e" data-hl="1-">⟨4,4,2⟩</div><div class="e" data-x="1-">⟨5,8,14⟩</div></div>
+      <div class="ul" style="width:260px;flex:none"><div class="uh">{c}</div><div class="e" data-x="1-">⟨1,2,7⟩</div><div class="e" data-hl="1-">⟨2,3,11⟩</div><div class="e" data-x="1-">⟨3,2,9⟩</div><div class="e" data-hl="1-">⟨4,2,0⟩</div><div class="e" data-x="1-">⟨6,1,11⟩</div></div>
+      <p class="num" style="align-self:center;color:var(--light)!important">→</p>
+      <div class="ul" style="width:260px;flex:none"><div class="uh">{e, c}</div><div class="e" data-s="2" data-hl="2">⟨2,7,11⟩</div><div class="e" data-s="3" data-hl="3">⟨4,6,0⟩</div></div>
+      <div class="col f1">
+        <div class="stk">
+          <div class="fm" data-only="0"><p>Tìm tid có ở cả hai danh sách.</p></div>
+          <div class="fm" data-only="1"><p>tid chung: <b>T2</b> và <b>T4</b></p></div>
+          <div class="fm" data-only="2"><p class="calc"><b>T2:</b> iutil = 4 + 3 = <b>7</b><br>rutil = rutil của c = <b>11</b></p></div>
+          <div class="fm" data-only="3-"><p class="calc"><b>T4:</b> iutil = 4 + 2 = <b>6</b><br>rutil = rutil của c = <b>0</b></p></div>
+        </div>
+        <div class="card dark" data-s="4"><p>Giữ tid chung · cộng hai iutil · lấy rutil của mục đứng sau</p></div>
+      </div>
+    </div>
+    <div class="fm" data-s="5"><p class="calc">Tương tự: UL({e,b}) = ⟨2,6,9⟩ ⟨5,12,10⟩ · UL({e,a}) = ⟨2,8,5⟩ ⟨5,13,5⟩</p></div>
+  </div>
+  <template class="nt">
+    <p data-n="0">Để tạo utility-list cho tập hai mục, thuật toán kết hợp hai danh sách của mục đơn. Lấy ví dụ tập {e, c}.</p>
+    <p data-n="1">Bước một: tìm các giao dịch có mặt ở cả hai danh sách. Danh sách của e có T2, T4, T5. Danh sách của c có T1, T2, T3, T4, T6. Phần chung là T2 và T4. Vì các tid đã được sắp xếp, việc so sánh chỉ cần duyệt mỗi danh sách một lần.</p>
+    <p data-n="2">Tại T2: iutil bằng 4 cộng 3 là 7. Rutil lấy theo mục đứng sau, tức c, bằng 11.</p>
+    <p data-n="3">Tại T4: iutil bằng 4 cộng 2 là 6, rutil bằng 0.</p>
+    <p data-n="4">Tóm lại: chỉ giữ tid chung, cộng hai iutil, lấy rutil của mục đứng sau, và không đọc lại cơ sở dữ liệu.</p>
+    <p data-n="5">Làm tương tự ta có danh sách của {e, b} và {e, a}. Hai danh sách này được dùng ở slide tiếp theo.</p>
+  </template>
+</section>
+
+<!-- ================= 13. k-UL ================= -->
+<section class="s" data-time="1 phút 30">
+  <div class="tag">3 · CẤU TRÚC UTILITY LIST</div>
+  <h2>Tập từ 3 mục: trừ phần tiền tố chung</h2>
+  <div class="sub">Tạo UL({e, b, a}) từ UL({e, b}) và UL({e, a}); tiền tố chung P = {e}</div>
+  <div class="bd" style="gap:24px">
+    <div class="row" style="gap:28px">
+      <div class="ul" style="width:280px;flex:none"><div class="uh">{e, b}</div><div class="e">⟨2,6,9⟩</div><div class="e">⟨5,12,10⟩</div></div>
+      <div class="ul" style="width:280px;flex:none"><div class="uh">{e, a}</div><div class="e">⟨2,8,5⟩</div><div class="e">⟨5,13,5⟩</div></div>
+      <div class="ul" style="width:280px;flex:none" data-s="3"><div class="uh">{e} <small>tiền tố</small></div><div class="e" data-hl="3-">⟨2,4,14⟩</div><div class="e" data-x="3-">⟨4,4,2⟩</div><div class="e" data-hl="3-">⟨5,8,14⟩</div></div>
+      <div class="stk f1">
+        <div class="card" data-only="1-2"><p><span class="pl warn">sai</span> e bị cộng hai lần</p></div>
+      </div>
+    </div>
+    <table class="tb" style="width:100%">
+      <tr><th style="width:34%"></th><th class="r">T2</th><th class="r">T5</th></tr>
+      <tr data-s="1"><td>Cộng trực tiếp</td><td class="r o">6 + 8 = 14</td><td class="r o">12 + 13 = 25</td></tr>
+      <tr data-s="2"><td>Tính lại từ giao dịch</td><td class="r">4 + 2 + 4 = 10</td><td class="r">8 + 4 + 5 = 17</td></tr>
+      <tr data-s="3" data-hl="3-"><td>Trừ phần của {e}</td><td class="r"><b>6 + 8 − 4 = 10</b></td><td class="r"><b>12 + 13 − 8 = 17</b></td></tr>
+    </table>
+    <div class="row" data-s="4" style="align-items:center">
+      <div class="fm"><div data-tex="u(Pxy,T)=u(Px,T)+u(Py,T)-u(P,T)">u(Pxy, T) = u(Px, T) + u(Py, T) − u(P, T)</div></div>
+      <p class="f1">UL({e,b,a}) = <b class="mono">⟨2,10,5⟩ ⟨5,17,5⟩</b></p>
+    </div>
+  </div>
+  <template class="nt">
+    <p data-n="0">Với tập từ ba mục trở lên, thuật toán kết hợp hai danh sách có chung tiền tố. Để có {e, b, a}, ta kết hợp danh sách của {e, b} và {e, a}. Cả hai đều bắt đầu bằng e.</p>
+    <p data-n="1">Nếu cộng trực tiếp như với tập hai mục, tại T2 được 6 cộng 8 bằng 14, tại T5 được 25.</p>
+    <p data-n="2">Tính lại từ giao dịch: trong T2, e bằng 4, b bằng 2, a bằng 4, tổng đúng là 10. Trong T5 tổng đúng là 17. Chênh lệch chính là độ hữu ích của e, vì e nằm trong cả hai danh sách nên bị cộng hai lần.</p>
+    <p data-n="3">Bài báo sửa bằng cách trừ đi độ hữu ích của tiền tố chung, lấy từ danh sách của {e}. Tại T2: 6 cộng 8 trừ 4 bằng 10. Tại T5: 12 cộng 13 trừ 8 bằng 17. Khớp với cách tính trực tiếp.</p>
+    <p data-n="4">Công thức tổng quát: u của Pxy bằng u của Px cộng u của Py trừ u của P. Đây là nội dung của Thuật toán 1 trong bài báo, có tên Construct.</p>
+  </template>
+</section>
+
+<!-- ================= 14. TỈA ================= -->
+<section class="s" data-time="1 phút 30">
+  <div class="tag">4 · THUẬT TOÁN HUI-MINER</div>
+  <h2>Quy tắc tỉa nhánh</h2>
+  <div class="sub">Tính chất 2 (Lemma 1 trong bài báo)</div>
+  <div class="bd" style="gap:24px">
+    <div class="band"><p>Nếu <span data-tex="\sum iutil+\sum rutil&lt;minutil">Σ iutil + Σ rutil &lt; minutil</span> thì X và mọi tập mở rộng từ X đều không phải HUI.</p></div>
+    <div class="row" style="align-items:stretch">
+      <div class="card f1" data-s="1">
+        <p class="cap">Vì sao đúng</p>
+        <p>Tập mở rộng X′ chỉ thêm các mục <b>đứng sau</b> X, nên:</p>
+        <div class="fm"><div data-tex="u(X',t)\le u(X,t)+ru(X,t)" data-d="1">u(X′, t) ≤ u(X, t) + ru(X, t)</div></div>
+      </div>
+      <div class="card f1" data-s="2">
+        <p class="cap">Ví dụ: X = {e, c}</p>
+        <div class="fm"><div data-tex="7+11+6+0=24&lt;30" data-d="1">7 + 11 + 6 + 0 = 24 &lt; 30</div></div>
+        <p data-s="3"><b>Bỏ qua 7 tập mở rộng:</b></p>
+        <p data-s="3" class="sm" style="line-height:1.7"><span class="pl cut">ecb</span> <span class="pl cut">eca</span> <span class="pl cut">ecd</span> <span class="pl cut">ecba</span> <span class="pl cut">ecbd</span> <span class="pl cut">ecad</span> <span class="pl cut">ecbad</span></p>
+      </div>
+    </div>
+  </div>
+  <template class="nt">
+    <p data-n="0">Phần định nghĩa đã chỉ ra rằng không thể tỉa nhánh chỉ dựa vào độ hữu ích của tập hiện tại. HUI-Miner dùng một tiêu chí khác: tổng iutil cộng tổng rutil. Nếu giá trị này nhỏ hơn ngưỡng, có thể bỏ qua cả nhánh.</p>
+    <p data-n="1">Lý do: mọi tập mở rộng từ X chỉ thêm các mục đứng sau X theo thứ tự đã cố định. Trong mỗi giao dịch, phần thêm vào không vượt quá rutil. Vì vậy độ hữu ích của tập mở rộng trong giao dịch không vượt quá iutil cộng rutil. Cộng trên các giao dịch được một giới hạn trên. Bài báo có chứng minh hình thức cho tính chất này.</p>
+    <p data-n="2">Ví dụ với {e, c}: cộng tất cả iutil và rutil được 24, nhỏ hơn 30.</p>
+    <p data-n="3">Như vậy không cần xét bảy tập mở rộng từ {e, c}. Thuật toán bỏ qua cả nhánh mà không cần tạo danh sách cho các tập đó. So với TWU, cận này nhỏ hơn hoặc bằng, vì chỉ tính phần đứng sau thay vì toàn bộ giao dịch, nên tỉa được nhiều nhánh hơn.</p>
+  </template>
+</section>
+
+<!-- ================= 15. THUẬT TOÁN ================= -->
+<section class="s" data-time="1 phút">
+  <div class="tag">4 · THUẬT TOÁN HUI-MINER</div>
+  <h2>Ba quy tắc cho mỗi utility-list X</h2>
+  <div class="sub">Duyệt theo chiều sâu, thứ tự e ≺ c ≺ b ≺ a ≺ d</div>
+  <div class="bd">
+    <table class="tb" style="width:100%">
+      <tr><th style="width:46%">Điều kiện</th><th>Hành động</th></tr>
+      <tr data-s="1" data-hl="1"><td><span data-tex="\sum iutil \ge minutil">Σ iutil ≥ minutil</span></td><td><span class="pl hui">HUI</span> Ghi nhận X</td></tr>
+      <tr data-s="2" data-hl="2"><td><span data-tex="\sum iutil + \sum rutil \ge minutil">Σ iutil + Σ rutil ≥ minutil</span></td><td><span class="pl go">Mở rộng</span> Kết hợp X với từng danh sách đứng sau</td></tr>
+      <tr data-s="3" data-hl="3"><td><span data-tex="\sum iutil + \sum rutil &lt; minutil">Σ iutil + Σ rutil &lt; minutil</span></td><td><span class="pl cut">Bỏ qua</span> Không xét nhánh của X</td></tr>
+    </table>
+    <div class="band" data-s="4"><p>Hai điều kiện đầu kiểm tra <b>độc lập</b>: một tập có thể không phải HUI nhưng vẫn cần mở rộng.</p></div>
+  </div>
+  <template class="nt">
+    <p data-n="0">Thuật toán HUI-Miner kết hợp các bước trên. Các tập mục được xét theo chiều sâu, bắt đầu từ mục đứng đầu theo thứ tự e, c, b, a, d. Với mỗi danh sách X, thuật toán kiểm tra ba trường hợp.</p>
+    <p data-n="1">Nếu tổng iutil đạt ngưỡng, X là tập hữu ích cao và được ghi nhận.</p>
+    <p data-n="2">Nếu tổng iutil cộng rutil đạt ngưỡng, vẫn có khả năng tồn tại tập hữu ích cao trong nhánh này. Thuật toán kết hợp X với các danh sách đứng sau để tạo danh sách cho tập lớn hơn, rồi lặp lại quá trình.</p>
+    <p data-n="3">Nếu tổng iutil cộng rutil không đạt ngưỡng, cả nhánh được bỏ qua.</p>
+    <p data-n="4">Lưu ý hai điều kiện đầu độc lập với nhau. Một tập không phải HUI vẫn có thể cần mở rộng. Slide tiếp theo có một ví dụ cụ thể.</p>
+  </template>
+</section>
+
+<!-- ================= 16. CÂY ================= -->
+<section class="s" data-time="1 phút 30">
+  <div class="tag">4 · THUẬT TOÁN HUI-MINER</div>
+  <h2>Chạy thuật toán trên nhánh e</h2>
+  <div class="sub">Số trong nút: Σ iutil | Σ iutil + Σ rutil · minutil = 30</div>
+  <div class="bd">
+    <div class="row" style="gap:28px">
+      <div class="tree">
+        <svg width="1120" height="690" viewBox="0 0 1120 690" aria-hidden="true">
+          <line data-s="1" x1="560" y1="130" x2="105" y2="185"/>
+          <line data-s="2" x1="560" y1="130" x2="390" y2="185"/>
+          <line data-s="6" x1="560" y1="130" x2="730" y2="185"/>
+          <line data-s="8" x1="560" y1="130" x2="1015" y2="185"/>
+          <line data-s="3" x1="390" y1="315" x2="300" y2="370"/>
+          <line data-s="5" x1="390" y1="315" x2="510" y2="370"/>
+          <line data-s="7" x1="730" y1="315" x2="770" y2="370"/>
+          <line data-s="4" x1="300" y1="500" x2="300" y2="555"/>
+        </svg>
+        <div class="nd" data-hl="0" style="left:460px;top:0"><span class="a">e</span><span class="v">16 | 46</span><span class="t">mở rộng</span></div>
+        <div class="nd cut" data-s="1" data-hl="1" style="left:5px;top:185px"><span class="a">ec</span><span class="v">13 | 24</span><span class="t">bỏ qua</span></div>
+        <div class="nd" data-s="2" data-hl="2" style="left:290px;top:185px"><span class="a">eb</span><span class="v">18 | 37</span><span class="t">mở rộng</span></div>
+        <div class="nd" data-s="3" data-hl="3" style="left:200px;top:370px"><span class="a">eba</span><span class="v">27 | 37</span><span class="t">mở rộng</span></div>
+        <div class="nd hui" data-s="4" data-hl="4" style="left:200px;top:555px"><span class="a">ebad</span><span class="v">37 | 37</span><span class="t">HUI</span></div>
+        <div class="nd cut" data-s="5" data-hl="5" style="left:410px;top:370px"><span class="a">ebd</span><span class="v">28 | 28</span><span class="t">bỏ qua</span></div>
+        <div class="nd" data-s="6" data-hl="6" style="left:630px;top:185px"><span class="a">ea</span><span class="v">21 | 31</span><span class="t">mở rộng</span></div>
+        <div class="nd hui" data-s="7" data-hl="7" style="left:670px;top:370px"><span class="a">ead</span><span class="v">31 | 31</span><span class="t">HUI</span></div>
+        <div class="nd cut" data-s="8" data-hl="8" style="left:915px;top:185px"><span class="a">ed</span><span class="v">22 | 22</span><span class="t">bỏ qua</span></div>
+      </div>
+      <div class="stk f1">
+        <div class="card" data-only="0"><h3>{e}</h3><p class="calc">⟨2,4,14⟩ ⟨4,4,2⟩ ⟨5,8,14⟩</p><p>16 &lt; 30: chưa là HUI.</p><p>46 ≥ 30: <b>mở rộng</b>.</p></div>
+        <div class="card" data-only="1"><h3>{e, c}</h3><p class="calc">⟨2,7,11⟩ ⟨4,6,0⟩</p><p>24 &lt; 30.</p><p><span class="pl cut">bỏ qua cả nhánh</span></p></div>
+        <div class="card" data-only="2"><h3>{e, b}</h3><p class="calc">⟨2,6,9⟩ ⟨5,12,10⟩</p><p>37 ≥ 30: <b>mở rộng</b> thành eba, ebd.</p></div>
+        <div class="card" data-only="3"><h3>{e, b, a}</h3><p class="calc">⟨2,10,5⟩ ⟨5,17,5⟩</p><p>27 &lt; 30: <b>không phải HUI</b>.</p><p>37 ≥ 30: <b>vẫn mở rộng</b>.</p></div>
+        <div class="card" data-only="4"><h3>{e, b, a, d}</h3><p class="calc">⟨2,15,0⟩ ⟨5,22,0⟩</p><p>37 ≥ 30.</p><p><span class="pl hui">tập hữu ích cao</span></p></div>
+        <div class="card" data-only="5"><h3>{e, b, d}</h3><p class="calc">⟨2,11,0⟩ ⟨5,17,0⟩</p><p>28 &lt; 30.</p><p><span class="pl cut">bỏ qua</span></p></div>
+        <div class="card" data-only="6"><h3>{e, a}</h3><p class="calc">⟨2,8,5⟩ ⟨5,13,5⟩</p><p>31 ≥ 30: <b>mở rộng</b> thành ead.</p></div>
+        <div class="card" data-only="7"><h3>{e, a, d}</h3><p class="calc">⟨2,13,0⟩ ⟨5,18,0⟩</p><p>31 ≥ 30.</p><p><span class="pl hui">tập hữu ích cao</span></p></div>
+        <div class="card" data-only="8"><h3>{e, d}</h3><p class="calc">⟨2,9,0⟩ ⟨5,13,0⟩</p><p>22 &lt; 30.</p><p><span class="pl cut">bỏ qua</span></p></div>
+        <div class="card dark" data-only="9-"><h3>Nhánh e: 2 HUI</h3><p>{e,b,a,d} = 37</p><p>{e,a,d} = 31</p></div>
+      </div>
+    </div>
+  </div>
+  <template class="nt">
+    <p data-n="0">Slide này chạy thuật toán trên nhánh bắt đầu từ e. Số bên trái trong mỗi nút là tổng iutil, số bên phải là tổng iutil cộng rutil. Tập {e} có tổng iutil 16, chưa phải HUI, nhưng giới hạn là 46, nên thuật toán xét tiếp bốn tập hai mục: ec, eb, ea, ed.</p>
+    <p data-n="1">Tập {e, c} có giới hạn 24, nhỏ hơn 30, nên bị bỏ qua như ở slide 14.</p>
+    <p data-n="2">Tập {e, b} có tổng iutil 18, giới hạn 37, nên được mở rộng thành eba và ebd.</p>
+    <p data-n="3">Tập {e, b, a} là trường hợp đáng chú ý: độ hữu ích 27, chưa đạt ngưỡng, nhưng giới hạn vẫn là 37 nên thuật toán tiếp tục mở rộng.</p>
+    <p data-n="4">Tập mở rộng {e, b, a, d} có độ hữu ích 37 và là tập hữu ích cao.</p>
+    <p data-n="5">Quay lại nhánh eb, tập {e, b, d} có giới hạn 28, nhỏ hơn 30, nên bị bỏ qua.</p>
+    <p data-n="6">Tập {e, a} có giới hạn 31, được mở rộng thành ead.</p>
+    <p data-n="7">Tập {e, a, d} có độ hữu ích 31, là tập hữu ích cao.</p>
+    <p data-n="8">Cuối cùng, tập {e, d} có giới hạn 22, bị bỏ qua.</p>
+    <p data-n="9">Nhánh e cho hai tập hữu ích cao. Ví dụ này cũng cho thấy vì sao cần rutil: nếu dừng ở {e, b, a} vì chưa đạt ngưỡng, thuật toán sẽ bỏ sót {e, b, a, d}.</p>
+  </template>
+</section>
+
+<!-- ================= 17. KẾT QUẢ ================= -->
+<section class="s" data-time="30 giây">
+  <div class="tag">4 · THUẬT TOÁN HUI-MINER</div>
+  <h2>Hai tập hữu ích cao với minutil = 30</h2>
+  <div class="sub">Tính lại từ dữ liệu của bài báo</div>
+  <div class="bd">
+    <div class="row" style="align-items:stretch">
+      <div class="card dark f1"><p class="num mono">{e,b,a,d} = 37</p><p data-s="1">T2: 15 · T5: 22</p></div>
+      <div class="card dark f1"><p class="num mono">{e,a,d} = 31</p><p data-s="1">T2: 13 · T5: 18</p></div>
+    </div>
+    <p data-s="2">Các nhánh c, b, a, d không có tập hữu ích cao.</p>
+    <div class="row" data-s="3" style="align-items:stretch">
+      <div class="card f1"><p class="num">17</p><p>utility-list cho tập từ 2 mục</p></div>
+      <div class="card f1"><p class="num">2</p><p>tập trong số đó là HUI</p></div>
+      <div class="card f1" data-s="4"><p class="num">127</p><p>tập mục tính toàn bộ để đối chiếu: trùng khớp</p></div>
+    </div>
+  </div>
+  <template class="nt">
+    <p data-n="0">Chạy hết các nhánh còn lại theo cùng cách, kết quả cuối cùng là hai tập hữu ích cao: {e, b, a, d} với độ hữu ích 37, và {e, a, d} với độ hữu ích 31.</p>
+    <p data-n="1">Có thể kiểm tra trực tiếp: cả hai tập đều chỉ xuất hiện trong T2 và T5. {e, b, a, d} được 15 ở T2 và 22 ở T5. {e, a, d} được 13 ở T2 và 18 ở T5.</p>
+    <p data-n="2">Các nhánh bắt đầu từ c, b, a và d không có tập hữu ích cao.</p>
+    <p data-n="3">Trong quá trình chạy, thuật toán tạo 17 utility-list cho các tập từ hai mục trở lên, và 2 tập trong số đó là kết quả. Nghĩa là HUI-Miner không lưu ứng viên, nhưng vẫn tính toán cho một số tập không phải kết quả.</p>
+    <p data-n="4">Kết quả được kiểm tra lại bằng cách tính toàn bộ 127 tập mục có thể có. Bài báo không nêu kết quả cuối của ví dụ này; các con số ở đây được tính lại từ dữ liệu của bài báo.</p>
+  </template>
+</section>
+
+<!-- ================= 18. THỰC NGHIỆM ================= -->
+<section class="s" data-time="1 phút 30">
+  <div class="tag">5 · THỰC NGHIỆM</div>
+  <h2>So sánh với ba thuật toán, 8 bộ dữ liệu</h2>
+  <div class="sub">Đối chứng: IHUP-TWU, UP-Growth, UP-Growth+</div>
+  <div class="bd" style="gap:24px">
+    <div class="row" style="gap:24px;align-items:stretch">
+      <div class="card f1" data-s="1"><p class="cap">mushroom · 2% · thời gian</p>
+        <div class="hb"><span class="lb">HUI-Miner</span><div class="tk"><div class="fi me" style="width:39%">35,8 s</div></div>
+        <span class="lb">UP-Growth+</span><div class="tk"><div class="fi" style="width:95%">6.302,3 s</div></div></div>
+        <p class="sm mut">Thang log</p></div>
+      <div class="card f1" data-s="2"><p class="cap">retail · 0,02% · thời gian</p>
+        <div class="hb"><span class="lb">HUI-Miner</span><div class="tk"><div class="fi me" style="width:34%">22,2 s</div></div>
+        <span class="lb">IHUP-TWU</span><div class="tk"><div class="fi" style="width:100%">9.758,0 s</div></div></div>
+        <p class="sm mut">Thang log</p></div>
+    </div>
+    <div class="row" style="gap:24px;align-items:stretch">
+      <div class="card f1" data-s="3"><p class="cap">T10I4D100K · bộ nhớ</p>
+        <div class="hb"><span class="lb">HUI-Miner</span><div class="tk"><div class="fi me" style="width:22%">23,6 MB</div></div>
+        <span class="lb">UP-Growth+</span><div class="tk"><div class="fi" style="width:46%">50,2 MB</div></div>
+        <span class="lb">IHUP-TWU</span><div class="tk"><div class="fi" style="width:100%">109,0 MB</div></div></div></div>
+      <div class="card dark f1" data-s="4"><p class="cap">Không tốt hơn khi</p><p>T40I10D100K, ngưỡng 0,6%: chậm hơn UP-Growth+</p><p>accidents: tốn bộ nhớ hơn</p></div>
+    </div>
+  </div>
+  <template class="nt">
+    <p data-n="0">Bài báo so sánh HUI-Miner với ba thuật toán: IHUP-TWU, UP-Growth và UP-Growth+, trên tám bộ dữ liệu gồm sáu bộ thực tế và hai bộ tổng hợp. Bảy trong tám bộ không có sẵn lợi nhuận và số lượng, nên tác giả sinh ngẫu nhiên hai giá trị này.</p>
+    <p data-n="1">Trên mushroom với ngưỡng 2%, HUI-Miner chạy trong 35,8 giây, UP-Growth+ cần hơn 6.300 giây. Lưu ý biểu đồ thời gian dùng thang log.</p>
+    <p data-n="2">Trên retail với ngưỡng 0,02%, HUI-Miner cần 22,2 giây, IHUP-TWU cần gần 9.760 giây.</p>
+    <p data-n="3">Về bộ nhớ, trên T10I4D100K với ngưỡng 0,005%, HUI-Miner dùng khoảng 24 MB, so với 50 MB của UP-Growth+ và 109 MB của IHUP-TWU.</p>
+    <p data-n="4">Bài báo cũng báo cáo hai trường hợp HUI-Miner không tốt hơn. Trên T40I10D100K với ngưỡng cao, UP-Growth+ chỉ phát sinh khoảng hai nghìn ứng viên và chạy nhanh hơn. Trên accidents, HUI-Miner dùng nhiều bộ nhớ hơn, và bài báo không giải thích nguyên nhân.</p>
+  </template>
+</section>
+
+<!-- ================= 19. ĐÁNH GIÁ ================= -->
+<section class="s" data-time="1 phút">
+  <div class="tag">5 · THỰC NGHIỆM</div>
+  <h2>Ưu điểm và hạn chế</h2>
+  <div class="sub">Nhận xét dựa trên nội dung và số liệu của bài báo</div>
+  <div class="bd">
+    <table class="tb" style="width:100%">
+      <tr><th style="width:50%">Ưu điểm</th><th>Hạn chế</th></tr>
+      <tr data-s="1"><td>Quét dữ liệu 2 lần, không lưu ứng viên</td><td>Vẫn tạo danh sách cho nhiều tập không phải HUI</td></tr>
+      <tr data-s="2"><td>Cận iutil + rutil ≤ TWU, có chứng minh</td><td>Chỉ tỉa sau khi kết hợp danh sách</td></tr>
+      <tr data-s="3"><td>Thời gian, bộ nhớ thấp hơn ở đa số thí nghiệm</td><td>Không phân tích độ phức tạp</td></tr>
+      <tr data-s="4"><td>Cấu trúc đơn giản, dễ cài đặt</td><td>Chạy một lần, không công bố mã nguồn</td></tr>
+    </table>
+    <p class="mut" data-s="5">Sai sót nhỏ: twu(g) ở Hình 3 ghi 10, đúng là 20.</p>
+  </div>
+  <template class="nt">
+    <p data-n="0">Phần này tổng hợp ưu điểm và hạn chế của bài báo.</p>
+    <p data-n="1">HUI-Miner chỉ quét cơ sở dữ liệu hai lần và không cần lưu tập ứng viên. Tuy vậy, cụm từ "không phát sinh ứng viên" cần được hiểu là không lưu và không kiểm tra lại ứng viên: thuật toán vẫn tạo danh sách cho nhiều tập không phải kết quả, như ví dụ đã cho thấy với 17 danh sách và 2 HUI. Bài báo không báo cáo số lượng này trong thực nghiệm.</p>
+    <p data-n="2">Cận dùng để tỉa nhỏ hơn hoặc bằng TWU và được chứng minh trong bài báo. Tuy nhiên việc tỉa chỉ diễn ra sau khi kết hợp danh sách.</p>
+    <p data-n="3">Kết quả thực nghiệm cho thấy thời gian chạy và bộ nhớ thấp hơn ở phần lớn các thí nghiệm, nhưng bài báo không phân tích độ phức tạp.</p>
+    <p data-n="4">Cấu trúc dữ liệu đơn giản nên dễ cài đặt. Về thực nghiệm, các kết quả chạy một lần trên dữ liệu có lợi nhuận sinh ngẫu nhiên, và mã nguồn không được công bố.</p>
+    <p data-n="5">Ngoài ra có một số sai sót nhỏ về số liệu, ví dụ TWU của g ở Hình 3, và ngưỡng dừng ghi 10.000 giây ở mục 5.2 nhưng 100.000 giây ở mục 5.5. Các sai sót này không ảnh hưởng tới kết luận chính.</p>
+  </template>
+</section>
+
+<!-- ================= 20. KẾT LUẬN ================= -->
+<section class="s" data-time="30 giây">
+  <div class="tag">KẾT LUẬN</div>
+  <h2>Tóm tắt</h2>
+  <div class="sub">Bốn điểm chính của bài báo</div>
+  <div class="bd" style="gap:20px">
+    <div class="card" data-s="1"><p>Thay cách làm hai pha bằng duyệt theo chiều sâu trên <b>utility-list</b>.</p></div>
+    <div class="card" data-s="2"><p><b>rutil</b> cho phép bỏ qua nhánh an toàn, dù độ hữu ích không đơn điệu.</p></div>
+    <div class="card" data-s="3"><p>Thời gian và bộ nhớ thấp hơn trên phần lớn bộ dữ liệu.</p></div>
+    <div class="card" data-s="4"><p>Utility-list được nhiều thuật toán sau này kế thừa.</p></div>
+    <div class="band" data-s="5"><p><b>Cảm ơn. Mời đặt câu hỏi.</b></p></div>
+  </div>
+  <template class="nt">
+    <p data-n="0">Phần cuối tóm tắt lại các nội dung chính.</p>
+    <p data-n="1">HUI-Miner thay cách làm hai pha bằng việc duyệt theo chiều sâu trên utility-list.</p>
+    <p data-n="2">Thông tin rutil cho phép xác định an toàn khi nào bỏ qua một nhánh, dù độ hữu ích không đơn điệu.</p>
+    <p data-n="3">Thực nghiệm trong bài báo cho thấy thời gian và bộ nhớ thấp hơn các thuật toán cùng thời trên phần lớn bộ dữ liệu.</p>
+    <p data-n="4">Cấu trúc utility-list sau đó được nhiều thuật toán khác kế thừa và cải tiến.</p>
+    <p data-n="5">Phần trình bày đến đây là kết thúc. Xin cảm ơn, và mời đặt câu hỏi.</p>
+  </template>
+</section>
+
+  </div>
+  </div>
+
+  <div class="notes" id="notes" aria-live="polite" hidden>
+    <div class="nh"><b>Lời trình bày</b><span id="nm"></span></div>
+    <div class="nl" id="nl"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script>
+(function(){
+  // Công thức: hiển thị bằng KaTeX; nếu không tải được thì giữ dòng chữ thay thế
+  if (window.katex) {
+    document.querySelectorAll('[data-tex]').forEach(function(el){
+      try { katex.render(el.getAttribute('data-tex'), el, {displayMode: el.hasAttribute('data-d'), throwOnError: false}); } catch (e) {}
+    });
+  }
+
+  var S = Array.prototype.slice.call(document.querySelectorAll('.s'));
+  var stage = document.getElementById('stage'), vp = document.getElementById('vp');
+  var notes = document.getElementById('notes'), nl = document.getElementById('nl'), nm = document.getElementById('nm');
+  var ct = document.getElementById('ct'), pg = document.getElementById('pg'), pgb = document.getElementById('pgb');
+  var N = S.length;
+
+  function rng(v){ v = String(v).trim();
+    if (v.slice(-1) === '-') return [parseInt(v,10), Infinity];
+    if (v.indexOf('-') > 0) { var p = v.split('-'); return [parseInt(p[0],10), parseInt(p[1],10)]; }
+    var n = parseInt(v,10); return [n,n]; }
+  function inR(r,s){ return s >= r[0] && s <= r[1]; }
+
+  S.forEach(function(sl){
+    var m = 0;
+    sl.querySelectorAll('[data-s],[data-only],[data-hl],[data-x]').forEach(function(el){
+      ['s','only','hl','x'].forEach(function(k){ var v = el.dataset[k]; if (v === undefined) return;
+        var r = rng(v); m = Math.max(m, r[0], isFinite(r[1]) ? r[1] : 0); });
+    });
+    var t = sl.querySelector('template.nt');
+    sl._n = t ? Array.prototype.map.call(t.content.querySelectorAll('p'), function(p){ return {n: parseInt(p.dataset.n,10)||0, t: p.textContent}; }) : [];
+    sl._n.forEach(function(o){ m = Math.max(m, o.n); });
+    sl._m = m;
+  });
+
+  var cur = 0, st = 0;
+  function apply(){
+    S.forEach(function(e,i){ e.classList.toggle('on', i === cur); });
+    var sl = S[cur];
+    sl.querySelectorAll('[data-s]').forEach(function(el){ el.classList.toggle('pre', st < rng(el.dataset.s)[0]); });
+    sl.querySelectorAll('[data-only]').forEach(function(el){ el.classList.toggle('pre', !inR(rng(el.dataset.only), st)); });
+    sl.querySelectorAll('[data-hl]').forEach(function(el){ el.classList.toggle('hl', inR(rng(el.dataset.hl), st)); });
+    sl.querySelectorAll('[data-x]').forEach(function(el){ el.classList.toggle('x', inR(rng(el.dataset.x), st)); });
+    pg.textContent = (cur+1) + ' / ' + N;
+    ct.textContent = 'Slide ' + (cur+1) + ' / ' + N + (sl._m ? ' · bước ' + (st+1) + '/' + (sl._m+1) : '');
+    var all = 0, done = 0;
+    S.forEach(function(s,i){ all += s._m + 1; if (i < cur) done += s._m + 1; });
+    pgb.style.width = ((done + st + 1) / all * 100) + '%';
+    renderNotes(sl);
+    try { history.replaceState(null, '', '#s' + (cur+1)); } catch (e) {}
+  }
+  function renderNotes(sl){
+    var now = -1;
+    sl._n.forEach(function(o,i){ if (o.n <= st) now = i; });
+    nm.textContent = 'Slide ' + (cur+1) + ' · thời lượng gợi ý ' + (sl.dataset.time || '') + (sl._m ? ' · bước ' + (st+1) + '/' + (sl._m+1) : '');
+    nl.innerHTML = '';
+    sl._n.forEach(function(o,i){
+      var p = document.createElement('p');
+      p.className = i < now ? 'past' : (i === now ? 'now' : 'future');
+      if (sl._m) { var k = document.createElement('span'); k.className = 'k'; k.textContent = 'B' + (o.n+1); p.appendChild(k); }
+      p.appendChild(document.createTextNode(o.t));
+      nl.appendChild(p);
+    });
+    var el = nl.querySelector('.now');
+    if (el && !notes.hidden) { notes.scrollTop = Math.max(0, el.offsetTop - nl.offsetTop - 30); }
+  }
+  function next(){ if (st < S[cur]._m) st++; else if (cur < N-1) { cur++; st = 0; } apply(); }
+  function prev(){ if (st > 0) st--; else if (cur > 0) { cur--; st = S[cur]._m; } apply(); }
+  function go(i, end){ cur = Math.max(0, Math.min(N-1, i)); st = end ? S[cur]._m : 0; apply(); }
+
+  function fit(){ var w = vp.clientWidth, h = vp.clientHeight;
+    var s = Math.max(0.05, Math.min(w/1920, h/1080));
+    stage.style.transform = 'translate(-50%,-50%) scale(' + s + ')'; }
+  window.addEventListener('resize', fit);
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(vp);
+
+  document.getElementById('nx').addEventListener('click', next);
+  document.getElementById('pv').addEventListener('click', prev);
+  stage.addEventListener('click', next);
+  var tn = document.getElementById('tn');
+  function setNotes(show){ notes.hidden = !show; tn.setAttribute('aria-pressed', String(show));
+    try { localStorage.setItem('huiNotesKQ2', show ? '1' : '0'); } catch (e) {}
+    requestAnimationFrame(function(){ fit(); renderNotes(S[cur]); }); }
+  tn.addEventListener('click', function(){ setNotes(notes.hidden); });
+  document.getElementById('fs').addEventListener('click', function(){
+    var d = document;
+    if (d.fullscreenElement) { if (d.exitFullscreen) d.exitFullscreen().catch(function(){}); }
+    else if (d.documentElement.requestFullscreen) d.documentElement.requestFullscreen().catch(function(){});
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    var k = e.key;
+    if (k === 'ArrowRight' || k === ' ' || k === 'PageDown' || k === 'ArrowDown') { e.preventDefault(); next(); }
+    else if (k === 'ArrowLeft' || k === 'PageUp' || k === 'ArrowUp' || k === 'Backspace') { e.preventDefault(); prev(); }
+    else if (k === 'Home') go(0);
+    else if (k === 'End') go(N-1, true);
+    else if (k === 'n' || k === 'N') setNotes(notes.hidden);
+    else if (k === 'f' || k === 'F') document.getElementById('fs').click();
+  });
+
+  var m = /^#s(\d+)$/.exec(location.hash || ''), start = m ? parseInt(m[1],10) - 1 : 0;
+  var show = false; try { if (localStorage.getItem('huiNotesKQ2') === '1') show = true; } catch (e) {}
+  notes.hidden = !show; tn.setAttribute('aria-pressed', String(show));
+  go(start); fit();
+})();
+</script>
+</body>
+</html>
