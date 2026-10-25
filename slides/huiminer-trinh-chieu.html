@@ -195,6 +195,18 @@ body{background:var(--shell);color:var(--shell-text);font-family:var(--font);ove
 .hb .tk{height:52px;background:var(--greybg);border-radius:10px;overflow:hidden}
 .hb .fi{min-width:max-content;height:100%;border-radius:10px;background:var(--grey);color:var(--white);font-size:var(--fs-small);font-weight:700;display:flex;align-items:center;padding:0 14px;white-space:nowrap}
 .hb .fi.me{background:var(--blue)}
+/* mã giả */
+pre.code{font-family:var(--mono);font-size:var(--fs-small);line-height:1.45;color:#e6f0f8;white-space:pre;margin:0}
+pre.code span{display:inline-block;border-radius:6px;transition:background .3s}
+pre.code span.hl{background:rgba(240,93,50,.32);box-shadow:0 0 0 4px rgba(240,93,50,.32)}
+/* cây liệt kê tập */
+.etree{position:relative;width:1704px;height:470px;flex:none}
+.etree svg{position:absolute;left:0;top:0}
+.etree line{stroke:var(--light);stroke-width:3;transition:opacity .35s}
+.etree line.x{opacity:.3}
+.sn{position:absolute;width:120px;height:50px;border:2px solid var(--blue);border-radius:12px;background:var(--white);font-family:var(--mono);font-weight:700;font-size:var(--fs-small);color:var(--title);display:flex;align-items:center;justify-content:center;transition:opacity .35s,background .3s,box-shadow .3s}
+.sn.cut.hl{box-shadow:0 0 0 6px var(--pill),0 0 0 9px var(--orange)}
+.sn.cut.x{background:var(--greybg);border-style:dashed;border-color:var(--grey);color:var(--grey);opacity:.75}
 </style>
 </head>
 <body>
@@ -216,7 +228,7 @@ body{background:var(--shell);color:var(--shell-text);font-family:var(--font);ove
   <img class="bg" src="kq-background.png" alt="">
   <div class="pg" id="pg"></div>
 
-<!-- ================= 1. BÌA ================= -->
+<!-- ================= 1. ================= -->
 <section class="s" data-time="30 giây">
   <div class="tag">BÁO CÁO BÀI BÁO KHOA HỌC</div>
   <div class="kick">KHAI PHÁ DỮ LIỆU · ACM CIKM 2012</div>
@@ -233,16 +245,16 @@ body{background:var(--shell);color:var(--shell-text);font-family:var(--font);ove
   </template>
 </section>
 
-<!-- ================= 2. NỘI DUNG ================= -->
+<!-- ================= 2. ================= -->
 <section class="s" data-time="30 giây">
   <div class="tag">NỘI DUNG</div>
   <h2>Nội dung trình bày</h2>
   <div class="sub">Một cơ sở dữ liệu 7 giao dịch lấy từ bài báo được dùng xuyên suốt</div>
   <div class="bd" style="gap:16px">
-    <div class="ag"><span class="n">1</span><h3>Giới thiệu</h3><p>Bài toán, cách làm trước đây, ý tưởng chính</p></div>
-    <div class="ag"><span class="n">2</span><h3>Một số định nghĩa</h3><p>Độ hữu ích, TWU, ví dụ minh họa</p></div>
-    <div class="ag dark"><span class="n">3</span><h3>Cấu trúc Utility List</h3><p>Bộ ba tid, iutil, rutil và phép kết hợp</p></div>
-    <div class="ag dark"><span class="n">4</span><h3>Thuật toán HUI-Miner</h3><p>Quy tắc tỉa, chạy ví dụ từng bước</p></div>
+    <div class="ag"><span class="n">1</span><h3>Giới thiệu</h3><p>Tập phổ biến, tập hữu ích cao, đề xuất UL</p></div>
+    <div class="ag"><span class="n">2</span><h3>Một số định nghĩa</h3><p>ĐN1–ĐN7, Tính chất 1</p></div>
+    <div class="ag dark"><span class="n">3</span><h3>Cấu trúc Utility List</h3><p>ĐN8–ĐN10, xây dựng 1-UL, 2-UL, k-UL</p></div>
+    <div class="ag dark"><span class="n">4</span><h3>Thuật toán HUI-Miner</h3><p>Tính chất 2, thuật toán, minh họa</p></div>
     <div class="ag"><span class="n">5</span><h3>Thực nghiệm</h3><p>So sánh kết quả và đánh giá</p></div>
   </div>
   <template class="nt">
@@ -250,14 +262,14 @@ body{background:var(--shell);color:var(--shell-text);font-family:var(--font);ove
   </template>
 </section>
 
-<!-- ================= 3. BÀI TOÁN ================= -->
+<!-- ================= 3. ================= -->
 <section class="s" data-time="1 phút">
   <div class="tag">1 · GIỚI THIỆU</div>
   <h2>Từ tần suất đến độ hữu ích</h2>
   <div class="sub">Không chỉ hỏi “mua gì”, mà hỏi “mua bao nhiêu” và “lời bao nhiêu”</div>
   <div class="bd">
     <div class="row" style="align-items:stretch">
-      <div class="card f1"><p class="cap">Khai phá tập phổ biến</p><div class="bar"></div><p>Chỉ đếm <b>số giao dịch chứa tập mục</b>. Mua 1 hay 3 hộp sữa đều tính là một lần.</p></div>
+      <div class="card f1"><p class="cap">Khai phá tập phổ biến</p><div class="bar"></div><p>Đếm <b>số giao dịch chứa tập mục</b>. Với n mục có <b>2ⁿ − 1</b> tập cần xét. Ví dụ: Apriori, FP-Growth.</p></div>
       <div class="card dark f1" data-s="1"><p class="cap">Khai phá tập hữu ích cao</p><div class="bar"></div><p>Tính <b>số lượng × lợi nhuận</b>. Tìm mọi tập mục có độ hữu ích <b>≥ minutil</b>.</p></div>
     </div>
     <div class="row" style="align-items:center">
@@ -270,7 +282,7 @@ body{background:var(--shell);color:var(--shell-text);font-family:var(--font);ove
     </div>
   </div>
   <template class="nt">
-    <p data-n="0">Bài toán quen thuộc trong khai phá dữ liệu là tìm tập phổ biến, tức các nhóm mặt hàng thường được mua cùng nhau. Cách này chỉ ghi nhận một mặt hàng có xuất hiện trong giao dịch hay không. Nó không phân biệt khách mua một hay ba đơn vị, cũng không phân biệt mặt hàng có lợi nhuận cao hay thấp.</p>
+    <p data-n="0">Bài toán quen thuộc trong khai phá dữ liệu là tìm tập phổ biến, tức các nhóm mặt hàng thường được mua cùng nhau. Với n mặt hàng có tới 2 mũ n trừ 1 tập mục cần xét, nên các thuật toán như Apriori hay FP-Growth tìm cách thu hẹp không gian này. Cách đếm tần suất chỉ ghi nhận một mặt hàng có xuất hiện trong giao dịch hay không. Nó không phân biệt khách mua một hay ba đơn vị, cũng không phân biệt mặt hàng có lợi nhuận cao hay thấp.</p>
     <p data-n="1">Khai phá tập hữu ích cao bổ sung hai thông tin này: số lượng mua và lợi nhuận đơn vị. Mục tiêu là tìm mọi tập mục có tổng độ hữu ích không nhỏ hơn một ngưỡng cho trước, gọi là minutil.</p>
     <p data-n="2">Ví dụ trong bài báo: tập {b, c} xuất hiện trong ba giao dịch, có độ hữu ích 18.</p>
     <p data-n="3">Tập {d, e} chỉ xuất hiện trong hai giao dịch nhưng có độ hữu ích 22.</p>
@@ -278,7 +290,7 @@ body{background:var(--shell);color:var(--shell-text);font-family:var(--font);ove
   </template>
 </section>
 
-<!-- ================= 4. HAI PHA ================= -->
+<!-- ================= 4. ================= -->
 <section class="s" data-time="1 phút">
   <div class="tag">1 · GIỚI THIỆU</div>
   <h2>Hai pha: phát sinh ứng viên rồi kiểm tra</h2>
@@ -309,31 +321,32 @@ body{background:var(--shell);color:var(--shell-text);font-family:var(--font);ove
   </template>
 </section>
 
-<!-- ================= 5. Ý TƯỞNG ================= -->
+<!-- ================= 5. ================= -->
 <section class="s" data-time="30 giây">
   <div class="tag">1 · GIỚI THIỆU</div>
-  <h2>Mỗi tập mục mang theo một <span>utility-list</span></h2>
-  <div class="sub">Danh sách này trả lời hai câu hỏi mà không cần quét lại dữ liệu</div>
+  <h2>Đề xuất: cấu trúc <span>Utility List</span> (UL)</h2>
+  <div class="sub">Mỗi tập mục có một danh sách, không cần lưu ứng viên</div>
   <div class="bd">
     <div class="row" style="align-items:stretch">
-      <div class="card f1"><p class="cap">Câu hỏi 1</p><div class="bar"></div><p>Độ hữu ích chính xác của tập mục là bao nhiêu?</p></div>
-      <div class="card f1"><p class="cap">Câu hỏi 2</p><div class="bar"></div><p>Có cần xét tiếp các tập lớn hơn chứa nó không?</p></div>
+      <div class="card f1"><p class="cap">Lưu trữ</p><div class="bar"></div><p>Độ hữu ích chính xác của tập mục</p></div>
+      <div class="card f1" data-s="1"><p class="cap">Xác định</p><div class="bar"></div><p>Tập mục có được tỉa hay không</p></div>
     </div>
     <div class="flow">
-      <div class="fl" data-s="1"><b>Quét lần 1</b><p>Loại các mục không cần xét, sắp xếp các mục còn lại</p></div>
-      <div class="fl" data-s="2"><b>Quét lần 2</b><p>Tạo utility-list cho từng mục</p></div>
-      <div class="fl key" data-s="3"><b>Không quét thêm</b><p>Kết hợp các danh sách, duyệt theo chiều sâu</p></div>
+      <div class="fl" data-s="2"><b>Cơ sở dữ liệu giao dịch</b><p>Quét 2 lần</p></div>
+      <div class="fl" data-s="3"><b>Xây dựng Utility List</b><p>Một danh sách cho mỗi mục</p></div>
+      <div class="fl key" data-s="4"><b>HUI-Miner</b><p>Kết hợp danh sách, duyệt theo chiều sâu</p></div>
     </div>
   </div>
   <template class="nt">
-    <p data-n="0">Ý tưởng của HUI-Miner là gắn cho mỗi tập mục một danh sách, gọi là utility-list. Danh sách này chứa đủ thông tin để trả lời hai câu hỏi: độ hữu ích chính xác của tập mục là bao nhiêu, và có cần xét tiếp các tập lớn hơn chứa nó hay không.</p>
-    <p data-n="1">Thuật toán quét cơ sở dữ liệu lần thứ nhất để loại các mục chắc chắn không cần xét và sắp xếp các mục còn lại. Cách loại mục được trình bày ở phần định nghĩa.</p>
-    <p data-n="2">Lần quét thứ hai dùng để tạo utility-list cho từng mục đơn.</p>
-    <p data-n="3">Sau đó mọi tính toán dựa trên việc kết hợp các danh sách, không cần quét lại cơ sở dữ liệu và không cần lưu tập ứng viên.</p>
+    <p data-n="0">Bài báo đề xuất một cấu trúc dữ liệu gọi là Utility List, viết tắt là UL. Mỗi tập mục có một danh sách. Danh sách này lưu trữ độ hữu ích chính xác của tập mục.</p>
+    <p data-n="1">Đồng thời, danh sách cho biết tập mục đó có được tỉa hay không, tức có cần xét tiếp các tập lớn hơn chứa nó hay không.</p>
+    <p data-n="2">Quy trình gồm ba bước. Bước một: quét cơ sở dữ liệu giao dịch hai lần.</p>
+    <p data-n="3">Bước hai: xây dựng utility-list cho từng mục.</p>
+    <p data-n="4">Bước ba: thuật toán HUI-Miner kết hợp các danh sách và duyệt theo chiều sâu để tìm tập hữu ích cao. Từ bước này không cần quét lại cơ sở dữ liệu và không cần lưu tập ứng viên.</p>
   </template>
 </section>
 
-<!-- ================= 6. DỮ LIỆU ================= -->
+<!-- ================= 6. ================= -->
 <section class="s" data-time="1 phút">
   <div class="tag">2 · MỘT SỐ ĐỊNH NGHĨA</div>
   <h2>Cơ sở dữ liệu mẫu</h2>
@@ -372,20 +385,20 @@ body{background:var(--shell);color:var(--shell-text);font-family:var(--font);ove
   </template>
 </section>
 
-<!-- ================= 7. ĐỊNH NGHĨA ================= -->
+<!-- ================= 7. ================= -->
 <section class="s" data-time="1 phút 30">
   <div class="tag">2 · MỘT SỐ ĐỊNH NGHĨA</div>
-  <h2>Số lượng × lợi nhuận, rồi cộng dồn</h2>
-  <div class="sub">Định nghĩa 1–6, mục 2.1 của bài báo</div>
+  <h2>ĐN1–ĐN6: Độ hữu ích</h2>
+  <div class="sub">Số lượng × lợi nhuận, rồi cộng dồn (mục 2.1 của bài báo)</div>
   <div class="bd" style="gap:22px">
     <table class="tb" style="width:100%">
-      <tr><th style="width:36%">Công thức</th><th style="width:30%">Ý nghĩa</th><th>Ví dụ</th></tr>
-      <tr data-hl="0"><td><span data-tex="eu(i)">eu(i)</span></td><td>Lợi nhuận đơn vị</td><td><span data-tex="eu(e)=4">eu(e) = 4</span></td></tr>
-      <tr data-s="1" data-hl="1"><td><span data-tex="iu(i,T)">iu(i, T)</span></td><td>Số lượng mua</td><td><span data-tex="iu(e,T_5)=2">iu(e, T5) = 2</span></td></tr>
-      <tr data-s="2" data-hl="2"><td><span data-tex="u(i,T)=iu(i,T)\times eu(i)">u(i, T) = iu(i, T) × eu(i)</span></td><td>Của mục i trong T</td><td><span data-tex="u(e,T_5)=2\times4=8">u(e, T5) = 2 × 4 = 8</span></td></tr>
-      <tr data-s="3" data-hl="3"><td><span data-tex="u(X,T)=\sum_{i\in X}u(i,T)">u(X, T) = Σ u(i, T)</span></td><td>Của tập X trong T</td><td><span data-tex="u(\{a,e\},T_2)=4+4=8">u({a,e}, T2) = 4 + 4 = 8</span></td></tr>
-      <tr data-s="4" data-hl="4"><td><span data-tex="u(X)=\sum_{T\supseteq X}u(X,T)">u(X) = Σ u(X, T)</span></td><td>Của tập X</td><td><span data-tex="u(\{a,e\})=8+13=21">u({a,e}) = 8 + 13 = 21</span></td></tr>
-      <tr data-s="5" data-hl="5"><td><span data-tex="tu(T)=\sum_{i\in T}u(i,T)">tu(T) = Σ u(i, T)</span></td><td>Của giao dịch T</td><td><span data-tex="tu(T_1)=10">tu(T1) = 10</span></td></tr>
+      <tr><th style="width:10%"></th><th style="width:33%">Công thức</th><th style="width:26%">Ý nghĩa</th><th>Ví dụ</th></tr>
+      <tr data-hl="0"><td><b>ĐN1</b></td><td><span data-tex="eu(i)">eu(i)</span></td><td>Lợi nhuận đơn vị</td><td><span data-tex="eu(e)=4">eu(e) = 4</span></td></tr>
+      <tr data-s="1" data-hl="1"><td><b>ĐN2</b></td><td><span data-tex="iu(i,T)">iu(i, T)</span></td><td>Số lượng mua</td><td><span data-tex="iu(e,T_5)=2">iu(e, T5) = 2</span></td></tr>
+      <tr data-s="2" data-hl="2"><td><b>ĐN3</b></td><td><span data-tex="u(i,T)=iu(i,T)\times eu(i)">u(i, T) = iu(i, T) × eu(i)</span></td><td>Của mục i trong T</td><td><span data-tex="u(e,T_5)=2\times4=8">u(e, T5) = 2 × 4 = 8</span></td></tr>
+      <tr data-s="3" data-hl="3"><td><b>ĐN4</b></td><td><span data-tex="u(X,T)=\sum_{i\in X}u(i,T)">u(X, T) = Σ u(i, T)</span></td><td>Của tập X trong T</td><td><span data-tex="u(\{a,e\},T_2)=4+4=8">u({a,e}, T2) = 4 + 4 = 8</span></td></tr>
+      <tr data-s="4" data-hl="4"><td><b>ĐN5</b></td><td><span data-tex="u(X)=\sum_{T\supseteq X}u(X,T)">u(X) = Σ u(X, T)</span></td><td>Của tập X</td><td><span data-tex="u(\{a,e\})=8+13=21">u({a,e}) = 8 + 13 = 21</span></td></tr>
+      <tr data-s="5" data-hl="5"><td><b>ĐN6</b></td><td><span data-tex="tu(T)=\sum_{i\in T}u(i,T)">tu(T) = Σ u(i, T)</span></td><td>Của giao dịch T</td><td><span data-tex="tu(T_1)=10">tu(T1) = 10</span></td></tr>
     </table>
     <div class="band" data-s="6"><p><b>X là HUI</b> khi <span data-tex="u(X)\ge minutil">u(X) ≥ minutil</span>. Ví dụ: <span data-tex="u(\{a,e\})=21&lt;30">u({a,e}) = 21 &lt; 30</span> nên không phải HUI.</p></div>
   </div>
@@ -400,7 +413,7 @@ body{background:var(--shell);color:var(--shell-text);font-family:var(--font);ove
   </template>
 </section>
 
-<!-- ================= 8. THÁCH THỨC ================= -->
+<!-- ================= 8. ================= -->
 <section class="s" data-time="1 phút">
   <div class="tag">2 · MỘT SỐ ĐỊNH NGHĨA</div>
   <h2>Thêm mục, độ hữu ích lúc tăng lúc giảm</h2>
@@ -439,11 +452,11 @@ body{background:var(--shell);color:var(--shell-text);font-family:var(--font);ove
   </template>
 </section>
 
-<!-- ================= 9. TWU ================= -->
+<!-- ================= 9. ================= -->
 <section class="s" data-time="1 phút">
   <div class="tag">2 · MỘT SỐ ĐỊNH NGHĨA</div>
-  <h2>TWU và bước lọc mục ban đầu</h2>
-  <div class="sub">Tính chất 1 (Property 1 trong bài báo)</div>
+  <h2>ĐN7: TWU và Tính chất 1</h2>
+  <div class="sub">Độ hữu ích có trọng số giao dịch, dùng để loại mục ngay từ đầu</div>
   <div class="bd" style="gap:24px">
     <div class="row" style="align-items:center">
       <div class="fm"><div data-tex="twu(X)=\sum_{T\supseteq X} tu(T)" data-d="1">twu(X) = Σ tu(T), T chứa X</div></div>
@@ -466,57 +479,82 @@ body{background:var(--shell);color:var(--shell-text);font-family:var(--font);ove
   </template>
 </section>
 
-<!-- ================= 10. rutil ================= -->
-<section class="s" data-time="1 phút 30">
+<!-- ================= 10. ================= -->
+<section class="s" data-time="1 phút">
   <div class="tag">3 · CẤU TRÚC UTILITY LIST</div>
-  <h2>Bộ ba ⟨tid, iutil, rutil⟩</h2>
-  <div class="sub">Giao dịch đã chỉnh sửa: bỏ f, g; sắp theo e ≺ c ≺ b ≺ a ≺ d; ghi độ hữu ích</div>
-  <div class="bd">
-    <div class="row" style="gap:40px">
-      <table class="tb" style="width:470px;flex:none">
-        <tr><th>Tid</th><th>Độ hữu ích</th></tr>
-        <tr><td>T1</td><td class="mono">c2 b2 d5</td></tr>
-        <tr data-hl="1-"><td>T2</td><td class="mono">e4 c3 b2 a4 d5</td></tr>
-        <tr><td>T3</td><td class="mono">c2 a4 d5</td></tr>
-        <tr><td>T4</td><td class="mono">e4 c2</td></tr>
-        <tr><td>T5</td><td class="mono">e8 b4 a5 d5</td></tr>
-        <tr><td>T6</td><td class="mono">c1 b8 a3</td></tr>
-        <tr><td>T7</td><td class="mono">d5</td></tr>
+  <h2>ĐN8: Giao dịch đã chỉnh sửa</h2>
+  <div class="sub">Loại mục có twu &lt; minutil, sắp các mục còn lại theo TWU tăng dần</div>
+  <div class="bd" style="gap:22px">
+    <div class="ord"><span class="cap" style="margin-right:12px">Thứ tự</span><span class="it first">e</span><span class="lt">≺</span><span class="it">c</span><span class="lt">≺</span><span class="it">b</span><span class="lt">≺</span><span class="it">a</span><span class="lt">≺</span><span class="it">d</span><span class="cap o" style="margin-left:28px" data-s="1">loại f, g</span></div>
+    <div class="row" style="gap:28px">
+      <table class="tb" style="width:700px;flex:none">
+        <tr><th>Tid</th><th>Giao dịch gốc</th></tr>
+        <tr><td>T1</td><td class="mono">b1 c2 d1 <span data-x="1-">g1</span></td></tr>
+        <tr><td>T2</td><td class="mono">a4 b1 c3 d1 e1</td></tr>
+        <tr><td>T3</td><td class="mono">a4 c2 d1</td></tr>
+        <tr><td>T4</td><td class="mono">c2 e1 <span data-x="1-">f1</span></td></tr>
+        <tr><td>T5</td><td class="mono">a5 b2 d1 e2</td></tr>
+        <tr><td>T6</td><td class="mono">a3 b4 c1 <span data-x="1-">f2</span></td></tr>
+        <tr><td>T7</td><td class="mono">d1 <span data-x="1-">g5</span></td></tr>
       </table>
-      <div class="col f1" style="gap:20px">
-        <div class="col" data-s="1" style="gap:12px">
-          <p class="cap">Giao dịch T2, tập X = {c}</p>
-          <div class="tbar">
-            <div class="seg" data-x="3-" style="width:240px">e 4</div>
-            <div class="seg i" data-hl="2-" style="width:180px">c 3</div>
-            <div class="seg r" data-hl="3-" style="width:120px">b 2</div>
-            <div class="seg r" data-hl="3-" style="width:240px">a 4</div>
-            <div class="seg r" data-hl="3-" style="width:300px">d 5</div>
-          </div>
-          <div class="brs">
-            <p class="br m" data-s="3" style="left:0;width:234px">đứng trước,<br>không tính</p>
-            <p class="br i" data-s="2" style="left:240px;width:174px">iutil = 3</p>
-            <p class="br r" data-s="3" style="left:420px;width:657px">rutil = 2 + 4 + 5 = 11</p>
-          </div>
-        </div>
-        <div class="stk">
-          <div class="fm" data-only="4"><p>Phần tử của UL({c}) tại T2: <b class="mono">⟨2, 3, 11⟩</b></p></div>
-          <div class="fm" data-only="5-"><div data-tex="rutil=ru(X,T)=\sum_{i\in T/X}u(i,T)" data-d="1">rutil = Σ u(i, T) với i đứng sau X</div></div>
-        </div>
-      </div>
+      <p class="num" data-s="2" style="align-self:center;color:var(--light)!important">→</p>
+      <table class="tb f1" data-s="2">
+        <tr><th>Tid</th><th>Đã chỉnh sửa (độ hữu ích)</th><th class="r">tu</th></tr>
+        <tr><td>T1</td><td class="mono">c2 b2 d5</td><td class="r">9</td></tr>
+        <tr data-hl="3"><td>T2</td><td class="mono">e4 c3 b2 a4 d5</td><td class="r">18</td></tr>
+        <tr><td>T3</td><td class="mono">c2 a4 d5</td><td class="r">11</td></tr>
+        <tr><td>T4</td><td class="mono">e4 c2</td><td class="r">6</td></tr>
+        <tr><td>T5</td><td class="mono">e8 b4 a5 d5</td><td class="r">22</td></tr>
+        <tr><td>T6</td><td class="mono">c1 b8 a3</td><td class="r">12</td></tr>
+        <tr><td>T7</td><td class="mono">d5</td><td class="r">5</td></tr>
+      </table>
     </div>
   </div>
   <template class="nt">
-    <p data-n="0">Trước khi tạo utility-list, mỗi giao dịch được chỉnh sửa: bỏ các mục đã bị loại là f và g, sắp xếp các mục còn lại theo thứ tự e, c, b, a, d, và ghi độ hữu ích thay cho số lượng.</p>
-    <p data-n="1">Lấy giao dịch T2 làm ví dụ. Sau khi chỉnh sửa, T2 là e 4, c 3, b 2, a 4, d 5. Xét tập X là {c}.</p>
-    <p data-n="2">Giá trị thứ nhất là iutil: độ hữu ích của X trong giao dịch. Độ hữu ích của c trong T2 là 3.</p>
-    <p data-n="3">Giá trị thứ hai là rutil, tức độ hữu ích còn lại: tổng độ hữu ích của các mục đứng sau X. Sau c là b, a, d, có tổng 2 cộng 4 cộng 5 bằng 11. Mục e đứng trước c nên không được tính.</p>
-    <p data-n="4">Mỗi phần tử của utility-list gồm ba giá trị: mã giao dịch, iutil và rutil. Phần tử của {c} tại T2 là 2, 3, 11.</p>
-    <p data-n="5">Viết dưới dạng công thức: rutil là tổng u của các mục thuộc T đứng sau X. Rutil là thông tin mới mà bài báo đưa vào: nó cho biết, trong giao dịch này, tối đa còn có thể thu thêm bao nhiêu nếu mở rộng tập mục.</p>
+    <p data-n="0">Định nghĩa 8: một giao dịch được gọi là giao dịch đã chỉnh sửa nếu thỏa hai điều kiện. Thứ nhất, loại bỏ các mục có TWU nhỏ hơn minutil. Thứ hai, các mục còn lại được sắp xếp tăng dần theo TWU, ở đây là e, c, b, a, d. Bên trái là các giao dịch gốc, số đi kèm là số lượng.</p>
+    <p data-n="1">Với minutil bằng 30, hai mục f và g bị loại khỏi mọi giao dịch.</p>
+    <p data-n="2">Bên phải là các giao dịch sau khi chỉnh sửa. Các mục được sắp theo thứ tự mới, và số đi kèm bây giờ là độ hữu ích, tức số lượng nhân lợi nhuận. Cột cuối là tổng độ hữu ích của giao dịch sau khi chỉnh sửa.</p>
+    <p data-n="3">Ví dụ T2 sau khi chỉnh sửa là e 4, c 3, b 2, a 4, d 5. Giao dịch này sẽ được dùng ở slide tiếp theo.</p>
   </template>
 </section>
 
-<!-- ================= 11. 1-UL ================= -->
+<!-- ================= 11. ================= -->
+<section class="s" data-time="1 phút 30">
+  <div class="tag">3 · CẤU TRÚC UTILITY LIST</div>
+  <h2>ĐN9, ĐN10: Các mục phía sau và rutil</h2>
+  <div class="sub">Giao dịch T2 đã chỉnh sửa, tập X = {c}</div>
+  <div class="bd" style="gap:20px">
+    <div class="col" style="gap:10px">
+      <div class="tbar">
+        <div class="seg" data-x="2-" style="width:240px">e 4</div>
+        <div class="seg i" data-hl="1-" style="width:180px">c 3</div>
+        <div class="seg r" data-hl="2-" style="width:120px">b 2</div>
+        <div class="seg r" data-hl="2-" style="width:240px">a 4</div>
+        <div class="seg r" data-hl="2-" style="width:300px">d 5</div>
+      </div>
+      <div class="brs">
+        <p class="br m" data-s="2" style="left:0;width:234px">đứng trước,<br>không tính</p>
+        <p class="br i" data-s="1" style="left:240px;width:174px">iutil = 3</p>
+        <p class="br r" data-s="2" style="left:420px;width:657px">rutil = 2 + 4 + 5 = 11</p>
+      </div>
+    </div>
+    <div class="row" style="align-items:stretch">
+      <div class="card f1" data-s="3"><p class="cap">ĐN9: T/X</p><p>Các mục <b>đứng sau</b> X trong T</p><p class="calc">T2/{e,b} = {a,d} · T2/{c} = {b,a,d}</p></div>
+      <div class="card f1" data-s="4"><p class="cap">ĐN10: độ hữu ích còn lại</p><div data-tex="ru(X,T)=\sum_{i\in T/X}u(i,T)" data-d="1">ru(X, T) = Σ u(i, T), i thuộc T/X</div><p class="calc">ru({e,b}, T2) = 4 + 5 = 9</p></div>
+    </div>
+    <div class="band" data-s="5"><p>Mỗi phần tử của UL là bộ ba <b>⟨tid, iutil, rutil⟩</b>. Với {c} tại T2: <b>⟨2, 3, 11⟩</b></p></div>
+  </div>
+  <template class="nt">
+    <p data-n="0">Xét giao dịch T2 đã chỉnh sửa: e 4, c 3, b 2, a 4, d 5, và tập X là {c}.</p>
+    <p data-n="1">Giá trị thứ nhất là iutil: độ hữu ích của X trong giao dịch. Độ hữu ích của c trong T2 là 3.</p>
+    <p data-n="2">Giá trị thứ hai là rutil: tổng độ hữu ích của các mục đứng sau X. Sau c là b, a, d, có tổng 2 cộng 4 cộng 5 bằng 11. Mục e đứng trước c nên không được tính.</p>
+    <p data-n="3">Định nghĩa 9 gọi tập các mục đứng sau X trong T là T chia X. Ví dụ, T2 chia {e, b} là {a, d}, và T2 chia {c} là {b, a, d}.</p>
+    <p data-n="4">Định nghĩa 10: độ hữu ích còn lại của X trong T là tổng độ hữu ích của các mục thuộc T chia X. Ví dụ, ru của {e, b} trong T2 bằng u của a cộng u của d, tức 4 cộng 5 bằng 9.</p>
+    <p data-n="5">Mỗi phần tử trong utility-list gồm ba giá trị: mã giao dịch, iutil và rutil. Với {c} tại T2, phần tử là 2, 3, 11. Rutil là thông tin mới mà bài báo đưa vào: nó cho biết tối đa còn có thể thu thêm bao nhiêu nếu mở rộng tập mục.</p>
+  </template>
+</section>
+
+<!-- ================= 12. ================= -->
 <section class="s" data-time="1 phút">
   <div class="tag">3 · CẤU TRÚC UTILITY LIST</div>
   <h2>Tạo utility-list cho từng mục</h2>
@@ -566,7 +604,7 @@ body{background:var(--shell);color:var(--shell-text);font-family:var(--font);ove
   </template>
 </section>
 
-<!-- ================= 12. 2-UL ================= -->
+<!-- ================= 13. ================= -->
 <section class="s" data-time="1 phút">
   <div class="tag">3 · CẤU TRÚC UTILITY LIST</div>
   <h2>Tập 2 mục: kết hợp UL({e}) và UL({c})</h2>
@@ -599,7 +637,7 @@ body{background:var(--shell);color:var(--shell-text);font-family:var(--font);ove
   </template>
 </section>
 
-<!-- ================= 13. k-UL ================= -->
+<!-- ================= 14. ================= -->
 <section class="s" data-time="1 phút 30">
   <div class="tag">3 · CẤU TRÚC UTILITY LIST</div>
   <h2>Tập từ 3 mục: trừ phần tiền tố chung</h2>
@@ -633,62 +671,100 @@ body{background:var(--shell);color:var(--shell-text);font-family:var(--font);ove
   </template>
 </section>
 
-<!-- ================= 14. TỈA ================= -->
-<section class="s" data-time="1 phút 30">
-  <div class="tag">4 · THUẬT TOÁN HUI-MINER</div>
-  <h2>Quy tắc tỉa nhánh</h2>
-  <div class="sub">Tính chất 2 (Lemma 1 trong bài báo)</div>
-  <div class="bd" style="gap:24px">
-    <div class="band"><p>Nếu <span data-tex="\sum iutil+\sum rutil&lt;minutil">Σ iutil + Σ rutil &lt; minutil</span> thì X và mọi tập mở rộng từ X đều không phải HUI.</p></div>
-    <div class="row" style="align-items:stretch">
-      <div class="card f1" data-s="1">
-        <p class="cap">Vì sao đúng</p>
-        <p>Tập mở rộng X′ chỉ thêm các mục <b>đứng sau</b> X, nên:</p>
-        <div class="fm"><div data-tex="u(X',t)\le u(X,t)+ru(X,t)" data-d="1">u(X′, t) ≤ u(X, t) + ru(X, t)</div></div>
-      </div>
-      <div class="card f1" data-s="2">
-        <p class="cap">Ví dụ: X = {e, c}</p>
-        <div class="fm"><div data-tex="7+11+6+0=24&lt;30" data-d="1">7 + 11 + 6 + 0 = 24 &lt; 30</div></div>
-        <p data-s="3"><b>Bỏ qua 7 tập mở rộng:</b></p>
-        <p data-s="3" class="sm" style="line-height:1.7"><span class="pl cut">ecb</span> <span class="pl cut">eca</span> <span class="pl cut">ecd</span> <span class="pl cut">ecba</span> <span class="pl cut">ecbd</span> <span class="pl cut">ecad</span> <span class="pl cut">ecbad</span></p>
-      </div>
+<!-- ================= 15. ================= -->
+<section class="s" data-time="1 phút">
+  <div class="tag">3 · CẤU TRÚC UTILITY LIST</div>
+  <h2>Thuật toán 1: Construct</h2>
+  <div class="sub">Tạo UL(Pxy) từ UL(Px) và UL(Py), không đọc lại cơ sở dữ liệu</div>
+  <div class="bd" style="gap:22px">
+    <div class="card dark"><pre class="code">Construct(P.UL, Px.UL, Py.UL):
+<span data-hl="1">  for each Ex ∈ Px.UL:
+    if ∃ Ey ∈ Py.UL có Ey.tid = Ex.tid:</span>
+<span data-hl="3">      if P.UL ≠ ∅:
+        tìm E ∈ P.UL có E.tid = Ex.tid
+        Exy ← ⟨Ex.tid, Ex.iutil + Ey.iutil − E.iutil, Ey.rutil⟩</span>
+<span data-hl="2">      else:
+        Exy ← ⟨Ex.tid, Ex.iutil + Ey.iutil, Ey.rutil⟩</span>
+<span data-hl="4">      thêm Exy vào Pxy.UL
+  return Pxy.UL</span></pre></div>
+    <div class="stk">
+      <div class="fm" data-only="0"><p>Đầu vào: danh sách của tiền tố P và của hai tập Px, Py.</p></div>
+      <div class="fm" data-only="1"><p>Chỉ xét các <b>tid có ở cả hai</b> danh sách.</p></div>
+      <div class="fm" data-only="2"><p>Tập 2 mục (P rỗng): <b>cộng hai iutil</b>, ví dụ {e,c}.</p></div>
+      <div class="fm" data-only="3"><p>Tập từ 3 mục: <b>trừ iutil của P</b>, ví dụ {e,b,a}.</p></div>
+      <div class="fm" data-only="4-"><p>rutil luôn lấy theo <b>Py</b>, mục đứng sau.</p></div>
     </div>
   </div>
   <template class="nt">
-    <p data-n="0">Phần định nghĩa đã chỉ ra rằng không thể tỉa nhánh chỉ dựa vào độ hữu ích của tập hiện tại. HUI-Miner dùng một tiêu chí khác: tổng iutil cộng tổng rutil. Nếu giá trị này nhỏ hơn ngưỡng, có thể bỏ qua cả nhánh.</p>
-    <p data-n="1">Lý do: mọi tập mở rộng từ X chỉ thêm các mục đứng sau X theo thứ tự đã cố định. Trong mỗi giao dịch, phần thêm vào không vượt quá rutil. Vì vậy độ hữu ích của tập mở rộng trong giao dịch không vượt quá iutil cộng rutil. Cộng trên các giao dịch được một giới hạn trên. Bài báo có chứng minh hình thức cho tính chất này.</p>
-    <p data-n="2">Ví dụ với {e, c}: cộng tất cả iutil và rutil được 24, nhỏ hơn 30.</p>
-    <p data-n="3">Như vậy không cần xét bảy tập mở rộng từ {e, c}. Thuật toán bỏ qua cả nhánh mà không cần tạo danh sách cho các tập đó. So với TWU, cận này nhỏ hơn hoặc bằng, vì chỉ tính phần đứng sau thay vì toàn bộ giao dịch, nên tỉa được nhiều nhánh hơn.</p>
+    <p data-n="0">Thuật toán 1 trong bài báo, tên là Construct, tóm tắt hai slide vừa rồi. Đầu vào gồm danh sách của tiền tố P và danh sách của hai tập Px, Py.</p>
+    <p data-n="1">Với mỗi phần tử của Px, thuật toán tìm phần tử của Py có cùng mã giao dịch. Chỉ các giao dịch có ở cả hai danh sách mới được giữ lại.</p>
+    <p data-n="2">Nếu P rỗng, tức đang tạo tập hai mục, iutil mới bằng tổng hai iutil. Đây là trường hợp của {e, c}.</p>
+    <p data-n="3">Nếu P không rỗng, tức đang tạo tập từ ba mục, thuật toán trừ thêm iutil của P để không cộng tiền tố hai lần. Đây là trường hợp của {e, b, a}.</p>
+    <p data-n="4">Trong cả hai trường hợp, rutil lấy theo Py, vì Py chứa mục đứng sau. Phần tử mới được thêm vào danh sách kết quả.</p>
   </template>
 </section>
 
-<!-- ================= 15. THUẬT TOÁN ================= -->
-<section class="s" data-time="1 phút">
-  <div class="tag">4 · THUẬT TOÁN HUI-MINER</div>
-  <h2>Ba quy tắc cho mỗi utility-list X</h2>
-  <div class="sub">Duyệt theo chiều sâu, thứ tự e ≺ c ≺ b ≺ a ≺ d</div>
-  <div class="bd">
-    <table class="tb" style="width:100%">
-      <tr><th style="width:46%">Điều kiện</th><th>Hành động</th></tr>
-      <tr data-s="1" data-hl="1"><td><span data-tex="\sum iutil \ge minutil">Σ iutil ≥ minutil</span></td><td><span class="pl hui">HUI</span> Ghi nhận X</td></tr>
-      <tr data-s="2" data-hl="2"><td><span data-tex="\sum iutil + \sum rutil \ge minutil">Σ iutil + Σ rutil ≥ minutil</span></td><td><span class="pl go">Mở rộng</span> Kết hợp X với từng danh sách đứng sau</td></tr>
-      <tr data-s="3" data-hl="3"><td><span data-tex="\sum iutil + \sum rutil &lt; minutil">Σ iutil + Σ rutil &lt; minutil</span></td><td><span class="pl cut">Bỏ qua</span> Không xét nhánh của X</td></tr>
-    </table>
-    <div class="band" data-s="4"><p>Hai điều kiện đầu kiểm tra <b>độc lập</b>: một tập có thể không phải HUI nhưng vẫn cần mở rộng.</p></div>
-  </div>
-  <template class="nt">
-    <p data-n="0">Thuật toán HUI-Miner kết hợp các bước trên. Các tập mục được xét theo chiều sâu, bắt đầu từ mục đứng đầu theo thứ tự e, c, b, a, d. Với mỗi danh sách X, thuật toán kiểm tra ba trường hợp.</p>
-    <p data-n="1">Nếu tổng iutil đạt ngưỡng, X là tập hữu ích cao và được ghi nhận.</p>
-    <p data-n="2">Nếu tổng iutil cộng rutil đạt ngưỡng, vẫn có khả năng tồn tại tập hữu ích cao trong nhánh này. Thuật toán kết hợp X với các danh sách đứng sau để tạo danh sách cho tập lớn hơn, rồi lặp lại quá trình.</p>
-    <p data-n="3">Nếu tổng iutil cộng rutil không đạt ngưỡng, cả nhánh được bỏ qua.</p>
-    <p data-n="4">Lưu ý hai điều kiện đầu độc lập với nhau. Một tập không phải HUI vẫn có thể cần mở rộng. Slide tiếp theo có một ví dụ cụ thể.</p>
-  </template>
-</section>
-
-<!-- ================= 16. CÂY ================= -->
+<!-- ================= 16. ================= -->
 <section class="s" data-time="1 phút 30">
   <div class="tag">4 · THUẬT TOÁN HUI-MINER</div>
-  <h2>Chạy thuật toán trên nhánh e</h2>
+  <h2>Tính chất 2: Quy tắc tỉa nhánh</h2>
+  <div class="sub">Cây liệt kê tập theo thứ tự e ≺ c ≺ b ≺ a ≺ d (Hình 8 của bài báo)</div>
+  <div class="bd" style="gap:18px">
+    <div class="band"><p>Nếu <span data-tex="\sum iutil+\sum rutil&lt;minutil">Σ iutil + Σ rutil &lt; minutil</span> thì X và mọi mở rộng của X không phải HUI.</p></div>
+    <div class="etree"><svg width="1704" height="470" viewBox="0 0 1704 470" aria-hidden="true"><line x1="852" y1="50" x2="320" y2="84"/><line x1="852" y1="50" x2="880" y2="84"/><line x1="852" y1="50" x2="1280" y2="84"/><line x1="852" y1="50" x2="1520" y2="84"/><line x1="852" y1="50" x2="1640" y2="84"/><line x1="320" y1="134" x2="80" y2="168" data-x="2-"/><line x1="320" y1="134" x2="240" y2="168"/><line x1="320" y1="134" x2="400" y2="168"/><line x1="320" y1="134" x2="560" y2="168"/><line x1="880" y1="134" x2="720" y2="168"/><line x1="880" y1="134" x2="880" y2="168"/><line x1="880" y1="134" x2="1040" y2="168"/><line x1="1280" y1="134" x2="1200" y2="168"/><line x1="1280" y1="134" x2="1360" y2="168"/><line x1="1520" y1="134" x2="1520" y2="168"/><line x1="80" y1="218" x2="80" y2="252" data-x="2-"/><line x1="80" y1="218" x2="240" y2="252" data-x="2-"/><line x1="80" y1="218" x2="400" y2="252" data-x="2-"/><line x1="240" y1="218" x2="560" y2="252"/><line x1="240" y1="218" x2="720" y2="252"/><line x1="400" y1="218" x2="880" y2="252"/><line x1="720" y1="218" x2="1040" y2="252"/><line x1="720" y1="218" x2="1200" y2="252"/><line x1="880" y1="218" x2="1360" y2="252"/><line x1="1200" y1="218" x2="1520" y2="252"/><line x1="80" y1="302" x2="80" y2="336" data-x="2-"/><line x1="80" y1="302" x2="240" y2="336" data-x="2-"/><line x1="240" y1="302" x2="400" y2="336" data-x="2-"/><line x1="560" y1="302" x2="560" y2="336"/><line x1="1040" y1="302" x2="1040" y2="336"/><line x1="80" y1="386" x2="80" y2="420" data-x="2-"/></svg><div class="sn" style="left:792px;top:0px">∅</div><div class="sn" style="left:260px;top:84px">e</div><div class="sn" style="left:820px;top:84px">c</div><div class="sn" style="left:1220px;top:84px">b</div><div class="sn" style="left:1460px;top:84px">a</div><div class="sn" style="left:1580px;top:84px">d</div><div class="sn cut" data-x="2-" data-hl="1-" style="left:20px;top:168px">ec</div><div class="sn" style="left:180px;top:168px">eb</div><div class="sn" style="left:340px;top:168px">ea</div><div class="sn" style="left:500px;top:168px">ed</div><div class="sn" style="left:660px;top:168px">cb</div><div class="sn" style="left:820px;top:168px">ca</div><div class="sn" style="left:980px;top:168px">cd</div><div class="sn" style="left:1140px;top:168px">ba</div><div class="sn" style="left:1300px;top:168px">bd</div><div class="sn" style="left:1460px;top:168px">ad</div><div class="sn cut" data-x="2-" style="left:20px;top:252px">ecb</div><div class="sn cut" data-x="2-" style="left:180px;top:252px">eca</div><div class="sn cut" data-x="2-" style="left:340px;top:252px">ecd</div><div class="sn" style="left:500px;top:252px">eba</div><div class="sn" style="left:660px;top:252px">ebd</div><div class="sn" style="left:820px;top:252px">ead</div><div class="sn" style="left:980px;top:252px">cba</div><div class="sn" style="left:1140px;top:252px">cbd</div><div class="sn" style="left:1300px;top:252px">cad</div><div class="sn" style="left:1460px;top:252px">bad</div><div class="sn cut" data-x="2-" style="left:20px;top:336px">ecba</div><div class="sn cut" data-x="2-" style="left:180px;top:336px">ecbd</div><div class="sn cut" data-x="2-" style="left:340px;top:336px">ecad</div><div class="sn" style="left:500px;top:336px">ebad</div><div class="sn" style="left:980px;top:336px">cbad</div><div class="sn cut" data-x="2-" style="left:20px;top:420px">ecbad</div></div>
+    <div class="stk">
+      <p class="calc" data-only="0">Mở rộng của X chỉ thêm các mục đứng sau X, nên phần thêm vào không vượt quá rutil.</p>
+      <p class="calc" data-only="1">UL({e,c}) = ⟨2,7,11⟩ ⟨4,6,0⟩: &nbsp;7 + 11 + 6 + 0 = <b>24 &lt; 30</b></p>
+      <p class="calc" data-only="2-"><b>Bỏ qua {e,c} và 7 mở rộng</b>, không cần tạo danh sách cho chúng.</p>
+    </div>
+  </div>
+  <template class="nt">
+    <p data-n="0">Tính chất 2, là Lemma 1 trong bài báo: nếu tổng iutil cộng tổng rutil trong danh sách của X nhỏ hơn minutil, thì X và mọi mở rộng của X đều không phải tập hữu ích cao. Hình bên dưới là cây liệt kê tập theo thứ tự e, c, b, a, d. Mỗi nút chỉ được mở rộng bằng các mục đứng sau nó, nên phần thêm vào trong mỗi giao dịch không vượt quá rutil. Bài báo có chứng minh hình thức cho tính chất này.</p>
+    <p data-n="1">Ví dụ với {e, c}: danh sách là 2, 7, 11 và 4, 6, 0. Cộng tất cả iutil và rutil được 24, nhỏ hơn 30.</p>
+    <p data-n="2">Như vậy có thể bỏ qua {e, c} cùng bảy mở rộng của nó trên cây, không cần tạo danh sách cho các tập này. So với TWU, cận này nhỏ hơn hoặc bằng, vì chỉ tính phần đứng sau thay vì toàn bộ giao dịch, nên tỉa được nhiều nhánh hơn.</p>
+  </template>
+</section>
+
+<!-- ================= 17. ================= -->
+<section class="s" data-time="1 phút">
+  <div class="tag">4 · THUẬT TOÁN HUI-MINER</div>
+  <h2>Thuật toán 2: HUI-Miner</h2>
+  <div class="sub">Duyệt theo chiều sâu trên các utility-list</div>
+  <div class="bd" style="gap:22px">
+    <div class="card dark"><pre class="code">HUI-Miner(P.UL, ULs, minutil):
+  for each X ∈ ULs:
+<span data-hl="1">    if SUM(X.iutil) ≥ minutil:
+      xuất X                                  # HUI</span>
+<span data-hl="2">    if SUM(X.iutil) + SUM(X.rutil) ≥ minutil:</span>
+<span data-hl="3">      exULs ← ∅
+      for each Y đứng sau X trong ULs:
+        exULs ← exULs + Construct(P.UL, X, Y)</span>
+<span data-hl="4">      HUI-Miner(X, exULs, minutil)</span>
+
+<span data-hl="5"># Gọi lần đầu: HUI-Miner(∅, các 1-UL, minutil)</span></pre></div>
+    <div class="stk">
+      <div class="fm" data-only="0"><p>Xét lần lượt từng danh sách X theo thứ tự e ≺ c ≺ b ≺ a ≺ d.</p></div>
+      <div class="fm" data-only="1"><p><span class="pl hui">HUI</span> &nbsp;Σ iutil ≥ minutil: ghi nhận X.</p></div>
+      <div class="fm" data-only="2"><p><span class="pl go">Mở rộng</span> nếu Σ iutil + Σ rutil ≥ minutil; ngược lại <span class="pl cut">bỏ qua</span></p></div>
+      <div class="fm" data-only="3"><p>Tạo danh sách của các mở rộng bằng <b>Construct</b>.</p></div>
+      <div class="fm" data-only="4"><p>Gọi đệ quy với X làm tiền tố mới.</p></div>
+      <div class="band" data-only="5-"><p>Hai điều kiện kiểm tra <b>độc lập</b>: tập không phải HUI vẫn có thể cần mở rộng.</p></div>
+    </div>
+  </div>
+  <template class="nt">
+    <p data-n="0">Thuật toán 2 là toàn bộ HUI-Miner. Các danh sách được xét lần lượt theo thứ tự e, c, b, a, d.</p>
+    <p data-n="1">Nếu tổng iutil của X đạt ngưỡng, X là tập hữu ích cao và được ghi nhận.</p>
+    <p data-n="2">Nếu tổng iutil cộng rutil đạt ngưỡng, vẫn có khả năng tồn tại tập hữu ích cao trong nhánh này, nên X được mở rộng. Ngược lại, cả nhánh được bỏ qua theo Tính chất 2.</p>
+    <p data-n="3">Khi mở rộng, thuật toán kết hợp X với từng danh sách đứng sau nó bằng Construct.</p>
+    <p data-n="4">Sau đó gọi đệ quy với X làm tiền tố mới, trên tập danh sách vừa tạo.</p>
+    <p data-n="5">Lần gọi đầu tiên dùng tiền tố rỗng và các danh sách của mục đơn. Lưu ý hai điều kiện được kiểm tra độc lập: một tập không phải HUI vẫn có thể cần mở rộng. Slide tiếp theo có một ví dụ cụ thể.</p>
+  </template>
+</section>
+
+<!-- ================= 18. ================= -->
+<section class="s" data-time="1 phút 30">
+  <div class="tag">4 · THUẬT TOÁN HUI-MINER</div>
+  <h2>Minh họa: nhánh bắt đầu từ e</h2>
   <div class="sub">Số trong nút: Σ iutil | Σ iutil + Σ rutil · minutil = 30</div>
   <div class="bd">
     <div class="row" style="gap:28px">
@@ -729,7 +805,7 @@ body{background:var(--shell);color:var(--shell-text);font-family:var(--font);ove
   </div>
   <template class="nt">
     <p data-n="0">Slide này chạy thuật toán trên nhánh bắt đầu từ e. Số bên trái trong mỗi nút là tổng iutil, số bên phải là tổng iutil cộng rutil. Tập {e} có tổng iutil 16, chưa phải HUI, nhưng giới hạn là 46, nên thuật toán xét tiếp bốn tập hai mục: ec, eb, ea, ed.</p>
-    <p data-n="1">Tập {e, c} có giới hạn 24, nhỏ hơn 30, nên bị bỏ qua như ở slide 14.</p>
+    <p data-n="1">Tập {e, c} có giới hạn 24, nhỏ hơn 30, nên bị bỏ qua theo Tính chất 2.</p>
     <p data-n="2">Tập {e, b} có tổng iutil 18, giới hạn 37, nên được mở rộng thành eba và ebd.</p>
     <p data-n="3">Tập {e, b, a} là trường hợp đáng chú ý: độ hữu ích 27, chưa đạt ngưỡng, nhưng giới hạn vẫn là 37 nên thuật toán tiếp tục mở rộng.</p>
     <p data-n="4">Tập mở rộng {e, b, a, d} có độ hữu ích 37 và là tập hữu ích cao.</p>
@@ -741,7 +817,7 @@ body{background:var(--shell);color:var(--shell-text);font-family:var(--font);ove
   </template>
 </section>
 
-<!-- ================= 17. KẾT QUẢ ================= -->
+<!-- ================= 19. ================= -->
 <section class="s" data-time="30 giây">
   <div class="tag">4 · THUẬT TOÁN HUI-MINER</div>
   <h2>Hai tập hữu ích cao với minutil = 30</h2>
@@ -767,7 +843,7 @@ body{background:var(--shell);color:var(--shell-text);font-family:var(--font);ove
   </template>
 </section>
 
-<!-- ================= 18. THỰC NGHIỆM ================= -->
+<!-- ================= 20. ================= -->
 <section class="s" data-time="1 phút 30">
   <div class="tag">5 · THỰC NGHIỆM</div>
   <h2>So sánh với ba thuật toán, 8 bộ dữ liệu</h2>
@@ -800,7 +876,7 @@ body{background:var(--shell);color:var(--shell-text);font-family:var(--font);ove
   </template>
 </section>
 
-<!-- ================= 19. ĐÁNH GIÁ ================= -->
+<!-- ================= 21. ================= -->
 <section class="s" data-time="1 phút">
   <div class="tag">5 · THỰC NGHIỆM</div>
   <h2>Ưu điểm và hạn chế</h2>
@@ -825,7 +901,7 @@ body{background:var(--shell);color:var(--shell-text);font-family:var(--font);ove
   </template>
 </section>
 
-<!-- ================= 20. KẾT LUẬN ================= -->
+<!-- ================= 22. ================= -->
 <section class="s" data-time="30 giây">
   <div class="tag">KẾT LUẬN</div>
   <h2>Tóm tắt</h2>
