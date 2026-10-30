@@ -11,11 +11,11 @@ Vì vậy mọi mục ghi **[chưa xác minh]** cần đối chiếu với văn 
 | Văn bản | Vai trò | Tình trạng |
 |---|---|---|
 | Luật An toàn thông tin mạng 86/2015/QH13 | Nền tảng cũ: phân loại HTTT theo 5 cấp độ | Được hợp nhất vào Luật An ninh mạng 2025 [cần xác minh điều khoản thay thế] |
-| Nghị định 85/2016/NĐ-CP | Bảo đảm ATHTTT theo cấp độ (tiêu chí 5 cấp độ, hồ sơ, thẩm định, phê duyệt) | Còn là căn cứ cho quá trình chuyển tiếp (xem mục 2) |
+| Nghị định 85/2016/NĐ-CP | Bảo đảm ATHTTT theo cấp độ (tiêu chí 5 cấp độ, hồ sơ, thẩm định, phê duyệt) | **Được Nghị định 331/2026/NĐ-CP thay thế** (người dùng xác nhận); vẫn áp dụng cho hệ thống thuộc diện chuyển tiếp (xem mục 2) |
 | Thông tư 12/2022/TT-BTTTT (hiệu lực 01/10/2022) | Hướng dẫn NĐ 85/2016; thay Thông tư 03/2017/TT-BTTTT; có biểu mẫu hồ sơ (VD Mẫu 01 đề nghị thẩm định/phê duyệt, Mẫu 03 xin ý kiến chuyên môn) | **Chưa rõ còn áp dụng hay đã bị thay thế** bởi văn bản mới |
 | TCVN 11930:2017 | Yêu cầu cơ bản về ATHTTT theo cấp độ (quản lý + kỹ thuật); căn cứ xây dựng phương án bảo đảm | Vẫn được viện dẫn trong các quyết định phê duyệt năm 2024 |
 | Luật An ninh mạng 116/2025/QH15 (thông qua 10/12/2025) | Hợp nhất Luật ATTTM 2015 và Luật ANM 2018; vẫn phân 5 cấp độ | Hiệu lực từ 01/07/2026 |
-| Nghị định 331/2026/NĐ-CP | Bảo vệ an ninh mạng đối với HTTT (theo báo chí/trang công an) **[chưa xác minh số hiệu, nội dung]** | Cần đọc toàn văn |
+| Nghị định 331/2026/NĐ-CP | Bảo vệ an ninh mạng đối với HTTT; thay thế NĐ 85/2016 | Đang hiệu lực; **cần đọc toàn văn** để cập nhật quy trình hồ sơ, thẩm quyền, biểu mẫu |
 | Luật Bảo vệ dữ liệu cá nhân | Liên quan khi hệ thống xử lý dữ liệu cá nhân | Hiệu lực từ 01/01/2026 |
 
 ## 2. Điểm chuyển tiếp quan trọng (hôm nay là 30/10/2026)
@@ -27,7 +27,7 @@ Theo các nguồn thứ cấp (Điều 39 khoản 1 của nghị định mới, 
 - Hệ thống đã được xác định cấp độ theo Luật ATTTM 2015 tiếp tục được công nhận.
 - Các nguồn mâu thuẫn nhau về thời hạn chuyển đổi chung 12 tháng; cần đọc điều khoản chuyển tiếp gốc.
 
-## 3. Quy trình lập hồ sơ (theo NĐ 85/2016 và TT 12/2022; kiến thức nền, **[chưa xác minh từng điều]**)
+## 3. Quy trình lập hồ sơ (theo NĐ 85/2016 và TT 12/2022, là quy trình cũ, cần cập nhật theo NĐ 331/2026; kiến thức nền, **[chưa xác minh từng điều]**)
 
 1. **Thu thập thông tin, khảo sát** hệ thống: mục đích, phạm vi, kiến trúc, thành phần, loại thông tin xử lý, đối tượng sử dụng.
 2. **Xác định cấp độ đề xuất** dựa trên loại thông tin và quy mô/tính chất hệ thống (5 cấp, từ 1 là thấp nhất đến 5 là quan trọng nhất về an ninh quốc gia).
@@ -49,7 +49,8 @@ Lưu ý thực tế (từ nguồn): hệ thống đã phê duyệt trước 01/1
 
 - [ ] Cho phép thêm domain (`vanban.vcci.com.vn`, `caselaw.vn`, hoặc `thuvienphapluat.vn`, `vanban.chinhphu.vn`) để đọc toàn văn.
 - [ ] Đọc toàn văn Luật 116/2025/QH15, Nghị định 331/2026/NĐ-CP, điều khoản chuyển tiếp và danh mục văn bản hết hiệu lực.
-- [ ] Xác nhận Thông tư 12/2022 và các biểu mẫu còn dùng được không.
+- [ ] Xác nhận Thông tư 12/2022 và các biểu mẫu còn dùng được không (thông tư hướng dẫn NĐ 85 nên có thể hết hiệu lực theo NĐ 85); tìm thông tư/hướng dẫn mới của Bộ Công an.
+- [ ] Viết lại mục 3 (quy trình lập hồ sơ) theo NĐ 331/2026 thay vì NĐ 85/2016.
 - [ ] Xác định hệ thống cụ thể cần lập hồ sơ (loại thông tin, quy mô, cơ quan chủ quản) để chọn cấp độ và cơ quan thẩm định.
 - [ ] Lập mẫu hồ sơ (thuyết minh + phương án theo TCVN 11930:2017) trong thư mục này.
 
